@@ -1,4 +1,5 @@
 import 'package:college_social_network/utils/theme.dart';
+import 'package:college_social_network/views/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,13 +16,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: lightTheme,
-      home: Scaffold(
-          body: Center(
-        child: Text(
-          "Hello World!",
-          style: GoogleFonts.poppins(fontSize: 36),
-        ),
-      )),
+      debugShowCheckedModeBanner: false,
+      home: MainScreen(),
     );
   }
 }
