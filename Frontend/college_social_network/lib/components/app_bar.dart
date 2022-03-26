@@ -13,8 +13,9 @@ class CustomAppBar extends StatelessWidget {
         Image.asset(Images.logo, height: 40),
         const SizedBox(width: 12),
         const Text(
-          "Title",
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          "ConnectUs",
+          style: TextStyle(
+              fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87),
         ),
         const Expanded(child: SizedBox())
       ]),
