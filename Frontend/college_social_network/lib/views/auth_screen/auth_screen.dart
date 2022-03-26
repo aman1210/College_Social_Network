@@ -42,8 +42,11 @@ class _AuthScreenState extends State<AuthScreen> {
             margin: Responsive.isMobile(context)
                 ? const EdgeInsets.all(kDefaultPadding / 4)
                 : const EdgeInsets.all(kDefaultPadding),
-            padding: const EdgeInsets.symmetric(
-                horizontal: kDefaultPadding * 1.5, vertical: kDefaultPadding),
+            padding: EdgeInsets.symmetric(
+                horizontal: Responsive.isMobile(context)
+                    ? kDefaultPadding
+                    : kDefaultPadding * 1.5,
+                vertical: kDefaultPadding),
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
@@ -98,6 +101,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     showSecond: isSignUpMode),
                 const SizedBox(height: kDefaultPadding * 2),
                 TextFormField(
+                  style: TextStyle(fontSize: 14),
                   controller: _emailController,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
@@ -119,6 +123,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   constraints:
                       BoxConstraints(maxHeight: isSignUpMode ? 100 : 0),
                   child: TextFormField(
+                    style: TextStyle(fontSize: 14),
                     enabled: isSignUpMode,
                     controller: _nameController,
                     validator: !isSignUpMode
@@ -144,6 +149,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
                 const SizedBox(height: kDefaultPadding),
                 TextFormField(
+                  style: TextStyle(fontSize: 14),
                   controller: _passwordController,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
@@ -182,7 +188,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
                 const SizedBox(height: kDefaultPadding / 2),
                 _button(context, authViewModel),
-                const SizedBox(height: kDefaultPadding / 2),
+                const SizedBox(height: kDefaultPadding),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -193,7 +199,9 @@ class _AuthScreenState extends State<AuthScreen> {
                           "Already have an account?",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 14),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              height: 1.1),
                         ),
                         secondWidget: const Text(
                           "Don't have an account?",
