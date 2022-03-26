@@ -1,10 +1,10 @@
 import 'package:college_social_network/components/app_bar.dart';
+import 'package:college_social_network/components/side_bar.dart';
 import 'package:college_social_network/responsive.dart';
 import 'package:college_social_network/view_models/auth_view_model.dart';
 import 'package:college_social_network/views/auth_screen/auth_screen.dart';
 import 'package:college_social_network/views/home_screen/chat_list.dart';
-import 'package:college_social_network/views/home_screen/home_screen.dart';
-import 'package:college_social_network/views/home_screen/side_bar.dart';
+import 'package:college_social_network/views/home_screen/post_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
