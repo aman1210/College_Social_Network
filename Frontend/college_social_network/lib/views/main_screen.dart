@@ -35,8 +35,8 @@ class MainScreen extends StatelessWidget {
         mobile: const PostFeed(),
         tablet: Row(
           children: const [
-            Expanded(flex: 9, child: PostFeed()),
-            Expanded(flex: 3, child: ChatList()),
+            Expanded(flex: 8, child: PostFeed()),
+            Expanded(flex: 4, child: ChatList()),
           ],
         ),
         desktop: Row(children: const [

@@ -34,7 +34,7 @@ class _AuthScreenState extends State<AuthScreen> {
         width: Responsive.isDesktop(context)
             ? _size.width / 3
             : Responsive.isTablet(context)
-                ? _size.width / 2
+                ? _size.width / 1.5
                 : _size.width / 1.2,
         alignment: Alignment.center,
         child: SingleChildScrollView(
