@@ -8,14 +8,14 @@ class CustomAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 60,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(children: [
         Image.asset(Images.logo, height: 40),
         const SizedBox(width: 12),
         const Text(
           "ConnectUs",
           style: TextStyle(
-              fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87),
+              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
         ),
         const Expanded(child: SizedBox())
       ]),

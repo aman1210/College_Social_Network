@@ -29,7 +29,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_riverpod: ^2.0.0-dev.5
+  provider: ^6.0.2
   intl: ^0.17.0
   shared_preferences: ^2.0.13
   image_picker: ^0.8.4+11

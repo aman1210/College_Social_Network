@@ -1,6 +1,8 @@
 import 'package:college_social_network/responsive.dart';
 import 'package:college_social_network/utils/constants.dart';
+import 'package:college_social_network/view_models/auth_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -11,8 +13,9 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool isSignUpMode = false;
+  bool showPassword = false;
 
-  final GlobalKey _key = GlobalKey<FormState>();
+  final _key = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
 
@@ -23,6 +26,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     Size _size = MediaQuery.of(context).size;
+    AuthViewModel authViewModel = context.watch<AuthViewModel>();
     return Form(
       key: _key,
       child: Container(
@@ -112,18 +116,22 @@ class _AuthScreenState extends State<AuthScreen> {
                 if (isSignUpMode) const SizedBox(height: kDefaultPadding),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
-                  height: isSignUpMode ? 60 : 0,
+                  constraints:
+                      BoxConstraints(maxHeight: isSignUpMode ? 100 : 0),
                   child: TextFormField(
+                    enabled: isSignUpMode,
                     controller: _nameController,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Please enter your name';
-                      }
-                      if (val.trim().length < 6) {
-                        return 'Please enter valid/full name';
-                      }
-                      return null;
-                    },
+                    validator: !isSignUpMode
+                        ? null
+                        : (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter your name';
+                            }
+                            if (val.trim().length < 6) {
+                              return 'Please enter valid/full name';
+                            }
+                            return null;
+                          },
                     decoration: InputDecoration(
                         hintText: !isSignUpMode ? null : "Your Name",
                         border: !isSignUpMode
@@ -143,10 +151,21 @@ class _AuthScreenState extends State<AuthScreen> {
                     }
                     return null;
                   },
-                  decoration: const InputDecoration(
-                      hintText: "********",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock_outline_rounded)),
+                  obscureText: !showPassword,
+                  decoration: InputDecoration(
+                    hintText: "********",
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock_outline_rounded),
+                    suffixIcon: GestureDetector(
+                      onTapDown: (details) => setState(() {
+                        showPassword = true;
+                      }),
+                      onTapUp: (details) => setState(() {
+                        showPassword = false;
+                      }),
+                      child: const Icon(Icons.remove_red_eye_outlined),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: kDefaultPadding / 2),
                 AnimatedContainer(
@@ -162,30 +181,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
                 const SizedBox(height: kDefaultPadding / 2),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            Theme.of(context).primaryColor),
-                        foregroundColor:
-                            MaterialStateProperty.all(Colors.white)),
-                    onPressed: () {},
-                    child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: CrossFade(
-                          showSecond: isSignUpMode,
-                          firstWidget: const Text(
-                            "Sign In",
-                            style: TextStyle(letterSpacing: 1.2, fontSize: 16),
-                          ),
-                          secondWidget: const Text(
-                            "Sign Up",
-                            style: TextStyle(letterSpacing: 1.2, fontSize: 16),
-                          ),
-                        )),
-                  ),
-                ),
+                _button(context, authViewModel),
                 const SizedBox(height: kDefaultPadding / 2),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -210,6 +206,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     const SizedBox(width: kDefaultPadding / 2),
                     TextButton(
                       onPressed: () {
+                        _key.currentState!.reset();
                         setState(() {
                           isSignUpMode = !isSignUpMode;
                         });
@@ -232,6 +229,54 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  bool submit() {
+    if (!_key.currentState!.validate()) {
+      return false;
+    }
+    _key.currentState!.save();
+    return true;
+  }
+
+  _button(BuildContext context, AuthViewModel authViewModel) {
+    if (authViewModel.isLoading) {
+      return const CircularProgressIndicator();
+    }
+    // if (authViewModel.userLoggedIn) {
+    //   Navigator.of(context).pushReplacement(MaterialPageRoute(
+    //     builder: (context) => Scaffold(
+    //       body: Center(child: Text("User Logged In")),
+    //     ),
+    //   ));
+    // }
+    return SizedBox(
+      width: double.infinity,
+      child: TextButton(
+        style: ButtonStyle(
+            backgroundColor:
+                MaterialStateProperty.all(Theme.of(context).primaryColor),
+            foregroundColor: MaterialStateProperty.all(Colors.white)),
+        onPressed: () {
+          if (submit()) {
+            authViewModel.loginUser("");
+          }
+        },
+        child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: CrossFade(
+              showSecond: isSignUpMode,
+              firstWidget: const Text(
+                "Sign In",
+                style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+              ),
+              secondWidget: const Text(
+                "Sign Up",
+                style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+              ),
+            )),
       ),
     );
   }
