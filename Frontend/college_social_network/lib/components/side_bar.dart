@@ -1,25 +1,16 @@
+import 'package:college_social_network/components/current_state.dart';
 import 'package:college_social_network/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 class SideBar extends StatefulWidget {
   const SideBar({Key? key}) : super(key: key);
+
   @override
   State<SideBar> createState() => _SideBarState();
 }
 
 class _SideBarState extends State<SideBar> {
-  final List<List<dynamic>> tabs = [
-    ['Feed', Icons.grid_view_outlined],
-    ['My Community', Icons.people_alt_outlined],
-    ['Messages', Icons.message_outlined],
-    ['Notification', Icons.notifications_outlined],
-    ['Profile', Icons.person_outline_rounded],
-    ['Settings', Icons.settings_outlined],
-    ['Logout', Icons.logout_rounded],
-  ];
-
   int selected = 0;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,8 +18,12 @@ class _SideBarState extends State<SideBar> {
           vertical: kDefaultPadding, horizontal: kDefaultPadding / 2),
       child: ListView.builder(
         itemBuilder: (context, index) => InkWell(
-          borderRadius: BorderRadius.circular(kDefaultPadding / 5),
+          borderRadius: BorderRadius.circular(kDefaultPadding / 2),
           onTap: () {
+            CurrentState.selectedIndex = index;
+            CurrentState.pageController.animateToPage(index,
+                duration: const Duration(milliseconds: 750),
+                curve: Curves.decelerate);
             setState(() {
               selected = index;
             });
@@ -49,14 +44,14 @@ class _SideBarState extends State<SideBar> {
               child: Row(
                 children: [
                   Icon(
-                    tabs[index][1],
+                    CurrentState.tabs[index][1],
                     color: selected != index
                         ? Colors.blueGrey.shade600
                         : Colors.white,
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    tabs[index][0],
+                    CurrentState.tabs[index][0],
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -67,7 +62,7 @@ class _SideBarState extends State<SideBar> {
                 ],
               )),
         ),
-        itemCount: tabs.length,
+        itemCount: CurrentState.tabs.length,
       ),
     );
   }

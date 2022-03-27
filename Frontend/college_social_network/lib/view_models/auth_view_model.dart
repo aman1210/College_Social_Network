@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 
 class AuthViewModel extends ChangeNotifier {
   bool _isLoading = false;
-  bool _userLoggedIn = true;
+  bool _userLoggedIn = false;
 
   bool get isLoading => _isLoading;
   bool get userLoggedIn => _userLoggedIn;
