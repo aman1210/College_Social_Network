@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:college_social_network/responsive.dart';
 import 'package:college_social_network/utils/constants.dart';
 import 'package:college_social_network/utils/images.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +23,16 @@ class PostCard extends StatelessWidget {
       "Lorem ipsum dolor sit amet. Ut error rerum ut dolorem velit et iusto nulla qui nihil itaque qui facilis distinctio. Ut accusamus quisquam eos distinctio odit et labore provident aut odit molestiae hic fuga nulla. Et distinctio iure At accusantium quas sed placeat vero ut tempore necessitatibus et cu";
   @override
   Widget build(BuildContext context) {
+    var isMobile = Responsive.isMobile(context);
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-      padding: const EdgeInsets.symmetric(
-          vertical: kDefaultPadding / 2, horizontal: kDefaultPadding),
+      margin: EdgeInsets.symmetric(
+          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding * 1.2),
+      padding: EdgeInsets.symmetric(
+          vertical: kDefaultPadding / 2,
+          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(kDefaultPadding / 2),
+          borderRadius: BorderRadius.circular(kDefaultPadding),
           boxShadow: [
             BoxShadow(
               blurRadius: 20,
@@ -46,16 +50,18 @@ class PostCard extends StatelessWidget {
               child: Text(lp),
             ),
           PostImages(
-              buttonCarouselController: buttonCarouselController,
-              images: images),
-          PostStats(),
-          PostButtons(),
+            buttonCarouselController: buttonCarouselController,
+            images: images,
+            isMobile: isMobile,
+          ),
+          const PostStats(),
+          const PostButtons(),
           Container(
             padding: const EdgeInsets.only(top: kDefaultPadding / 2),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: Colors.lightBlue,
                   child: Icon(
                     Icons.person_outline_rounded,
@@ -80,25 +86,27 @@ class PostCard extends StatelessWidget {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: "Write a comment..",
-                        suffixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.gif_box_outlined,
-                              color: Colors.blueGrey.shade500,
-                            ),
-                            SizedBox(width: kDefaultPadding / 4),
-                            Icon(
-                              Icons.image_outlined,
-                              color: Colors.blueGrey.shade500,
-                            ),
-                            SizedBox(width: kDefaultPadding / 4),
-                            Icon(
-                              Icons.emoji_emotions_outlined,
-                              color: Colors.blueGrey.shade500,
-                            ),
-                          ],
-                        ),
+                        suffixIcon: isMobile
+                            ? null
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.gif_box_outlined,
+                                    color: Colors.blueGrey.shade500,
+                                  ),
+                                  const SizedBox(width: kDefaultPadding / 4),
+                                  Icon(
+                                    Icons.image_outlined,
+                                    color: Colors.blueGrey.shade500,
+                                  ),
+                                  const SizedBox(width: kDefaultPadding / 4),
+                                  Icon(
+                                    Icons.emoji_emotions_outlined,
+                                    color: Colors.blueGrey.shade500,
+                                  ),
+                                ],
+                              ),
                       ),
                     ),
                   ),
@@ -143,18 +151,18 @@ class PostButtons extends StatelessWidget {
         children: [
           TextButton.icon(
             onPressed: () {},
-            icon: Icon(Icons.favorite_border_rounded),
-            label: Text("Like"),
+            icon: const Icon(Icons.favorite_border_rounded),
+            label: const Text("Like"),
           ),
           TextButton.icon(
             onPressed: () {},
-            icon: Icon(Icons.mode_comment_outlined),
-            label: Text("Comment"),
+            icon: const Icon(Icons.mode_comment_outlined),
+            label: const Text("Comments"),
           ),
           TextButton.icon(
             onPressed: () {},
-            icon: Icon(Icons.share_outlined),
-            label: Text("Share"),
+            icon: const Icon(Icons.share_outlined),
+            label: const Text("Share"),
           ),
         ],
       ),
@@ -180,7 +188,7 @@ class PostStats extends StatelessWidget {
                 fontSize: 14,
                 color: Colors.blueGrey.shade400),
           ),
-          Expanded(child: SizedBox()),
+          const Expanded(child: SizedBox()),
           Text(
             "3 Comments",
             style: TextStyle(
@@ -188,7 +196,7 @@ class PostStats extends StatelessWidget {
                 fontSize: 14,
                 color: Colors.blueGrey.shade400),
           ),
-          SizedBox(width: kDefaultPadding),
+          const SizedBox(width: kDefaultPadding),
           Text(
             "17 Share",
             style: TextStyle(
@@ -207,10 +215,12 @@ class PostImages extends StatelessWidget {
     Key? key,
     required this.buttonCarouselController,
     required this.images,
+    required this.isMobile,
   }) : super(key: key);
 
   final CarouselController buttonCarouselController;
   final List<String> images;
+  final bool isMobile;
 
   @override
   Widget build(BuildContext context) {
@@ -222,13 +232,15 @@ class PostImages extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: kDefaultPadding, vertical: kDefaultPadding / 2),
+            padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? kDefaultPadding / 4 : kDefaultPadding,
+                vertical: isMobile ? kDefaultPadding / 4 : kDefaultPadding / 2),
             child: CarouselSlider(
               carouselController: buttonCarouselController,
               options: CarouselOptions(
                 enlargeCenterPage: true,
-                height: 400,
+                height: isMobile ? 200 : 400,
+                viewportFraction: isMobile ? 1 : 0.9,
                 enlargeStrategy: CenterPageEnlargeStrategy.scale,
                 enableInfiniteScroll: false,
                 scrollDirection: Axis.horizontal,
@@ -236,10 +248,11 @@ class PostImages extends StatelessWidget {
               items: images
                   .map(
                     (e) => Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: kDefaultPadding),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: isMobile ? 0 : kDefaultPadding),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(kDefaultPadding),
+                        borderRadius: BorderRadius.circular(
+                            isMobile ? kDefaultPadding / 2 : kDefaultPadding),
                         child: Image.asset(
                           e,
                           fit: BoxFit.cover,
@@ -250,68 +263,84 @@ class PostImages extends StatelessWidget {
                   .toList(),
             ),
           ),
-          Positioned(
-            right: 0,
-            child: InkWell(
-              hoverColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              focusColor: Colors.transparent,
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
-              highlightColor: Colors.transparent,
-              onTap: () {
-                buttonCarouselController.nextPage(
-                    curve: Curves.easeInOut,
-                    duration: const Duration(milliseconds: 300));
-              },
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.black45,
-                  borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(kDefaultPadding),
-                    topRight: Radius.circular(kDefaultPadding),
+          if (images.length > 1)
+            Positioned(
+              right: 0,
+              child: InkWell(
+                hoverColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  buttonCarouselController.nextPage(
+                      curve: Curves.easeInOut,
+                      duration: const Duration(milliseconds: 300));
+                },
+                child: Container(
+                  margin: isMobile
+                      ? null
+                      : const EdgeInsets.only(right: kDefaultPadding / 2),
+                  decoration: const BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(kDefaultPadding),
+                      topRight: Radius.circular(kDefaultPadding),
+                    ),
                   ),
-                ),
-                width: 60,
-                height: 400 + kDefaultPadding,
-                child: const Icon(
-                  Icons.chevron_right_rounded,
-                  color: Colors.white,
-                  size: 60,
+                  width: isMobile ? 30 : 40,
+                  height: (isMobile ? 200 : 400) + kDefaultPadding,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.black26,
+                    maxRadius: isMobile ? 15 : 20,
+                    child: Icon(
+                      Icons.chevron_right_rounded,
+                      color: Colors.white,
+                      size: isMobile ? 30 : 40,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            left: 0,
-            child: InkWell(
-              hoverColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              focusColor: Colors.transparent,
-              overlayColor: MaterialStateProperty.all(Colors.transparent),
-              highlightColor: Colors.transparent,
-              onTap: () {
-                buttonCarouselController.previousPage(
-                    curve: Curves.easeInOut,
-                    duration: const Duration(milliseconds: 300));
-              },
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.black45,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(kDefaultPadding),
-                    topLeft: Radius.circular(kDefaultPadding),
+          if (images.length > 1)
+            Positioned(
+              left: 0,
+              child: InkWell(
+                hoverColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                focusColor: Colors.transparent,
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  buttonCarouselController.previousPage(
+                      curve: Curves.easeInOut,
+                      duration: const Duration(milliseconds: 300));
+                },
+                child: Container(
+                  margin: isMobile
+                      ? null
+                      : const EdgeInsets.only(left: kDefaultPadding / 2),
+                  decoration: const BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(kDefaultPadding),
+                      topLeft: Radius.circular(kDefaultPadding),
+                    ),
                   ),
-                ),
-                width: 60,
-                height: 400 + kDefaultPadding,
-                child: const Icon(
-                  Icons.chevron_left_rounded,
-                  color: Colors.white,
-                  size: 60,
+                  width: isMobile ? 30 : 40,
+                  height: (isMobile ? 200 : 400) + kDefaultPadding,
+                  child: CircleAvatar(
+                    maxRadius: isMobile ? 15 : 20,
+                    backgroundColor: Colors.black26,
+                    child: Icon(
+                      Icons.chevron_left_rounded,
+                      color: Colors.white,
+                      size: isMobile ? 30 : 40,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

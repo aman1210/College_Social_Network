@@ -15,7 +15,7 @@ class _SideBarState extends State<SideBar> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-          vertical: kDefaultPadding, horizontal: kDefaultPadding / 2),
+          vertical: kDefaultPadding, horizontal: kDefaultPadding),
       child: ListView.builder(
         itemBuilder: (context, index) => InkWell(
           borderRadius: BorderRadius.circular(kDefaultPadding / 2),

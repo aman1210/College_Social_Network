@@ -24,13 +24,15 @@ class _MainScreenState extends State<MainScreen> {
     Size _size = MediaQuery.of(context).size;
     AuthViewModel authViewModel = context.watch<AuthViewModel>();
 
-    return Scaffold(
-      backgroundColor: Colors.white70,
-      body: Column(
-        children: [
-          const CustomAppBar(),
-          ui(authViewModel),
-        ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white70,
+        body: Column(
+          children: [
+            const CustomAppBar(),
+            ui(authViewModel),
+          ],
+        ),
       ),
     );
   }
@@ -56,10 +58,9 @@ class _MainScreenState extends State<MainScreen> {
               child: mainarea(),
             ),
             Expanded(
-                flex: 3,
-                child: Container(
-                    color: showChatList ? Colors.green : Colors.red,
-                    child: ChatList())),
+              flex: 3,
+              child: ChatList(),
+            ),
           ],
         ),
       ),

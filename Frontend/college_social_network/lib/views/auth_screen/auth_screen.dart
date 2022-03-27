@@ -196,18 +196,18 @@ class _AuthScreenState extends State<AuthScreen> {
                       child: CrossFade(
                         showSecond: isSignUpMode,
                         firstWidget: const Text(
+                          "Don't have an account?",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 14),
+                        ),
+                        secondWidget: const Text(
                           "Already have an account?",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontWeight: FontWeight.w500,
                               fontSize: 14,
                               height: 1.1),
-                        ),
-                        secondWidget: const Text(
-                          "Don't have an account?",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 14),
                         ),
                       ),
                     ),
