@@ -78,7 +78,10 @@ class _PostCardState extends State<PostCard> {
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
-                  child: Text(lp),
+                  child: Text(
+                    lp,
+                    style: TextStyle(fontSize: 14),
+                  ),
                 ),
               PostImages(
                 buttonCarouselController: buttonCarouselController,

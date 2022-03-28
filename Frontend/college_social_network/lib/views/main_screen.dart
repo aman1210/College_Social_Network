@@ -27,6 +27,7 @@ class _MainScreenState extends State<MainScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white70,
+        drawer: const SideBar(),
         body: Column(
           children: [
             const CustomAppBar(),
@@ -47,18 +48,18 @@ class _MainScreenState extends State<MainScreen> {
         tablet: Row(
           children: [
             Expanded(flex: 8, child: mainarea()),
-            Expanded(flex: 4, child: ChatList()),
+            Expanded(flex: 3, child: ChatList()),
           ],
         ),
         desktop: Row(
           children: [
-            Expanded(flex: 2, child: SideBar()),
+            const Expanded(flex: 2, child: SideBar()),
             Expanded(
-              flex: 7,
+              flex: 6,
               child: mainarea(),
             ),
             Expanded(
-              flex: 3,
+              flex: 2,
               child: ChatList(),
             ),
           ],
@@ -74,7 +75,7 @@ class _MainScreenState extends State<MainScreen> {
       },
       controller: CurrentState.pageController,
       scrollDirection: Axis.vertical,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: CurrentState.screens.length,
       onPageChanged: (val) {
         if (val == 4) {

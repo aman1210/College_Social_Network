@@ -13,6 +13,7 @@ class PostFeed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
+    var istablet = Responsive.isTablet(context);
     return Container(
       width: double.infinity,
       clipBehavior: Clip.hardEdge,
@@ -45,17 +46,18 @@ class PostFeed extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            flex: 5,
-            child: ListView(
-              controller: _cardController,
-              children: const [
-                RecentEventCard(),
-                SizedBox(height: kDefaultPadding),
-                BirthdayCard(),
-              ],
-            ),
-          )
+          if (!isMobile && !istablet)
+            Expanded(
+              flex: 5,
+              child: ListView(
+                controller: _cardController,
+                children: const [
+                  RecentEventCard(),
+                  SizedBox(height: kDefaultPadding),
+                  BirthdayCard(),
+                ],
+              ),
+            )
         ],
       ),
     );
