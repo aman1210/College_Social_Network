@@ -11,7 +11,7 @@ class ChatList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: kDefaultPadding / 2,
+        horizontal: kDefaultPadding,
       ),
       child: Column(
         children: [
@@ -86,6 +86,7 @@ class _AnimatedChatListItemState extends State<AnimatedChatListItem> {
               curve: Curves.decelerate,
             );
           },
+          contentPadding: const EdgeInsets.symmetric(horizontal: 0),
           leading: CircleAvatar(
             child: Icon(Icons.person_outline_rounded),
           ),

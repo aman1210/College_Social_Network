@@ -4,11 +4,15 @@ import 'package:college_social_network/utils/constants.dart';
 import 'package:college_social_network/utils/images.dart';
 import 'package:flutter/material.dart';
 
-class PostCard extends StatelessWidget {
-  PostCard({
-    Key? key,
-  }) : super(key: key);
+class PostCard extends StatefulWidget {
+  PostCard({Key? key, required this.index}) : super(key: key);
+  final int index;
 
+  @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
   List<String> images = [
     Images.img1,
     Images.img2,
@@ -21,112 +25,144 @@ class PostCard extends StatelessWidget {
 
   final String lp =
       "Lorem ipsum dolor sit amet. Ut error rerum ut dolorem velit et iusto nulla qui nihil itaque qui facilis distinctio. Ut accusamus quisquam eos distinctio odit et labore provident aut odit molestiae hic fuga nulla. Et distinctio iure At accusantium quas sed placeat vero ut tempore necessitatibus et cu";
+
+  bool _animate = false;
+
+  static bool _isStart = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _isStart
+        ? Future.delayed(Duration(milliseconds: (widget.index + 1) * 250), () {
+            setState(() {
+              _animate = true;
+              _isStart = false;
+            });
+          })
+        : _animate = true;
+  }
+
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
-    return Container(
-      margin: EdgeInsets.symmetric(
-          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding * 1.2),
-      padding: EdgeInsets.symmetric(
-          vertical: kDefaultPadding / 2,
-          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(kDefaultPadding),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 20,
-              color: Colors.black.withOpacity(0.07),
-              offset: const Offset(0, 5),
-            )
-          ]),
-      child: Column(
-        children: [
-          const PostHead(),
-          if (lp != null)
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
-              child: Text(lp),
-            ),
-          PostImages(
-            buttonCarouselController: buttonCarouselController,
-            images: images,
-            isMobile: isMobile,
-          ),
-          const PostStats(),
-          const PostButtons(),
-          Container(
-            padding: const EdgeInsets.only(top: kDefaultPadding / 2),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircleAvatar(
-                  backgroundColor: Colors.lightBlue,
-                  child: Icon(
-                    Icons.person_outline_rounded,
-                    color: Colors.white,
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: kDefaultPadding / 2),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: kDefaultPadding / 2),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey.shade50,
-                      borderRadius: BorderRadius.circular(
-                        kDefaultPadding / 2,
-                      ),
-                    ),
-                    child: TextFormField(
-                      maxLines: 5,
-                      minLines: 1,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Write a comment..",
-                        suffixIcon: isMobile
-                            ? null
-                            : Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.gif_box_outlined,
-                                    color: Colors.blueGrey.shade500,
-                                  ),
-                                  const SizedBox(width: kDefaultPadding / 4),
-                                  Icon(
-                                    Icons.image_outlined,
-                                    color: Colors.blueGrey.shade500,
-                                  ),
-                                  const SizedBox(width: kDefaultPadding / 4),
-                                  Icon(
-                                    Icons.emoji_emotions_outlined,
-                                    color: Colors.blueGrey.shade500,
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(kDefaultPadding / 4),
-                    color: Colors.blue.withOpacity(0.1),
-                  ),
-                  child: Icon(
-                    Icons.send,
-                    color: Theme.of(context).primaryColor,
-                  ),
+    return AnimatedOpacity(
+      duration: Duration(milliseconds: 1000),
+      opacity: _animate ? 1 : 0,
+      curve: Curves.easeInOutQuart,
+      child: AnimatedPadding(
+        duration: Duration(milliseconds: 1000),
+        padding: _animate
+            ? const EdgeInsets.all(4.0)
+            : const EdgeInsets.only(top: 10),
+        child: Container(
+          margin: EdgeInsets.symmetric(
+              horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
+          padding: EdgeInsets.symmetric(
+              vertical: kDefaultPadding / 2,
+              horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(kDefaultPadding),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 20,
+                  color: Colors.black.withOpacity(0.07),
+                  offset: const Offset(0, 5),
                 )
-              ],
-            ),
-          )
-        ],
+              ]),
+          child: Column(
+            children: [
+              const PostHead(),
+              if (lp != null)
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
+                  child: Text(lp),
+                ),
+              PostImages(
+                buttonCarouselController: buttonCarouselController,
+                images: images,
+                isMobile: isMobile,
+              ),
+              const PostStats(),
+              const PostButtons(),
+              Container(
+                padding: const EdgeInsets.only(top: kDefaultPadding / 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircleAvatar(
+                      backgroundColor: Colors.lightBlue,
+                      child: Icon(
+                        Icons.person_outline_rounded,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: kDefaultPadding / 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: kDefaultPadding / 2),
+                        decoration: BoxDecoration(
+                          color: Colors.blueGrey.shade50,
+                          borderRadius: BorderRadius.circular(
+                            kDefaultPadding / 2,
+                          ),
+                        ),
+                        child: TextFormField(
+                          maxLines: 5,
+                          minLines: 1,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Write a comment..",
+                            suffixIcon: isMobile
+                                ? null
+                                : Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.gif_box_outlined,
+                                        color: Colors.blueGrey.shade500,
+                                      ),
+                                      const SizedBox(
+                                          width: kDefaultPadding / 4),
+                                      Icon(
+                                        Icons.image_outlined,
+                                        color: Colors.blueGrey.shade500,
+                                      ),
+                                      const SizedBox(
+                                          width: kDefaultPadding / 4),
+                                      Icon(
+                                        Icons.emoji_emotions_outlined,
+                                        color: Colors.blueGrey.shade500,
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(kDefaultPadding / 4),
+                        color: Colors.blue.withOpacity(0.1),
+                      ),
+                      child: Icon(
+                        Icons.send,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -239,7 +275,7 @@ class PostImages extends StatelessWidget {
               carouselController: buttonCarouselController,
               options: CarouselOptions(
                 enlargeCenterPage: true,
-                height: isMobile ? 200 : 400,
+                height: isMobile ? 200 : 300,
                 viewportFraction: isMobile ? 1 : 0.9,
                 enlargeStrategy: CenterPageEnlargeStrategy.scale,
                 enableInfiniteScroll: false,
@@ -289,7 +325,7 @@ class PostImages extends StatelessWidget {
                     ),
                   ),
                   width: isMobile ? 30 : 40,
-                  height: (isMobile ? 200 : 400) + kDefaultPadding,
+                  height: (isMobile ? 200 : 300) + kDefaultPadding,
                   child: CircleAvatar(
                     backgroundColor: Colors.black26,
                     maxRadius: isMobile ? 15 : 20,
@@ -328,7 +364,7 @@ class PostImages extends StatelessWidget {
                     ),
                   ),
                   width: isMobile ? 30 : 40,
-                  height: (isMobile ? 200 : 400) + kDefaultPadding,
+                  height: (isMobile ? 200 : 300) + kDefaultPadding,
                   child: CircleAvatar(
                     maxRadius: isMobile ? 15 : 20,
                     backgroundColor: Colors.black26,

@@ -21,4 +21,9 @@ class AuthViewModel extends ChangeNotifier {
       setLoading(false);
     });
   }
+
+  void logout() {
+    _userLoggedIn = false;
+    setLoading(false);
+  }
 }
