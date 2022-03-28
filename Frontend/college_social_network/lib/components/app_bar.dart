@@ -1,8 +1,10 @@
 import 'package:college_social_network/responsive.dart';
 import 'package:college_social_network/utils/constants.dart';
 import 'package:college_social_network/utils/images.dart';
+import 'package:college_social_network/view_models/auth_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({Key? key}) : super(key: key);
@@ -11,11 +13,12 @@ class CustomAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
     var isTablet = Responsive.isTablet(context);
+    AuthViewModel authViewModel = context.watch<AuthViewModel>();
     return Container(
       height: isMobile ? 60 : 70,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(children: [
-        if (isMobile)
+        if (isMobile && authViewModel.userLoggedIn)
           IconButton(
             splashRadius: 25,
             onPressed: () {
@@ -25,7 +28,7 @@ class CustomAppBar extends StatelessWidget {
           ),
         if (!isMobile) AppLogo(),
         const Expanded(flex: 1, child: SizedBox()),
-        if (!isTablet && !isMobile)
+        if (!isTablet && !isMobile && authViewModel.userLoggedIn)
           Expanded(
             flex: 8,
             child: Padding(
@@ -51,32 +54,33 @@ class CustomAppBar extends StatelessWidget {
             ),
           ),
         const Expanded(flex: 4, child: SizedBox()),
-        Container(
-          child: Row(
-            children: [
-              Text(
-                "User Name",
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.blueGrey.shade700),
-              ),
-              SizedBox(width: kDefaultPadding),
-              Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(kDefaultPadding / 4),
-                  color: Colors.blue.shade100,
+        if (authViewModel.userLoggedIn)
+          Container(
+            child: Row(
+              children: [
+                Text(
+                  "User Name",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.blueGrey.shade700),
                 ),
-                child: Icon(
-                  CupertinoIcons.person,
-                  color: Colors.blue,
-                ),
-              )
-            ],
-          ),
-        )
+                SizedBox(width: kDefaultPadding),
+                Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(kDefaultPadding / 4),
+                    color: Colors.blue.shade100,
+                  ),
+                  child: Icon(
+                    CupertinoIcons.person,
+                    color: Colors.blue,
+                  ),
+                )
+              ],
+            ),
+          )
       ]),
     );
   }
