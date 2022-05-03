@@ -2,6 +2,8 @@ import 'package:college_social_network/views/home_screen/post_feed.dart';
 import 'package:college_social_network/views/my_community_screen/my_community_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../views/profile_screen/profile_screen.dart';
+
 class CurrentState extends ChangeNotifier {
   static int selectedIndex = 0;
 
@@ -20,10 +22,11 @@ class CurrentState extends ChangeNotifier {
     MyCommunityScreen(),
     const Center(child: Text("3")),
     const Center(child: Text("4")),
-    const Center(child: Text("5")),
+    ProfileScreen(),
     const Center(child: Text("6")),
     const Center(child: Text("7")),
   ];
 
-  static PageController pageController = PageController(initialPage: 0);
+  static PageController pageController =
+      PageController(initialPage: 0, keepPage: true);
 }

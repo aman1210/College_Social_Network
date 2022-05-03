@@ -23,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     Size _size = MediaQuery.of(context).size;
     AuthViewModel authViewModel = context.watch<AuthViewModel>();
-
+    var pageController = CurrentState.pageController;
     return SafeArea(
       child: Scaffold(
         // backgroundColor: Colors.white70,
@@ -32,23 +32,23 @@ class _MainScreenState extends State<MainScreen> {
         body: Column(
           children: [
             const CustomAppBar(),
-            ui(authViewModel),
+            ui(authViewModel, pageController),
           ],
         ),
       ),
     );
   }
 
-  ui(AuthViewModel authViewModel) {
+  ui(AuthViewModel authViewModel, PageController pageController) {
     if (!authViewModel.userLoggedIn) {
       return const AuthScreen();
     }
     return Expanded(
       child: Responsive(
-        mobile: mainarea(),
+        mobile: mainarea(pageController),
         tablet: Row(
           children: [
-            Expanded(flex: 8, child: mainarea()),
+            Expanded(flex: 8, child: mainarea(pageController)),
             Expanded(flex: 3, child: ChatList()),
           ],
         ),
@@ -57,7 +57,7 @@ class _MainScreenState extends State<MainScreen> {
             const Expanded(flex: 2, child: SideBar()),
             Expanded(
               flex: 6,
-              child: mainarea(),
+              child: mainarea(pageController),
             ),
             Expanded(
               flex: 2,
@@ -69,12 +69,12 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  PageView mainarea() {
+  PageView mainarea(PageController controller) {
     return PageView.builder(
       itemBuilder: (context, index) {
         return CurrentState.screens[index];
       },
-      controller: CurrentState.pageController,
+      controller: controller,
       scrollDirection: Axis.vertical,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: CurrentState.screens.length,

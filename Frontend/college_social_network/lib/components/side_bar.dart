@@ -44,6 +44,7 @@ class _SideBarState extends State<SideBar> {
                     setState(() {
                       selected = index;
                     });
+                    print(CurrentState.selectedIndex);
                     if (isMobile) Navigator.pop(context);
                   }
                 },
