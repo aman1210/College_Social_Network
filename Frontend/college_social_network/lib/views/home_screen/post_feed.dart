@@ -38,80 +38,7 @@ class PostFeed extends StatelessWidget {
                 scrollDirection: Axis.vertical,
                 controller: _scrollController,
                 itemBuilder: (context, index) => index == 0
-                    ? Container(
-                        margin: EdgeInsets.symmetric(
-                            horizontal: isMobile
-                                ? kDefaultPadding / 2
-                                : kDefaultPadding),
-                        padding: EdgeInsets.symmetric(
-                            vertical: kDefaultPadding / 2,
-                            horizontal: isMobile
-                                ? kDefaultPadding / 2
-                                : kDefaultPadding),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.circular(kDefaultPadding),
-                            boxShadow: [
-                              BoxShadow(
-                                blurRadius: 20,
-                                color: Colors.black.withOpacity(0.07),
-                                offset: const Offset(0, 5),
-                              )
-                            ]),
-                        child: Column(children: [
-                          Row(
-                            children: [
-                              const CircleAvatar(
-                                child: Icon(Icons.person),
-                              ),
-                              const SizedBox(width: kDefaultPadding / 2),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.only(
-                                    left: kDefaultPadding / 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(
-                                        kDefaultPadding / 2),
-                                  ),
-                                  child: TextFormField(
-                                    decoration: const InputDecoration(
-                                      hintText: "What's happening?",
-                                      hintStyle: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.1),
-                                      border: InputBorder.none,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          const SizedBox(height: kDefaultPadding / 2),
-                          Row(
-                            children: [
-                              TextButton.icon(
-                                onPressed: () {},
-                                icon: const Icon(Icons.emoji_emotions_outlined),
-                                label: const Text("Feeling"),
-                              ),
-                              const SizedBox(height: kDefaultPadding / 4),
-                              TextButton.icon(
-                                onPressed: () {},
-                                icon: const Icon(Icons.photo_outlined),
-                                label: const Text("Photo"),
-                              ),
-                              const Expanded(child: const SizedBox()),
-                              ElevatedButton(
-                                  onPressed: () {}, child: const Text("Post"))
-                            ],
-                          ),
-                        ]),
-                      )
+                    ? NewPost(isMobile: isMobile)
                     : PostCard(
                         index: index - 1,
                       ),
@@ -135,6 +62,86 @@ class PostFeed extends StatelessWidget {
             )
         ],
       ),
+    );
+  }
+}
+
+class NewPost extends StatelessWidget {
+  const NewPost({
+    Key? key,
+    required this.isMobile,
+  }) : super(key: key);
+
+  final bool isMobile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(
+          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
+      padding: EdgeInsets.symmetric(
+          vertical: kDefaultPadding / 2,
+          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(kDefaultPadding),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 20,
+              color: Colors.black.withOpacity(0.07),
+              offset: const Offset(0, 5),
+            )
+          ]),
+      child: Column(children: [
+        Row(
+          children: [
+            const CircleAvatar(
+              child: Icon(Icons.person),
+            ),
+            const SizedBox(width: kDefaultPadding / 2),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.only(
+                  left: kDefaultPadding / 2,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(kDefaultPadding / 2),
+                ),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    hintText: "What's happening?",
+                    hintStyle: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.1),
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+        const SizedBox(height: kDefaultPadding / 2),
+        Row(
+          children: [
+            TextButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.emoji_emotions_outlined),
+              label: const Text("Feeling"),
+            ),
+            const SizedBox(height: kDefaultPadding / 4),
+            TextButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.photo_outlined),
+              label: const Text("Photo"),
+            ),
+            const Expanded(child: const SizedBox()),
+            ElevatedButton(onPressed: () {}, child: const Text("Post"))
+          ],
+        ),
+      ]),
     );
   }
 }
