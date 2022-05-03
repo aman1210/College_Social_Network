@@ -26,7 +26,8 @@ class _MainScreenState extends State<MainScreen> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white70,
+        // backgroundColor: Colors.white70,
+        drawerEnableOpenDragGesture: false,
         drawer: const SideBar(),
         body: Column(
           children: [

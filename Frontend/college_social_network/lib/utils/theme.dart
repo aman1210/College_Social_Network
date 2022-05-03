@@ -7,6 +7,7 @@ var lightTheme = ThemeData(
     textTheme: GoogleFonts.poppinsTextTheme());
 
 var darkTheme = ThemeData(
+  scaffoldBackgroundColor: Color(0xff121212),
   primaryColor: Colors.blue,
   brightness: Brightness.dark,
   textTheme: GoogleFonts.poppinsTextTheme(),

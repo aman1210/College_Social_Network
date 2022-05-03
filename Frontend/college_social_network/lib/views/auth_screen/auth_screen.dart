@@ -176,7 +176,11 @@ class _AuthScreenState extends State<AuthScreen> {
                 const SizedBox(height: kDefaultPadding / 2),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
-                  height: isSignUpMode ? 0 : 20,
+                  height: isSignUpMode
+                      ? 0
+                      : Responsive.isMobile(context)
+                          ? 40
+                          : 20,
                   child: Row(
                     children: [
                       const Expanded(child: SizedBox()),

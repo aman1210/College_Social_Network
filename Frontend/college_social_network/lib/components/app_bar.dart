@@ -17,8 +17,9 @@ class CustomAppBar extends StatelessWidget {
     return Container(
       height: isMobile ? 60 : 70,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(children: [
-        if (isMobile && authViewModel.userLoggedIn)
+        if ((isMobile || isTablet) && authViewModel.userLoggedIn)
           IconButton(
             splashRadius: 25,
             onPressed: () {
@@ -26,7 +27,7 @@ class CustomAppBar extends StatelessWidget {
             },
             icon: Icon(Icons.menu),
           ),
-        if (!isMobile) AppLogo(),
+        if (!isMobile || !authViewModel.userLoggedIn) AppLogo(),
         const Expanded(flex: 1, child: SizedBox()),
         if (!isTablet && !isMobile && authViewModel.userLoggedIn)
           Expanded(
@@ -98,12 +99,15 @@ class AppLogo extends StatelessWidget {
         children: [
           Image.asset(Images.logo, height: 40),
           const SizedBox(width: 12),
-          const Text(
+          Text(
             "ConnectUs",
             style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87),
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black87
+                  : Colors.white,
+            ),
           ),
         ],
       ),
