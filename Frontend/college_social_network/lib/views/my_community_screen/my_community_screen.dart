@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:college_social_network/utils/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_fade/image_fade.dart';
 
 import '../../responsive.dart';
 import '../../utils/constants.dart';
@@ -54,12 +56,17 @@ class MyCommunityScreen extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(kDefaultPadding / 4),
-                          topRight: const Radius.circular(kDefaultPadding / 4)),
+                          topRight: Radius.circular(kDefaultPadding / 4)),
                       child: Container(
                         width: double.infinity,
-                        child: Image.network(
-                          "https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+                        child: ImageFade(
+                          image: NetworkImage(
+                            "https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+                          ),
                           fit: BoxFit.cover,
+                          placeholder: SpinKitCubeGrid(
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                       ),
                     ),
@@ -68,7 +75,7 @@ class MyCommunityScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(left: kDefaultPadding / 2),
                     child: Text(
                       "User $user",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                   Padding(
@@ -94,7 +101,7 @@ class MyCommunityScreen extends StatelessWidget {
                                   color: Theme.of(context).primaryColor,
                                   borderRadius: BorderRadius.circular(
                                       kDefaultPadding / 4)),
-                              child: Text(
+                              child: const Text(
                                 "View",
                                 style: TextStyle(color: Colors.white),
                                 textAlign: TextAlign.center,

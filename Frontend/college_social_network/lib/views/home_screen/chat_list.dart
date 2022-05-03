@@ -11,7 +11,7 @@ class ChatList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: kDefaultPadding,
+        horizontal: kDefaultPadding / 2,
       ),
       child: Column(
         children: [
@@ -76,7 +76,7 @@ class _AnimatedChatListItemState extends State<AnimatedChatListItem> {
       child: AnimatedPadding(
         duration: Duration(milliseconds: 1000),
         padding: _animate
-            ? const EdgeInsets.all(4.0)
+            ? const EdgeInsets.all(2.0)
             : const EdgeInsets.only(top: 10),
         child: ListTile(
           onTap: () {
@@ -86,7 +86,7 @@ class _AnimatedChatListItemState extends State<AnimatedChatListItem> {
               curve: Curves.decelerate,
             );
           },
-          contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 4),
           leading: CircleAvatar(
             child: Icon(Icons.person_outline_rounded),
           ),

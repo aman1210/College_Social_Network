@@ -3,6 +3,8 @@ import 'package:college_social_network/responsive.dart';
 import 'package:college_social_network/utils/constants.dart';
 import 'package:college_social_network/utils/images.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_fade/image_fade.dart';
 
 class PostCard extends StatefulWidget {
   PostCard({Key? key, required this.index}) : super(key: key);
@@ -292,8 +294,10 @@ class PostImages extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(
                             isMobile ? kDefaultPadding / 2 : kDefaultPadding),
-                        child: Image.asset(
-                          e,
+                        child: ImageFade(
+                          image: AssetImage(e),
+                          placeholder: SpinKitCubeGrid(
+                              color: Theme.of(context).primaryColor),
                           fit: BoxFit.cover,
                         ),
                       ),

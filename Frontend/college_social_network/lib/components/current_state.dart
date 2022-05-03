@@ -27,6 +27,5 @@ class CurrentState extends ChangeNotifier {
     const Center(child: Text("7")),
   ];
 
-  static PageController pageController =
-      PageController(initialPage: 0, keepPage: true);
+  static PageController pageController = PageController(initialPage: 0);
 }

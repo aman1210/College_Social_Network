@@ -1,6 +1,8 @@
 import 'package:college_social_network/responsive.dart';
 import 'package:college_social_network/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_fade/image_fade.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -52,15 +54,19 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(kDefaultPadding),
-                      topRight: Radius.circular(kDefaultPadding)),
-                  child: Image.network(
-                    "https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
-                ),
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(kDefaultPadding),
+                        topRight: Radius.circular(kDefaultPadding)),
+                    child: ImageFade(
+                      image: NetworkImage(
+                        "https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                      ),
+                      placeholder: SpinKitWave(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )),
                 Positioned(
                   right: kDefaultPadding / 2,
                   bottom: kDefaultPadding / 2,
