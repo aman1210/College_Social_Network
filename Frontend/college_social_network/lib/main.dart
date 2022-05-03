@@ -2,7 +2,6 @@ import 'package:college_social_network/utils/theme.dart';
 import 'package:college_social_network/view_models/auth_view_model.dart';
 import 'package:college_social_network/views/main_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 void main() {

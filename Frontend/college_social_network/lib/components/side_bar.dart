@@ -22,13 +22,13 @@ class _SideBarState extends State<SideBar> {
     selected = CurrentState.selectedIndex;
     return Container(
       color: Colors.white,
-      constraints: BoxConstraints(maxWidth: 300),
+      constraints: const BoxConstraints(maxWidth: 300),
       padding: const EdgeInsets.symmetric(
           vertical: kDefaultPadding, horizontal: kDefaultPadding),
       child: Column(
         children: [
-          if (isMobile) AppLogo(),
-          if (isMobile) SizedBox(height: kDefaultPadding),
+          if (isMobile) const AppLogo(),
+          if (isMobile) const SizedBox(height: kDefaultPadding),
           Expanded(
             child: ListView.builder(
               itemBuilder: (context, index) => InkWell(
@@ -44,7 +44,6 @@ class _SideBarState extends State<SideBar> {
                     setState(() {
                       selected = index;
                     });
-                    print(CurrentState.selectedIndex);
                     if (isMobile) Navigator.pop(context);
                   }
                 },

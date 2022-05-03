@@ -25,9 +25,9 @@ class CustomAppBar extends StatelessWidget {
             onPressed: () {
               Scaffold.of(context).openDrawer();
             },
-            icon: Icon(Icons.menu),
+            icon: const Icon(Icons.menu),
           ),
-        if (!isMobile || !authViewModel.userLoggedIn) AppLogo(),
+        if (!isMobile || !authViewModel.userLoggedIn) const AppLogo(),
         const Expanded(flex: 1, child: SizedBox()),
         if (!isTablet && !isMobile && authViewModel.userLoggedIn)
           Expanded(
@@ -35,18 +35,18 @@ class CustomAppBar extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
               child: TextFormField(
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
                 decoration: InputDecoration(
                   isDense: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(kDefaultPadding / 2),
-                    borderSide: BorderSide(
+                    borderSide: const BorderSide(
                       color: Colors.black12,
                     ),
                   ),
                   hintText: "Search for something here...",
-                  hintStyle: TextStyle(fontSize: 14),
-                  prefixIcon: Icon(
+                  hintStyle: const TextStyle(fontSize: 14),
+                  prefixIcon: const Icon(
                     CupertinoIcons.search,
                     size: 15,
                   ),
@@ -56,31 +56,29 @@ class CustomAppBar extends StatelessWidget {
           ),
         const Expanded(flex: 4, child: SizedBox()),
         if (authViewModel.userLoggedIn)
-          Container(
-            child: Row(
-              children: [
-                Text(
-                  "User Name",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.blueGrey.shade700),
+          Row(
+            children: [
+              Text(
+                "User Name",
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.blueGrey.shade700),
+              ),
+              const SizedBox(width: kDefaultPadding),
+              Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(kDefaultPadding / 4),
+                  color: Colors.blue.shade100,
                 ),
-                SizedBox(width: kDefaultPadding),
-                Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(kDefaultPadding / 4),
-                    color: Colors.blue.shade100,
-                  ),
-                  child: Icon(
-                    CupertinoIcons.person,
-                    color: Colors.blue,
-                  ),
-                )
-              ],
-            ),
+                child: const Icon(
+                  CupertinoIcons.person,
+                  color: Colors.blue,
+                ),
+              )
+            ],
           )
       ]),
     );
@@ -94,23 +92,21 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          Image.asset(Images.logo, height: 40),
-          const SizedBox(width: 12),
-          Text(
-            "ConnectUs",
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).brightness == Brightness.light
-                  ? Colors.black87
-                  : Colors.white,
-            ),
+    return Row(
+      children: [
+        Image.asset(Images.logo, height: 40),
+        const SizedBox(width: 12),
+        Text(
+          "ConnectUs",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.black87
+                : Colors.white,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
