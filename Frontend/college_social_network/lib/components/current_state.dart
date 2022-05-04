@@ -1,4 +1,5 @@
 import 'package:college_social_network/views/home_screen/post_feed.dart';
+import 'package:college_social_network/views/message_screen/message_screen.dart';
 import 'package:college_social_network/views/my_community_screen/my_community_screen.dart';
 import 'package:college_social_network/views/notification_screen/notification_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class CurrentState extends ChangeNotifier {
   static var screens = [
     PostFeed(),
     MyCommunityScreen(),
-    const Center(child: Text("3")),
+    MessageScreen(),
     NotificationScreen(),
     ProfileScreen(),
     const Center(child: Text("6")),

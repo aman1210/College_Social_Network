@@ -1,11 +1,14 @@
 import 'package:college_social_network/components/current_state.dart';
 import 'package:college_social_network/utils/constants.dart';
+import 'package:college_social_network/view_models/message_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChatList extends StatelessWidget {
   ChatList({Key? key}) : super(key: key);
-  ScrollController _controller = ScrollController();
+
+  final ScrollController _controller = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,16 +25,17 @@ class ChatList extends StatelessWidget {
                   borderRadius: BorderRadius.circular(kDefaultPadding / 2),
                 ),
                 hintText: "Search Friends!",
-                prefixIcon: Icon(CupertinoIcons.search)),
+                prefixIcon: const Icon(CupertinoIcons.search)),
           ),
-          SizedBox(height: kDefaultPadding / 2),
+          const SizedBox(height: kDefaultPadding / 2),
           Expanded(
             child: ListView.separated(
                 scrollDirection: Axis.vertical,
                 controller: _controller,
-                itemBuilder: (context, index) =>
-                    AnimatedChatListItem(index: index),
-                separatorBuilder: (context, index) => SizedBox(height: 6),
+                itemBuilder: (context, index) => AnimatedChatListItem(
+                      index: index,
+                    ),
+                separatorBuilder: (context, index) => const SizedBox(height: 2),
                 itemCount: 15),
           )
         ],
@@ -70,24 +74,31 @@ class _AnimatedChatListItemState extends State<AnimatedChatListItem> {
   @override
   Widget build(BuildContext context) {
     return AnimatedOpacity(
-      duration: Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
       opacity: _animate ? 1 : 0,
       curve: Curves.easeInOutQuart,
       child: AnimatedPadding(
-        duration: Duration(milliseconds: 1000),
+        duration: const Duration(milliseconds: 1000),
         padding: _animate
             ? const EdgeInsets.all(2.0)
             : const EdgeInsets.only(top: 10),
         child: ListTile(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(kDefaultPadding)),
           onTap: () {
+            CurrentState.selectedIndex = 2;
             CurrentState.pageController.animateToPage(
               2,
-              duration: Duration(milliseconds: 700),
+              duration: const Duration(milliseconds: 700),
               curve: Curves.decelerate,
             );
+            Provider.of<MessageViewModel>(context, listen: false)
+                .selectUser(widget.index);
           },
-          contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-          leading: CircleAvatar(
+          contentPadding: EdgeInsets.symmetric(
+              horizontal:
+                  CurrentState.selectedIndex == 2 ? kDefaultPadding / 2 : 4),
+          leading: const CircleAvatar(
             child: Icon(Icons.person_outline_rounded),
           ),
           title: Text(
@@ -101,7 +112,7 @@ class _AnimatedChatListItemState extends State<AnimatedChatListItem> {
               ? Container(
                   height: 8,
                   width: 8,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       shape: BoxShape.circle, color: Colors.green),
                 )
               : Text(
