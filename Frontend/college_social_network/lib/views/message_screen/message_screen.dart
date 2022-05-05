@@ -100,7 +100,8 @@ class _MessageScreenState extends State<MessageScreen> {
                   )
                 : Container(
                     margin: const EdgeInsets.only(bottom: kDefaultPadding / 2),
-                    padding: const EdgeInsets.only(top: kDefaultPadding),
+                    padding: EdgeInsets.only(
+                        top: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(
@@ -109,7 +110,10 @@ class _MessageScreenState extends State<MessageScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ChatBoxHeading(selectedUser: selectedUser),
+                        ChatBoxHeading(
+                          selectedUser: selectedUser,
+                          isMobile: isMobile,
+                        ),
                         Divider(height: kDefaultPadding),
                         Expanded(
                           child: ListView.builder(
@@ -256,19 +260,30 @@ class MessageBubble extends StatelessWidget {
 }
 
 class ChatBoxHeading extends StatelessWidget {
-  const ChatBoxHeading({
-    Key? key,
-    required this.selectedUser,
-  }) : super(key: key);
+  const ChatBoxHeading(
+      {Key? key, required this.selectedUser, required this.isMobile})
+      : super(key: key);
 
   final int selectedUser;
+  final bool isMobile;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+      padding: EdgeInsets.only(
+          left: isMobile ? kDefaultPadding / 4 : kDefaultPadding / 2,
+          right: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
       child: Row(
         children: [
+          IconButton(
+              onPressed: () {
+                Provider.of<MessageViewModel>(context, listen: false)
+                    .selectUser(-1);
+              },
+              icon: Icon(
+                Icons.arrow_back,
+                color: Theme.of(context).primaryColor,
+              )),
           CircleAvatar(
             child: Icon(Icons.person),
           ),

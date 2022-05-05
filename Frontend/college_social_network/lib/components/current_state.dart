@@ -15,7 +15,7 @@ class CurrentState extends ChangeNotifier {
     ['Messages', Icons.message_outlined],
     ['Notification', Icons.notifications_outlined],
     ['Profile', Icons.person_outline_rounded],
-    ['Settings', Icons.settings_outlined],
+    // ['Settings', Icons.settings_outlined],
     ['Logout', Icons.logout_rounded],
   ];
 
@@ -25,7 +25,7 @@ class CurrentState extends ChangeNotifier {
     MessageScreen(),
     NotificationScreen(),
     ProfileScreen(),
-    const Center(child: Text("6")),
+    // const Center(child: Text("6")),
     const Center(child: Text("7")),
   ];
 

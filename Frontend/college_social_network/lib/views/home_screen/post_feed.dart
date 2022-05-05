@@ -18,7 +18,7 @@ class PostFeed extends StatelessWidget {
       width: double.infinity,
       clipBehavior: Clip.hardEdge,
       padding: EdgeInsets.only(
-          top: isMobile ? kDefaultPadding / 2 : kDefaultPadding * 1.2),
+          top: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
       decoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: BorderRadius.only(
@@ -137,7 +137,7 @@ class NewPost extends StatelessWidget {
               icon: const Icon(Icons.photo_outlined),
               label: const Text("Photo"),
             ),
-            const Expanded(child: const SizedBox()),
+            const Expanded(child: SizedBox()),
             ElevatedButton(onPressed: () {}, child: const Text("Post"))
           ],
         ),
