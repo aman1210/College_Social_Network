@@ -32,6 +32,10 @@ mongoose
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.log('Failed to connect to MongoDB', err));
 
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.get('/',(req,res)=>{
     res.send("Hello World!");
 });
