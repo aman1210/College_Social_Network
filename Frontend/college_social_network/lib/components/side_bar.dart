@@ -41,6 +41,7 @@ class _SideBarState extends State<SideBar> {
                     CurrentState.pageController.animateToPage(index,
                         duration: const Duration(milliseconds: 750),
                         curve: Curves.decelerate);
+                    // CurrentState.pageController.jumpToPage(index);
                     setState(() {
                       selected = index;
                     });

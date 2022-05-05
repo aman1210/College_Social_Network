@@ -1,5 +1,6 @@
 import 'package:college_social_network/utils/theme.dart';
 import 'package:college_social_network/view_models/auth_view_model.dart';
+import 'package:college_social_network/view_models/message_view_model.dart';
 import 'package:college_social_network/views/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => AuthViewModel()),
+        ChangeNotifierProvider(create: (ctx) => MessageViewModel()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

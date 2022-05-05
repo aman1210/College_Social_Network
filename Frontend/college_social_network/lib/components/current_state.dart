@@ -1,5 +1,7 @@
 import 'package:college_social_network/views/home_screen/post_feed.dart';
+import 'package:college_social_network/views/message_screen/message_screen.dart';
 import 'package:college_social_network/views/my_community_screen/my_community_screen.dart';
+import 'package:college_social_network/views/notification_screen/notification_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../views/profile_screen/profile_screen.dart';
@@ -13,17 +15,17 @@ class CurrentState extends ChangeNotifier {
     ['Messages', Icons.message_outlined],
     ['Notification', Icons.notifications_outlined],
     ['Profile', Icons.person_outline_rounded],
-    ['Settings', Icons.settings_outlined],
+    // ['Settings', Icons.settings_outlined],
     ['Logout', Icons.logout_rounded],
   ];
 
   static var screens = [
     PostFeed(),
     MyCommunityScreen(),
-    const Center(child: Text("3")),
-    const Center(child: Text("4")),
+    MessageScreen(),
+    NotificationScreen(),
     ProfileScreen(),
-    const Center(child: Text("6")),
+    // const Center(child: Text("6")),
     const Center(child: Text("7")),
   ];
 
