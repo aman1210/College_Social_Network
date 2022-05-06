@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({Key? key}) : super(key: key);
+  CustomAppBar({Key? key, this.isAdmin = false}) : super(key: key);
+  bool isAdmin;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +56,7 @@ class CustomAppBar extends StatelessWidget {
             ),
           ),
         const Expanded(flex: 4, child: SizedBox()),
-        if (authViewModel.userLoggedIn)
+        if (authViewModel.userLoggedIn && !isAdmin)
           Row(
             children: [
               Text(

@@ -36,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
         drawer: const SideBar(),
         body: Column(
           children: [
-            const CustomAppBar(),
+            CustomAppBar(),
             ui(authViewModel, pageController),
           ],
         ),
