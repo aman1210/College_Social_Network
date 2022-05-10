@@ -45,18 +45,20 @@ class _AdminScreenState extends State<AdminScreen>
               fontWeight: FontWeight.w600,
             ),
             labelColor: Colors.black,
+
             tabs: const [
               Tab(child: Text("User Verification")),
               Tab(child: Text("Post Verification")),
               Tab(child: Text("Reports")),
             ],
+            unselectedLabelColor: Colors.grey,
             controller: _tabController,
           ),
           Expanded(
             child: TabBarView(
               children: [
-                UserVerification(),
-                PostVerification(),
+                UsersVerification(),
+                PostsVerification(),
                 ReportsVerification(),
               ],
               controller: _tabController,

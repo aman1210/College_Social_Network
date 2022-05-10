@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ChatList extends StatelessWidget {
-  ChatList({Key? key}) : super(key: key);
+  ChatList({Key? key, this.scrollPageView}) : super(key: key);
+  Function? scrollPageView;
 
   final ScrollController _controller = ScrollController();
 
@@ -34,6 +35,7 @@ class ChatList extends StatelessWidget {
                 controller: _controller,
                 itemBuilder: (context, index) => AnimatedChatListItem(
                       index: index,
+                      scrollPageView: this.scrollPageView,
                     ),
                 separatorBuilder: (context, index) => const SizedBox(height: 2),
                 itemCount: 15),
@@ -45,8 +47,10 @@ class ChatList extends StatelessWidget {
 }
 
 class AnimatedChatListItem extends StatefulWidget {
-  const AnimatedChatListItem({Key? key, required this.index}) : super(key: key);
-
+  const AnimatedChatListItem(
+      {Key? key, required this.index, this.scrollPageView})
+      : super(key: key);
+  final Function? scrollPageView;
   final int index;
 
   @override
@@ -87,11 +91,7 @@ class _AnimatedChatListItemState extends State<AnimatedChatListItem> {
               borderRadius: BorderRadius.circular(kDefaultPadding)),
           onTap: () {
             CurrentState.selectedIndex = 2;
-            CurrentState.pageController.animateToPage(
-              2,
-              duration: const Duration(milliseconds: 700),
-              curve: Curves.decelerate,
-            );
+            if (widget.scrollPageView != null) widget.scrollPageView!(2);
             Provider.of<MessageViewModel>(context, listen: false)
                 .selectUser(widget.index);
           },

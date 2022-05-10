@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SideBar extends StatefulWidget {
-  const SideBar({Key? key}) : super(key: key);
+  SideBar({Key? key, required this.function}) : super(key: key);
+  Function function;
 
   @override
   State<SideBar> createState() => _SideBarState();
@@ -27,7 +28,10 @@ class _SideBarState extends State<SideBar> {
           vertical: kDefaultPadding, horizontal: kDefaultPadding),
       child: Column(
         children: [
-          if (isMobile) const AppLogo(),
+          if (isMobile)
+            AppLogo(
+              scrollPageView: widget.function,
+            ),
           if (isMobile) const SizedBox(height: kDefaultPadding),
           Expanded(
             child: ListView.builder(
@@ -38,9 +42,10 @@ class _SideBarState extends State<SideBar> {
                     authViewModel.logout();
                   } else {
                     CurrentState.selectedIndex = index;
-                    CurrentState.pageController.animateToPage(index,
-                        duration: const Duration(milliseconds: 750),
-                        curve: Curves.decelerate);
+                    // CurrentState.pageController.animateToPage(index,
+                    //     duration: const Duration(milliseconds: 750),
+                    //     curve: Curves.decelerate);
+                    widget.function(index);
                     // CurrentState.pageController.jumpToPage(index);
                     setState(() {
                       selected = index;
