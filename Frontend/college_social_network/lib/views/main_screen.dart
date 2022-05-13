@@ -54,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
       newVisiblePageViews[pageCurrent - 1] = visiblePageViews[pageTarget];
     }
 
-    print(newVisiblePageViews);
+    // print(newVisiblePageViews);
     // print(visiblePageViews);
 
     setState(() {
