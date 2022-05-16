@@ -22,7 +22,9 @@ class _SideBarState extends State<SideBar> {
     var isMobile = Responsive.isMobile(context);
     selected = CurrentState.selectedIndex;
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? Theme.of(context).scaffoldBackgroundColor
+          : Colors.white,
       constraints: const BoxConstraints(maxWidth: 300),
       padding: const EdgeInsets.symmetric(
           vertical: kDefaultPadding, horizontal: kDefaultPadding),
@@ -64,14 +66,18 @@ class _SideBarState extends State<SideBar> {
                     decoration: BoxDecoration(
                         color: selected == index
                             ? Colors.blueGrey.shade600
-                            : Colors.white,
+                            : Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white10
+                                : Colors.white,
                         borderRadius: BorderRadius.circular(10)),
                     child: Row(
                       children: [
                         Icon(
                           CurrentState.tabs[index][1],
                           color: selected != index
-                              ? Colors.blueGrey.shade600
+                              ? Theme.of(context).brightness == Brightness.light
+                                  ? Colors.blueGrey.shade700
+                                  : Colors.blueGrey.shade300
                               : Colors.white,
                         ),
                         const SizedBox(width: 10),
@@ -81,7 +87,10 @@ class _SideBarState extends State<SideBar> {
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: selected != index
-                                  ? Colors.blueGrey.shade600
+                                  ? Theme.of(context).brightness ==
+                                          Brightness.light
+                                      ? Colors.blueGrey.shade700
+                                      : Colors.blueGrey.shade300
                                   : Colors.white),
                         ),
                       ],

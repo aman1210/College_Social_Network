@@ -68,7 +68,9 @@ class CustomAppBar extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Colors.blueGrey.shade700),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white.withOpacity(0.8)
+                        : Colors.blueGrey.shade700),
               ),
               const SizedBox(width: kDefaultPadding),
               Container(

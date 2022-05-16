@@ -27,7 +27,9 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(kDefaultPadding),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.blueGrey.withOpacity(0.2)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(kDefaultPadding),
                   boxShadow: [
                     BoxShadow(
@@ -45,27 +47,37 @@ class ProfileScreen extends StatelessWidget {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: Colors.blueGrey.shade700),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white70
+                              : Colors.blueGrey.shade700),
                     ),
                     SizedBox(height: kDefaultPadding / 5),
-                    introField(Icons.web, "www.portfolio.com"),
-                    introField(CupertinoIcons.person, "Male"),
-                    introField(Icons.cake_outlined, "Born October 12, 1998"),
-                    introField(Icons.map_rounded, "Varanasi, India"),
-                    introField(Icons.facebook_outlined, "Facebook name"),
-                    introField(Icons.facebook, "Instagram name"),
+                    introField(Icons.web, "www.portfolio.com", context),
+                    introField(CupertinoIcons.person, "Male", context),
+                    introField(
+                        Icons.cake_outlined, "Born October 12, 1998", context),
+                    introField(Icons.map_rounded, "Varanasi, India", context),
+                    introField(
+                        Icons.facebook_outlined, "Facebook name", context),
+                    introField(Icons.facebook, "Instagram name", context),
                     Divider(thickness: 1, height: kDefaultPadding * 2),
                     Text(
                       "About",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: Colors.blueGrey.shade700),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white70
+                              : Colors.blueGrey.shade700),
                     ),
                     SizedBox(height: kDefaultPadding / 5),
                     Text(
                       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withOpacity(0.65)
+                              : null),
                     ),
                     Divider(thickness: 1, height: kDefaultPadding * 2),
                   ],
@@ -78,7 +90,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Padding introField(IconData icon, String value) {
+  Padding introField(IconData icon, String value, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(children: [
@@ -90,7 +102,10 @@ class ProfileScreen extends StatelessWidget {
         SizedBox(width: kDefaultPadding / 2),
         Text(
           value,
-          style: TextStyle(color: Colors.blueGrey),
+          style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white70
+                  : Colors.blueGrey),
         ),
       ]),
     );
@@ -109,7 +124,9 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.blueGrey.withOpacity(0.2)
+            : Colors.white,
         borderRadius: BorderRadius.circular(kDefaultPadding),
         boxShadow: [
           BoxShadow(
@@ -198,6 +215,10 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                             child: Icon(
                               Icons.cloud_upload_outlined,
                               size: 20,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.black
+                                  : null,
                             ),
                           ),
                         ),
@@ -230,14 +251,18 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: Colors.blueGrey.shade700,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white70
+                            : Colors.blueGrey.shade700,
                       ),
                     ),
                     Text(
                       "One liner about",
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.blueGrey.shade400,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white70
+                            : Colors.blueGrey.shade400,
                       ),
                     ),
                   ],

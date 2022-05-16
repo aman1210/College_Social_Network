@@ -19,8 +19,6 @@ class _AuthScreenState extends State<AuthScreen> {
 
   final TextEditingController _emailController = TextEditingController();
 
-  final TextEditingController _nameController = TextEditingController();
-
   final TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -51,10 +49,14 @@ class _AuthScreenState extends State<AuthScreen> {
               boxShadow: [
                 BoxShadow(
                   blurRadius: 22,
-                  color: Colors.black.withOpacity(0.07),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black.withOpacity(0.07),
                 )
               ],
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xff1a1d22)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -64,23 +66,31 @@ class _AuthScreenState extends State<AuthScreen> {
                 Text(
                   "Sign In",
                   textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline4
-                      ?.copyWith(fontWeight: FontWeight.bold, fontSize: 28),
+                  style: Theme.of(context).textTheme.headline4?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 28,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : null),
                 ),
                 const SizedBox(height: kDefaultPadding / 4),
                 Text(
                   "Welcome back, you've been missed!",
                   textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6
-                      ?.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : null),
                 ),
                 const SizedBox(height: kDefaultPadding * 2),
                 TextFormField(
-                  style: TextStyle(fontSize: 14),
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : null),
                   controller: _emailController,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
@@ -91,20 +101,29 @@ class _AuthScreenState extends State<AuthScreen> {
                     }
                     return null;
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: "name@knit.ac.in",
-                      border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.alternate_email_rounded)),
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.alternate_email_rounded)),
                 ),
                 const SizedBox(height: kDefaultPadding),
                 TextFormField(
-                  style: TextStyle(fontSize: 14),
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : null),
                   controller: _passwordController,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
                       return 'Please enter password';
                     }
                     return null;
+                  },
+                  onFieldSubmitted: (val) {
+                    if (submit()) {
+                      authViewModel.loginUser("");
+                    }
                   },
                   obscureText: !showPassword,
                   decoration: InputDecoration(
@@ -152,16 +171,16 @@ class _AuthScreenState extends State<AuthScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
+                        const Icon(
                           FontAwesomeIcons.google,
                           color: Colors.blue,
                           size: 20,
                         ),
                         new Container(
-                          padding: EdgeInsets.only(left: 10.0),
+                          padding: const EdgeInsets.only(left: 10.0),
                           child: new Text(
                             "Sign in with Google",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12),
@@ -210,8 +229,8 @@ class _AuthScreenState extends State<AuthScreen> {
             authViewModel.loginUser("");
           }
         },
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
+        child: const Padding(
+          padding: EdgeInsets.all(12.0),
           child: Text(
             "Sign In",
             style: TextStyle(letterSpacing: 1.2, fontSize: 16),

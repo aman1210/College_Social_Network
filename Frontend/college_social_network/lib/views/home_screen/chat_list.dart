@@ -106,7 +106,9 @@ class _AnimatedChatListItemState extends State<AnimatedChatListItem> {
             style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.blueGrey.shade700),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white70
+                    : Colors.blueGrey.shade700),
           ),
           trailing: widget.index % 3 == 0
               ? Container(

@@ -89,7 +89,7 @@ class _MainScreenState extends State<MainScreen> {
     }
     await swapChildren(pageCurrent, pageTarget);
     await quickJump(pageCurrent, pageTarget);
-    WidgetsBinding.instance?.addPostFrameCallback(refreshChildren);
+    WidgetsBinding.instance.addPostFrameCallback(refreshChildren);
   }
 
   List<Widget> createPageContents() {
