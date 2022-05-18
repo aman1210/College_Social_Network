@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+const authRoutes = require('./routes/authRoute');
 dotenv.config()
 
 const app = express();
@@ -10,6 +11,8 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 const dbURI = "mongodb+srv://connectus:"+process.env.DATABASE_PASSWORD+"@connectus.u2hwv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+
+app.use(express.json());
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -23,6 +26,8 @@ app.use((req, res, next) => {
   }
   return next();
 });
+
+app.use('/auth',authRoutes);
 
 mongoose
   .connect(
