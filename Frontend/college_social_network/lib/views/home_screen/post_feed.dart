@@ -93,7 +93,7 @@ class NewPost extends StatelessWidget {
             BoxShadow(
               blurRadius: 20,
               color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white10
+                  ? Colors.white.withOpacity(0.03)
                   : Colors.black.withOpacity(0.07),
               offset: const Offset(0, 5),
             )
@@ -173,7 +173,7 @@ class BirthdayCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white10
+                ? Colors.white.withOpacity(0.03)
                 : Colors.black.withOpacity(0.07),
             blurRadius: kDefaultPadding,
             offset: const Offset(0, 7),
@@ -331,7 +331,7 @@ class RecentEventCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white10
+                ? Colors.white.withOpacity(0.03)
                 : Colors.black.withOpacity(0.07),
             blurRadius: kDefaultPadding,
             offset: const Offset(0, 7),

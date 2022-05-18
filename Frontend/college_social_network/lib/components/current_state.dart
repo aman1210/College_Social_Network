@@ -15,7 +15,7 @@ class CurrentState extends ChangeNotifier {
     ['Messages', Icons.message_outlined],
     ['Notification', Icons.notifications_outlined],
     ['Profile', Icons.person_outline_rounded],
-    // ['Settings', Icons.settings_outlined],
+    ['Toggle Dark Mode', Icons.dark_mode_outlined],
     ['Logout', Icons.logout_rounded],
   ];
 

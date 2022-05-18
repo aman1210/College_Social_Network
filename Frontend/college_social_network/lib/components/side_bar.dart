@@ -16,6 +16,15 @@ class SideBar extends StatefulWidget {
 
 class _SideBarState extends State<SideBar> {
   int selected = 0;
+  bool isDarkModeEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isDarkModeEnabled =
+        Provider.of<AuthViewModel>(context, listen: false).isDarkMode;
+  }
+
   @override
   Widget build(BuildContext context) {
     AuthViewModel authViewModel = context.watch<AuthViewModel>();
@@ -42,6 +51,9 @@ class _SideBarState extends State<SideBar> {
                 onTap: () {
                   if (index == CurrentState.tabs.length - 1) {
                     authViewModel.logout();
+                  } else if (index == CurrentState.tabs.length - 2) {
+                    Provider.of<AuthViewModel>(context, listen: false)
+                        .toggleDarkMode();
                   } else {
                     CurrentState.selectedIndex = index;
                     // CurrentState.pageController.animateToPage(index,
@@ -81,17 +93,19 @@ class _SideBarState extends State<SideBar> {
                               : Colors.white,
                         ),
                         const SizedBox(width: 10),
-                        Text(
-                          CurrentState.tabs[index][0],
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: selected != index
-                                  ? Theme.of(context).brightness ==
-                                          Brightness.light
-                                      ? Colors.blueGrey.shade700
-                                      : Colors.blueGrey.shade300
-                                  : Colors.white),
+                        Flexible(
+                          child: Text(
+                            CurrentState.tabs[index][0],
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: selected != index
+                                    ? Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Colors.blueGrey.shade700
+                                        : Colors.blueGrey.shade300
+                                    : Colors.white),
+                          ),
                         ),
                       ],
                     )),

@@ -72,7 +72,7 @@ class _PostCardState extends State<PostCard> {
                 BoxShadow(
                   blurRadius: 20,
                   color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
+                      ? Colors.white.withOpacity(0.03)
                       : Colors.black.withOpacity(0.07),
                   offset: const Offset(0, 5),
                 )

@@ -4,7 +4,8 @@ import 'package:flutter/foundation.dart';
 
 class AuthViewModel extends ChangeNotifier {
   bool _isLoading = false;
-  bool _userLoggedIn = false;
+  bool _userLoggedIn = true;
+  bool isDarkMode = false;
 
   bool get isLoading => _isLoading;
   bool get userLoggedIn => _userLoggedIn;
@@ -25,5 +26,10 @@ class AuthViewModel extends ChangeNotifier {
   void logout() {
     _userLoggedIn = false;
     setLoading(false);
+  }
+
+  void toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    notifyListeners();
   }
 }

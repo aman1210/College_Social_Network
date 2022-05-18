@@ -203,6 +203,7 @@ class _AuthScreenState extends State<AuthScreen> {
       return false;
     }
     _key.currentState!.save();
+
     return true;
   }
 

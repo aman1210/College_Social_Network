@@ -105,7 +105,9 @@ class _MessageScreenState extends State<MessageScreen> {
                     padding: EdgeInsets.only(
                         top: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context).scaffoldBackgroundColor
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(
                           isMobile ? kDefaultPadding / 2 : kDefaultPadding * 1),
                     ),
@@ -132,6 +134,10 @@ class _MessageScreenState extends State<MessageScreen> {
                         Container(
                           height: 60,
                           decoration: BoxDecoration(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Theme.of(context).scaffoldBackgroundColor
+                                  : null,
                               borderRadius: BorderRadius.only(
                                   bottomLeft: Radius.circular(isMobile
                                       ? kDefaultPadding / 2
@@ -139,49 +145,59 @@ class _MessageScreenState extends State<MessageScreen> {
                                   bottomRight: Radius.circular(isMobile
                                       ? kDefaultPadding / 2
                                       : kDefaultPadding * 1))),
-                          child: Row(children: [
-                            Expanded(
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: isMobile
-                                        ? kDefaultPadding / 2
-                                        : kDefaultPadding),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: isMobile
-                                        ? kDefaultPadding / 2
-                                        : kDefaultPadding),
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.03),
-                                  borderRadius: BorderRadius.circular(5),
-                                  border:
-                                      Border.all(color: Colors.grey.shade300),
-                                ),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: "Type something here",
-                                    hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: isMobile ? 12 : 14),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: isMobile
+                                          ? kDefaultPadding / 2
+                                          : kDefaultPadding),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: isMobile
+                                          ? kDefaultPadding / 2
+                                          : kDefaultPadding),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.03),
+                                    borderRadius: BorderRadius.circular(5),
+                                    border:
+                                        Border.all(color: Colors.grey.shade300),
+                                  ),
+                                  child: TextFormField(
+                                    style: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? TextStyle(color: Colors.white70)
+                                        : null,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: "Type something here",
+                                      hintStyle: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: isMobile ? 12 : 14),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .primaryColor
-                                    .withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Icon(
-                                Icons.send,
-                                color: Colors.blue,
-                              ),
-                            )
-                          ]),
+                              Container(
+                                height: 40,
+                                width: 40,
+                                margin: EdgeInsets.only(
+                                    right: isMobile
+                                        ? kDefaultPadding / 2
+                                        : kDefaultPadding),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Icon(
+                                  Icons.send,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
                         )
                       ],
                     ),
@@ -231,8 +247,13 @@ class MessageBubble extends StatelessWidget {
                       ? Colors.lightBlue
                       : Color(0xff707C9740).withOpacity(0.25),
                   width: 1),
-              color:
-                  chatSelected.fromUser ? Colors.lightBlue[300] : Colors.white,
+              color: chatSelected.fromUser
+                  ? Theme.of(context).brightness == Brightness.dark
+                      ? Colors.blueGrey.shade900
+                      : Colors.lightBlue[300]
+                  : Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: chatSelected.fromUser
                     ? const Radius.circular(0)
@@ -251,8 +272,12 @@ class MessageBubble extends StatelessWidget {
               style: TextStyle(
                   fontSize: isMobile ? 12 : 14,
                   color: chatSelected.fromUser
-                      ? Colors.white
-                      : const Color(0xff707C97)),
+                      ? Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : Colors.white
+                      : Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : const Color(0xff707C97)),
             ),
           ),
         ],

@@ -21,11 +21,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => AuthViewModel()),
         ChangeNotifierProvider(create: (ctx) => MessageViewModel()),
       ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: darkTheme,
-        debugShowCheckedModeBanner: false,
-        home: MainScreen(),
+      child: Consumer<AuthViewModel>(
+        builder: (context, value, child) {
+          return MaterialApp(
+            title: 'Flutter Demo',
+            theme: value.isDarkMode ? darkTheme : lightTheme,
+            debugShowCheckedModeBanner: false,
+            home: MainScreen(),
+          );
+        },
       ),
     );
   }

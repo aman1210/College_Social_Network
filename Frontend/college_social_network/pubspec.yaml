@@ -40,6 +40,7 @@ dependencies:
   image_fade: ^0.4.0
   cached_network_image: ^3.2.0
   font_awesome_flutter: ^10.1.0
+  http: 
 
 
   # The following adds the Cupertino Icons font to your application.
