@@ -1,6 +1,7 @@
 import 'package:college_social_network/utils/theme.dart';
 import 'package:college_social_network/view_models/auth_view_model.dart';
 import 'package:college_social_network/view_models/message_view_model.dart';
+import 'package:college_social_network/views/admin_screen.dart/admin_screen.dart';
 import 'package:college_social_network/views/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
-        theme: lightTheme,
+        theme: darkTheme,
         debugShowCheckedModeBanner: false,
         home: MainScreen(),
       ),

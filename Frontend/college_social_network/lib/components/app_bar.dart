@@ -1,3 +1,4 @@
+import 'package:college_social_network/components/current_state.dart';
 import 'package:college_social_network/responsive.dart';
 import 'package:college_social_network/utils/constants.dart';
 import 'package:college_social_network/utils/images.dart';
@@ -7,7 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({Key? key}) : super(key: key);
+  CustomAppBar({Key? key, this.isAdmin = false, this.scrollPageView})
+      : super(key: key);
+  bool isAdmin;
+  final Function? scrollPageView;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,8 @@ class CustomAppBar extends StatelessWidget {
             },
             icon: const Icon(Icons.menu),
           ),
-        if (!isMobile || !authViewModel.userLoggedIn) const AppLogo(),
+        if (!isMobile || !authViewModel.userLoggedIn)
+          AppLogo(scrollPageView: scrollPageView),
         const Expanded(flex: 1, child: SizedBox()),
         if (!isTablet && !isMobile && authViewModel.userLoggedIn)
           Expanded(
@@ -55,7 +60,7 @@ class CustomAppBar extends StatelessWidget {
             ),
           ),
         const Expanded(flex: 4, child: SizedBox()),
-        if (authViewModel.userLoggedIn)
+        if (authViewModel.userLoggedIn && !isAdmin)
           Row(
             children: [
               Text(
@@ -63,7 +68,9 @@ class CustomAppBar extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Colors.blueGrey.shade700),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white.withOpacity(0.8)
+                        : Colors.blueGrey.shade700),
               ),
               const SizedBox(width: kDefaultPadding),
               Container(
@@ -86,27 +93,34 @@ class CustomAppBar extends StatelessWidget {
 }
 
 class AppLogo extends StatelessWidget {
-  const AppLogo({
-    Key? key,
-  }) : super(key: key);
+  const AppLogo({Key? key, this.scrollPageView}) : super(key: key);
+  final Function? scrollPageView;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Image.asset(Images.logo, height: 40),
-        const SizedBox(width: 12),
-        Text(
-          "ConnectUs",
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).brightness == Brightness.light
-                ? Colors.black87
-                : Colors.white,
+    return InkWell(
+      onTap: () {
+        CurrentState.selectedIndex = 0;
+        if (scrollPageView != null) {
+          scrollPageView!(0);
+        }
+      },
+      child: Row(
+        children: [
+          Image.asset(Images.logo, height: 40),
+          const SizedBox(width: 12),
+          Text(
+            "ConnectUs",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black87
+                  : Colors.white,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

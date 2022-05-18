@@ -64,12 +64,16 @@ class _PostCardState extends State<PostCard> {
               vertical: kDefaultPadding / 2,
               horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
           decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Theme.of(context).scaffoldBackgroundColor
+                  : Colors.white,
               borderRadius: BorderRadius.circular(kDefaultPadding),
               boxShadow: [
                 BoxShadow(
                   blurRadius: 20,
-                  color: Colors.black.withOpacity(0.07),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black.withOpacity(0.07),
                   offset: const Offset(0, 5),
                 )
               ]),
@@ -82,7 +86,11 @@ class _PostCardState extends State<PostCard> {
                       const EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
                   child: Text(
                     lp,
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white70
+                            : null),
                   ),
                 ),
               PostImages(
@@ -111,7 +119,9 @@ class _PostCardState extends State<PostCard> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: kDefaultPadding / 2),
                         decoration: BoxDecoration(
-                          color: Colors.blueGrey.shade50,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.blueGrey.withOpacity(0.2)
+                              : Colors.blueGrey.shade50,
                           borderRadius: BorderRadius.circular(
                             kDefaultPadding / 2,
                           ),
@@ -267,7 +277,9 @@ class PostImages extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.blueGrey.withOpacity(0.2)
+              : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(kDefaultPadding)),
       child: Stack(
         clipBehavior: Clip.hardEdge,

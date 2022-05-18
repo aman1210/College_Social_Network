@@ -19,7 +19,9 @@ class NotificationScreen extends StatelessWidget {
           left: kDefaultPadding,
           right: kDefaultPadding),
       decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white10
+              : Colors.grey.shade200,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(
                   isMobile ? kDefaultPadding : kDefaultPadding * 1.5),
@@ -40,8 +42,20 @@ class NotificationScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                title: Text("User XYZ liked your photo."),
-                subtitle: Text(DateTime.now().toString()),
+                title: Text(
+                  "User XYZ liked your photo.",
+                  style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : null),
+                ),
+                subtitle: Text(
+                  DateTime.now().toString(),
+                  style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : null),
+                ),
               ),
           separatorBuilder: (context, index) => Divider(),
           itemCount: 20),

@@ -20,7 +20,9 @@ class PostFeed extends StatelessWidget {
       padding: EdgeInsets.only(
           top: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
       decoration: BoxDecoration(
-          color: Colors.grey.shade200,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white10
+              : Colors.grey.shade200,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(
                   isMobile ? kDefaultPadding : kDefaultPadding * 1.5),
@@ -83,12 +85,16 @@ class NewPost extends StatelessWidget {
           vertical: kDefaultPadding / 2,
           horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Theme.of(context).scaffoldBackgroundColor
+              : Colors.white,
           borderRadius: BorderRadius.circular(kDefaultPadding),
           boxShadow: [
             BoxShadow(
               blurRadius: 20,
-              color: Colors.black.withOpacity(0.07),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white10
+                  : Colors.black.withOpacity(0.07),
               offset: const Offset(0, 5),
             )
           ]),
@@ -105,7 +111,9 @@ class NewPost extends StatelessWidget {
                   left: kDefaultPadding / 2,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.blueGrey.withOpacity(0.2)
+                      : Colors.grey[200],
                   borderRadius: BorderRadius.circular(kDefaultPadding / 2),
                 ),
                 child: TextFormField(
@@ -158,11 +166,15 @@ class BirthdayCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: kDefaultPadding / 1.5, vertical: kDefaultPadding / 2),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).scaffoldBackgroundColor
+            : Colors.white,
         borderRadius: BorderRadius.circular(kDefaultPadding),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white10
+                : Colors.black.withOpacity(0.07),
             blurRadius: kDefaultPadding,
             offset: const Offset(0, 7),
           ),
@@ -172,8 +184,10 @@ class BirthdayCard extends StatelessWidget {
         children: [
           Container(
             decoration: const BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(color: Colors.black12, width: 2))),
+              border: Border(
+                bottom: BorderSide(color: Colors.black12, width: 2),
+              ),
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -205,7 +219,9 @@ class BirthdayCard extends StatelessWidget {
                       height: 40,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.blueGrey.withOpacity(0.2)
+                            : Colors.grey.shade100,
                         borderRadius:
                             BorderRadius.circular(kDefaultPadding / 4),
                       ),
@@ -241,16 +257,28 @@ class BirthdayCard extends StatelessWidget {
                             horizontal: kDefaultPadding / 2,
                             vertical: kDefaultPadding / 3),
                         decoration: BoxDecoration(
-                            color: Colors.blueGrey.shade100,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.blueGrey.withOpacity(0.2)
+                                    : Colors.blueGrey.shade100,
                             borderRadius:
                                 BorderRadius.circular(kDefaultPadding / 4)),
                         child: TextFormField(
-                          style: const TextStyle(fontSize: 12),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.blueGrey.withOpacity(0.2)
+                                  : null),
                           decoration: const InputDecoration(
-                              isDense: true,
-                              border: InputBorder.none,
-                              hintText: "Write on their inbox",
-                              hintStyle: TextStyle(fontSize: 12, height: 1)),
+                            isDense: true,
+                            border: InputBorder.none,
+                            hintText: "Write on their inbox",
+                            hintStyle: TextStyle(
+                              fontSize: 12,
+                              height: 1,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -259,13 +287,17 @@ class BirthdayCard extends StatelessWidget {
                       height: 40,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade100,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.blueGrey.withOpacity(0.2)
+                            : Colors.blue.shade100,
                         borderRadius:
                             BorderRadius.circular(kDefaultPadding / 4),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.send_outlined,
-                        color: Colors.blue,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.blue.shade700
+                            : Colors.blue,
                       ),
                     )
                   ],
@@ -292,11 +324,15 @@ class RecentEventCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: kDefaultPadding / 1.5, vertical: kDefaultPadding / 2),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).scaffoldBackgroundColor
+            : Colors.white,
         borderRadius: BorderRadius.circular(kDefaultPadding),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white10
+                : Colors.black.withOpacity(0.07),
             blurRadius: kDefaultPadding,
             offset: const Offset(0, 7),
           ),
@@ -306,8 +342,10 @@ class RecentEventCard extends StatelessWidget {
         children: [
           Container(
             decoration: const BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(color: Colors.black12, width: 2))),
+              border: Border(
+                bottom: BorderSide(color: Colors.black12, width: 2),
+              ),
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -370,7 +408,9 @@ class EventListItem extends StatelessWidget {
           vertical: kDefaultPadding / 2, horizontal: kDefaultPadding / 4),
       padding: const EdgeInsets.all(kDefaultPadding / 2),
       decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.blueGrey.withOpacity(0.2)
+              : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(kDefaultPadding / 2)),
       child: Column(
         children: [
@@ -397,7 +437,9 @@ class EventListItem extends StatelessWidget {
                       title,
                       style: TextStyle(
                           fontSize: 14,
-                          color: Colors.blueGrey.shade700,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.blueGrey.shade300
+                              : Colors.blueGrey.shade700,
                           fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: kDefaultPadding / 5),
@@ -405,7 +447,12 @@ class EventListItem extends StatelessWidget {
                       content,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white70
+                            : null,
+                      ),
                     ),
                   ],
                 ),
@@ -414,10 +461,15 @@ class EventListItem extends StatelessWidget {
           ),
           const Divider(),
           Row(
-            children: const [
+            children: [
               Text(
                 "8 seen",
-                style: TextStyle(fontSize: 12),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white30
+                      : null,
+                ),
               )
             ],
           )

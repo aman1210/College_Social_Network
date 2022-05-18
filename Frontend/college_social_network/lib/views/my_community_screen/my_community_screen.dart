@@ -35,7 +35,9 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
                 left: kDefaultPadding,
                 right: kDefaultPadding),
             decoration: BoxDecoration(
-              color: Colors.grey.shade200,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white10
+                  : Colors.grey.shade200,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(
                     isMobile ? kDefaultPadding : kDefaultPadding * 1.5),
@@ -61,7 +63,9 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
                   return Container(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.blueGrey.withOpacity(0.3)
+                            : Colors.white,
                         borderRadius:
                             BorderRadius.circular(kDefaultPadding / 4)),
                     child: Column(
@@ -130,12 +134,16 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
                                   ),
                                 ),
                               ),
+                              SizedBox(width: 5),
                               Expanded(
                                 child: InkWell(
                                   onTap: () {},
                                   child: Container(
                                     decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white10
+                                            : Colors.white,
                                         borderRadius: BorderRadius.circular(
                                             kDefaultPadding / 4)),
                                     child: Text(

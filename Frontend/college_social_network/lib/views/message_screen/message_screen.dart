@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../utils/constants.dart';
 
 class MessageScreen extends StatefulWidget {
-  const MessageScreen({Key? key}) : super(key: key);
+  MessageScreen({Key? key}) : super(key: key);
 
   @override
   State<MessageScreen> createState() => _MessageScreenState();
@@ -88,7 +88,9 @@ class _MessageScreenState extends State<MessageScreen> {
                 left: isMobile ? kDefaultPadding / 2 : kDefaultPadding,
                 right: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
             decoration: BoxDecoration(
-                color: Colors.grey.shade200,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white10
+                    : Colors.grey.shade200,
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(
                         isMobile ? kDefaultPadding : kDefaultPadding * 1.5),

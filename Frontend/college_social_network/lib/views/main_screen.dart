@@ -18,6 +18,91 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   bool showChatList = true;
 
+  late List<Widget> pageViews;
+  late List<Widget> visiblePageViews;
+
+  void animateToOne() {
+    CurrentState.pageController.animateToPage(
+      0,
+      curve: Curves.easeIn,
+      duration: const Duration(seconds: 1),
+    );
+  }
+
+  void jumpAnimateEight() async {
+    CurrentState.pageController.jumpToPage(6);
+    await CurrentState.pageController.animateToPage(
+      7,
+      curve: Curves.easeIn,
+      duration: const Duration(seconds: 1),
+    );
+  }
+
+  void refreshChildren(Duration duration) {
+    setState(() {
+      visiblePageViews = createPageContents();
+    });
+  }
+
+  Future<void> swapChildren(int pageCurrent, int pageTarget) async {
+    List<Widget> newVisiblePageViews = [];
+    newVisiblePageViews.addAll(pageViews);
+
+    if (pageTarget > pageCurrent) {
+      newVisiblePageViews[pageCurrent + 1] = visiblePageViews[pageTarget];
+    } else if (pageTarget < pageCurrent) {
+      newVisiblePageViews[pageCurrent - 1] = visiblePageViews[pageTarget];
+    }
+
+    // print(newVisiblePageViews);
+    // print(visiblePageViews);
+
+    setState(() {
+      visiblePageViews = newVisiblePageViews;
+    });
+  }
+
+  Future quickJump(int pageCurrent, int pageTarget) async {
+    int quickJumpTarget = -1;
+
+    if (pageTarget > pageCurrent) {
+      quickJumpTarget = pageCurrent + 1;
+    } else if (pageTarget < pageCurrent) {
+      quickJumpTarget = pageCurrent - 1;
+    }
+    if (quickJumpTarget != -1) {
+      await CurrentState.pageController.animateToPage(
+        quickJumpTarget,
+        curve: Curves.easeIn,
+        duration: const Duration(milliseconds: 500),
+      );
+      CurrentState.pageController.jumpToPage(pageTarget);
+    }
+  }
+
+  void flashToEight(int newpageTarget) async {
+    int pageCurrent = CurrentState.pageController.page!.round();
+    int pageTarget = newpageTarget;
+    // print("$pageCurrent  $pageTarget");
+    if (pageCurrent == pageTarget) {
+      return;
+    }
+    await swapChildren(pageCurrent, pageTarget);
+    await quickJump(pageCurrent, pageTarget);
+    WidgetsBinding.instance.addPostFrameCallback(refreshChildren);
+  }
+
+  List<Widget> createPageContents() {
+    return CurrentState.screens;
+  }
+
+  @override
+  void initState() {
+    pageViews = createPageContents();
+    visiblePageViews = createPageContents();
+    super.initState();
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -33,10 +118,10 @@ class _MainScreenState extends State<MainScreen> {
       child: Scaffold(
         // backgroundColor: Colors.white70,
         drawerEnableOpenDragGesture: false,
-        drawer: const SideBar(),
+        drawer: SideBar(function: flashToEight),
         body: Column(
           children: [
-            const CustomAppBar(),
+            CustomAppBar(scrollPageView: flashToEight),
             ui(authViewModel, pageController),
           ],
         ),
@@ -54,19 +139,27 @@ class _MainScreenState extends State<MainScreen> {
         tablet: Row(
           children: [
             Expanded(flex: 8, child: mainarea(pageController)),
-            Expanded(flex: 3, child: ChatList()),
+            Expanded(
+                flex: 3,
+                child: ChatList(
+                  scrollPageView: flashToEight,
+                )),
           ],
         ),
         desktop: Row(
           children: [
-            const Expanded(flex: 2, child: SideBar()),
+            Expanded(
+                flex: 2,
+                child: SideBar(
+                  function: flashToEight,
+                )),
             Expanded(
               flex: 6,
               child: mainarea(pageController),
             ),
             Expanded(
               flex: 2,
-              child: ChatList(),
+              child: ChatList(scrollPageView: flashToEight),
             ),
           ],
         ),
@@ -77,12 +170,12 @@ class _MainScreenState extends State<MainScreen> {
   PageView mainarea(PageController controller) {
     return PageView.builder(
       itemBuilder: (context, index) {
-        return CurrentState.screens[index];
+        return visiblePageViews[index];
       },
       controller: controller,
       scrollDirection: Axis.vertical,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: CurrentState.screens.length,
+      itemCount: visiblePageViews.length,
       onPageChanged: (val) {
         if (val == 4) {
           showChatList = false;

@@ -2,6 +2,7 @@ import 'package:college_social_network/responsive.dart';
 import 'package:college_social_network/utils/constants.dart';
 import 'package:college_social_network/view_models/auth_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -12,14 +13,11 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  bool isSignUpMode = false;
   bool showPassword = false;
 
   final _key = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
-
-  final TextEditingController _nameController = TextEditingController();
 
   final TextEditingController _passwordController = TextEditingController();
 
@@ -51,57 +49,48 @@ class _AuthScreenState extends State<AuthScreen> {
               boxShadow: [
                 BoxShadow(
                   blurRadius: 22,
-                  color: Colors.black.withOpacity(0.07),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.black.withOpacity(0.07),
                 )
               ],
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xff1a1d22)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                CrossFade(
-                  showSecond: isSignUpMode,
-                  firstWidget: Text(
-                    "Sign In",
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline4
-                        ?.copyWith(fontWeight: FontWeight.bold, fontSize: 28),
-                  ),
-                  secondWidget: Text(
-                    "Getting Started",
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline4
-                        ?.copyWith(fontWeight: FontWeight.bold, fontSize: 28),
-                  ),
+                Text(
+                  "Sign In",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headline4?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 28,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : null),
                 ),
                 const SizedBox(height: kDefaultPadding / 4),
-                CrossFade(
-                    firstWidget: Text(
-                      "Welcome back, you've been missed!",
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
-                    ),
-                    secondWidget: Text(
-                      "Create an account to connect with friends",
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6
-                          ?.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
-                    ),
-                    showSecond: isSignUpMode),
+                Text(
+                  "Welcome back, you've been missed!",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : null),
+                ),
                 const SizedBox(height: kDefaultPadding * 2),
                 TextFormField(
-                  style: TextStyle(fontSize: 14),
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : null),
                   controller: _emailController,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
@@ -112,50 +101,29 @@ class _AuthScreenState extends State<AuthScreen> {
                     }
                     return null;
                   },
-                  decoration: InputDecoration(
-                      hintText: isSignUpMode ? "Your email" : "name@knit.ac.in",
-                      border: const OutlineInputBorder(),
-                      prefixIcon: const Icon(Icons.alternate_email_rounded)),
-                ),
-                if (isSignUpMode) const SizedBox(height: kDefaultPadding),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  constraints:
-                      BoxConstraints(maxHeight: isSignUpMode ? 100 : 0),
-                  child: TextFormField(
-                    style: TextStyle(fontSize: 14),
-                    enabled: isSignUpMode,
-                    controller: _nameController,
-                    validator: !isSignUpMode
-                        ? null
-                        : (val) {
-                            if (val == null || val.isEmpty) {
-                              return 'Please enter your name';
-                            }
-                            if (val.trim().length < 6) {
-                              return 'Please enter valid/full name';
-                            }
-                            return null;
-                          },
-                    decoration: InputDecoration(
-                        hintText: !isSignUpMode ? null : "Your Name",
-                        border: !isSignUpMode
-                            ? InputBorder.none
-                            : const OutlineInputBorder(),
-                        prefixIcon: !isSignUpMode
-                            ? null
-                            : const Icon(Icons.face_outlined)),
-                  ),
+                  decoration: const InputDecoration(
+                      hintText: "name@knit.ac.in",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.alternate_email_rounded)),
                 ),
                 const SizedBox(height: kDefaultPadding),
                 TextFormField(
-                  style: TextStyle(fontSize: 14),
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : null),
                   controller: _passwordController,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
                       return 'Please enter password';
                     }
                     return null;
+                  },
+                  onFieldSubmitted: (val) {
+                    if (submit()) {
+                      authViewModel.loginUser("");
+                    }
                   },
                   obscureText: !showPassword,
                   decoration: InputDecoration(
@@ -176,11 +144,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 const SizedBox(height: kDefaultPadding / 2),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
-                  height: isSignUpMode
-                      ? 0
-                      : Responsive.isMobile(context)
-                          ? 40
-                          : 20,
+                  height: Responsive.isMobile(context) ? 40 : 20,
                   child: Row(
                     children: [
                       const Expanded(child: SizedBox()),
@@ -193,50 +157,39 @@ class _AuthScreenState extends State<AuthScreen> {
                 const SizedBox(height: kDefaultPadding / 2),
                 _button(context, authViewModel),
                 const SizedBox(height: kDefaultPadding),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: CrossFade(
-                        showSecond: isSignUpMode,
-                        firstWidget: const Text(
-                          "Don't have an account?",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 14),
+                InkWell(
+                  onTap: () {},
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: kDefaultPadding,
+                        vertical: kDefaultPadding / 2),
+                    decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.09),
+                        borderRadius:
+                            BorderRadius.circular(kDefaultPadding / 4)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          FontAwesomeIcons.google,
+                          color: Colors.blue,
+                          size: 20,
                         ),
-                        secondWidget: const Text(
-                          "Already have an account?",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                              height: 1.1),
+                        new Container(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: new Text(
+                            "Sign in with Google",
+                            style: const TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(width: kDefaultPadding / 2),
-                    TextButton(
-                      onPressed: () {
-                        _key.currentState!.reset();
-                        setState(() {
-                          isSignUpMode = !isSignUpMode;
-                        });
-                      },
-                      child: CrossFade(
-                        showSecond: isSignUpMode,
-                        firstWidget: const Text(
-                          "Sign Up",
-                          style: TextStyle(letterSpacing: 1.2, fontSize: 14),
-                        ),
-                        secondWidget: const Text(
-                          "Sign In",
-                          style: TextStyle(letterSpacing: 1.2, fontSize: 14),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                )
               ],
             ),
           ),
@@ -276,19 +229,13 @@ class _AuthScreenState extends State<AuthScreen> {
             authViewModel.loginUser("");
           }
         },
-        child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: CrossFade(
-              showSecond: isSignUpMode,
-              firstWidget: const Text(
-                "Sign In",
-                style: TextStyle(letterSpacing: 1.2, fontSize: 16),
-              ),
-              secondWidget: const Text(
-                "Sign Up",
-                style: TextStyle(letterSpacing: 1.2, fontSize: 16),
-              ),
-            )),
+        child: const Padding(
+          padding: EdgeInsets.all(12.0),
+          child: Text(
+            "Sign In",
+            style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+          ),
+        ),
       ),
     );
   }
