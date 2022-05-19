@@ -1,6 +1,8 @@
-{ "scripts": {
-    "start": "node index.js"
-  },
+{
+  "name": "connectus",
+  "version": "1.0.0",
+  "description": "Backend of college social network",
+  "main": "app.js",
   "dependencies": {
     "axios": "^0.27.2",
     "cors": "^2.8.5",
@@ -14,5 +16,12 @@
     "nodemon": "^2.0.16",
     "passport": "^0.5.3",
     "passport-google-oauth": "^2.0.0"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "",
+  "license": "ISC"
 }
