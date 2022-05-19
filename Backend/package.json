@@ -1,4 +1,6 @@
-{
+{ "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "axios": "^0.27.2",
     "cors": "^2.8.5",
