@@ -1,6 +1,6 @@
-import 'package:college_social_network/responsive.dart';
-import 'package:college_social_network/utils/constants.dart';
-import 'package:college_social_network/view_models/auth_view_model.dart';
+import '../../responsive.dart';
+import '../../utils/constants.dart';
+import '../../view_models/auth_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';

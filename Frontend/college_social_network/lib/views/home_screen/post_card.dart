@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:college_social_network/responsive.dart';
-import 'package:college_social_network/utils/constants.dart';
-import 'package:college_social_network/utils/images.dart';
+import '../../responsive.dart';
+import '../../utils/constants.dart';
+import '../../utils/images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_fade/image_fade.dart';

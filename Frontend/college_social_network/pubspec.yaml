@@ -1,5 +1,5 @@
-name: college_social_network
-description: A new Flutter project.
+name: ConnectUs
+description: A college social network.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -41,6 +41,9 @@ dependencies:
   cached_network_image: ^3.2.0
   font_awesome_flutter: ^10.1.0
   http: 
+  cloud_firestore: ^3.1.15
+  firebase_messaging:
+  firebase_storage:
 
 
   # The following adds the Cupertino Icons font to your application.

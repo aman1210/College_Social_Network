@@ -1,6 +1,6 @@
-import 'package:college_social_network/responsive.dart';
-import 'package:college_social_network/view_models/message_view_model.dart';
-import 'package:college_social_network/views/home_screen/chat_list.dart';
+import '../../responsive.dart';
+import '../../view_models/message_view_model.dart';
+import '../../views/home_screen/chat_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,7 +1,4 @@
-import 'dart:ui';
-
-import 'package:college_social_network/utils/theme.dart';
-import 'package:college_social_network/views/profile_screen/profile_screen.dart';
+import '../../views/profile_screen/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_fade/image_fade.dart';

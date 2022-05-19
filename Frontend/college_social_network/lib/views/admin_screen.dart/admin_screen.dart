@@ -1,11 +1,8 @@
-import 'package:college_social_network/components/app_bar.dart';
-import 'package:college_social_network/utils/constants.dart';
-import 'package:college_social_network/views/admin_screen.dart/post_verification_tab.dart';
-import 'package:college_social_network/views/admin_screen.dart/reports_tab.dart';
-import 'package:college_social_network/views/admin_screen.dart/user_verification_tab.dart';
+import '/components/app_bar.dart';
+import '/views/admin_screen.dart/post_verification_tab.dart';
+import '/views/admin_screen.dart/reports_tab.dart';
+import '/views/admin_screen.dart/user_verification_tab.dart';
 import 'package:flutter/material.dart';
-
-import '../../utils/images.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({Key? key}) : super(key: key);

@@ -1,8 +1,8 @@
-import 'package:college_social_network/components/app_bar.dart';
-import 'package:college_social_network/components/current_state.dart';
-import 'package:college_social_network/responsive.dart';
-import 'package:college_social_network/utils/constants.dart';
-import 'package:college_social_network/view_models/auth_view_model.dart';
+import '../../components/app_bar.dart';
+import '../../components/current_state.dart';
+import '../../responsive.dart';
+import '../../utils/constants.dart';
+import '../../view_models/auth_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,4 +1,4 @@
-import 'package:college_social_network/utils/constants.dart';
+import '../../utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_fade/image_fade.dart';
