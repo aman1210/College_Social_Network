@@ -4,6 +4,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/authRoute');
+
+const session = require('express-session');
 dotenv.config()
 
 const app = express();
@@ -27,7 +29,14 @@ app.use((req, res, next) => {
   return next();
 });
 
-app.use('/auth',authRoutes);
+app.use(session({
+  resave: false,
+  saveUninitialized: true,
+  secret: 'SECRET' 
+}));
+
+app.use("/auth",authRoutes);
+
 
 mongoose
   .connect(
