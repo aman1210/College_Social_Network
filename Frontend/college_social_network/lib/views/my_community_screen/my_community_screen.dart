@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '../../views/profile_screen/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -73,14 +75,14 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
                             borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(kDefaultPadding / 4),
                                 topRight: Radius.circular(kDefaultPadding / 4)),
-                            child: Container(
+                            child: SizedBox(
                               width: double.infinity,
-                              child: ImageFade(
-                                image: NetworkImage(
-                                  "https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-                                ),
+                              child: CachedNetworkImage(
+                                imageUrl:
+                                    "https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
                                 fit: BoxFit.cover,
-                                placeholder: SpinKitCubeGrid(
+                                placeholder: (context, progress) =>
+                                    SpinKitCubeGrid(
                                   color: Theme.of(context).primaryColor,
                                 ),
                               ),

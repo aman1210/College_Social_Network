@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter_socket_io/flutter_socket_io.dart';
 import 'package:flutter_socket_io/socket_io_manager.dart';
@@ -6,7 +7,7 @@ import 'dart:convert';
 import '../models/message.dart';
 import '../models/user.dart';
 
-class ChatModel extends Model {
+class ChatModel extends ChangeNotifier {
   List<User> users = [
     User(name: 'IronMan', chatID: '111'),
     User(name: 'Captain America', chatID: '222'),
@@ -26,7 +27,7 @@ class ChatModel extends Model {
         users.where((user) => user.chatID != currentUser.chatID).toList();
 
     socketIO = SocketIOManager().createSocketIO(
-        '<ENTER_YOUR_SERVER_URL_HERE>', '/',
+        'https://connectus15-backend.herokuapp.com', '/',
         query: 'chatID=${currentUser.chatID}');
     socketIO.init();
 

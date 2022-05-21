@@ -1,3 +1,7 @@
+import 'package:ConnectUs/view_models/chat_view_model.dart';
+
+import '../../models/message.dart';
+import '../../models/user.dart';
 import '../../responsive.dart';
 import '../../view_models/message_view_model.dart';
 import '../../views/home_screen/chat_list.dart';
@@ -16,68 +20,27 @@ class MessageScreen extends StatefulWidget {
 class _MessageScreenState extends State<MessageScreen> {
   final ScrollController _chatListController = ScrollController();
 
-  final List<ChatModel> chats = [
-    ChatModel(
-      name: "Dianne Russell",
-      lastOnline: "5 hours ago",
-      issueType: "General Query",
-      msgs: [
-        MessageModel(
-          msg: "Hey! Okay, send out.",
-          fromUser: false,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg: "Can I send you?",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg:
-              "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim ",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg: "Hey! Okay, send out.",
-          fromUser: false,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg: "Can I send you?",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg:
-              "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim ",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg: "Hey! Okay, send out.",
-          fromUser: false,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg: "Can I send you?",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg:
-              "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim ",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-      ],
-    ),
-  ];
+  List<Message> chats = [];
+  late String chatId;
+  late User selected;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
     var selectedUser = Provider.of<MessageViewModel>(context).selectedUser;
+    // var model = Provider.of<ChatModel>(context);
+    if (selectedUser != null) {
+      selected = Provider.of<ChatModel>(context, listen: false)
+          .friendList[selectedUser];
+      chatId = selected.chatID;
+      chats = Provider.of<ChatModel>(context).getMessagesForChatID(chatId);
+    }
     return isMobile && selectedUser == null
         ? ChatList()
         : Container(
@@ -115,7 +78,7 @@ class _MessageScreenState extends State<MessageScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ChatBoxHeading(
-                          selectedUser: selectedUser,
+                          selectedUser: selected,
                           isMobile: isMobile,
                         ),
                         Divider(height: kDefaultPadding),
@@ -124,10 +87,11 @@ class _MessageScreenState extends State<MessageScreen> {
                             controller: _chatListController,
                             reverse: true,
                             itemBuilder: (context, index) => MessageBubble(
-                              chatSelected: chats[0].msgs[index],
+                              chatSelected: chats[index],
                               isMobile: isMobile,
+                              userChatID: chatId,
                             ),
-                            itemCount: chats[0].msgs.length,
+                            itemCount: chats.length,
                           ),
                         ),
                         Divider(height: kDefaultPadding / 2),
@@ -208,11 +172,15 @@ class _MessageScreenState extends State<MessageScreen> {
 
 class MessageBubble extends StatelessWidget {
   const MessageBubble(
-      {Key? key, required this.chatSelected, required this.isMobile})
+      {Key? key,
+      required this.chatSelected,
+      required this.isMobile,
+      required this.userChatID})
       : super(key: key);
 
-  final MessageModel chatSelected;
+  final Message chatSelected;
   final bool isMobile;
+  final String userChatID;
 
   @override
   Widget build(BuildContext context) {
@@ -222,11 +190,11 @@ class MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: chatSelected.fromUser
+        mainAxisAlignment: userChatID == chatSelected.senderID
             ? MainAxisAlignment.start
             : MainAxisAlignment.end,
         children: [
-          if (chatSelected.fromUser)
+          if (userChatID == chatSelected.senderID)
             Container(
               margin: const EdgeInsets.only(right: 8),
               height: 40,
@@ -243,11 +211,11 @@ class MessageBubble extends StatelessWidget {
                 BoxConstraints(maxWidth: isMobile ? width * 0.6 : width * 0.38),
             decoration: BoxDecoration(
               border: Border.all(
-                  color: chatSelected.fromUser
+                  color: userChatID == chatSelected.senderID
                       ? Colors.lightBlue
                       : Color(0xff707C9740).withOpacity(0.25),
                   width: 1),
-              color: chatSelected.fromUser
+              color: userChatID == chatSelected.senderID
                   ? Theme.of(context).brightness == Brightness.dark
                       ? Colors.blueGrey.shade900
                       : Colors.lightBlue[300]
@@ -255,23 +223,24 @@ class MessageBubble extends StatelessWidget {
                       ? Colors.white10
                       : Colors.white,
               borderRadius: BorderRadius.only(
-                topLeft: chatSelected.fromUser
+                topLeft: userChatID == chatSelected.senderID
                     ? const Radius.circular(0)
                     : const Radius.circular(10),
                 bottomLeft: const Radius.circular(10),
                 topRight: const Radius.circular(10),
-                bottomRight: chatSelected.fromUser
+                bottomRight: userChatID == chatSelected.senderID
                     ? const Radius.circular(10)
                     : const Radius.circular(0),
               ),
             ),
             child: Text(
-              chatSelected.msg,
-              textAlign:
-                  chatSelected.fromUser ? TextAlign.start : TextAlign.end,
+              chatSelected.text,
+              textAlign: userChatID == chatSelected.senderID
+                  ? TextAlign.start
+                  : TextAlign.end,
               style: TextStyle(
                   fontSize: isMobile ? 12 : 14,
-                  color: chatSelected.fromUser
+                  color: userChatID == chatSelected.senderID
                       ? Theme.of(context).brightness == Brightness.dark
                           ? Colors.white70
                           : Colors.white
@@ -291,7 +260,7 @@ class ChatBoxHeading extends StatelessWidget {
       {Key? key, required this.selectedUser, required this.isMobile})
       : super(key: key);
 
-  final int selectedUser;
+  final User selectedUser;
   final bool isMobile;
 
   @override
@@ -316,7 +285,7 @@ class ChatBoxHeading extends StatelessWidget {
           ),
           SizedBox(width: kDefaultPadding / 2),
           Text(
-            "User $selectedUser chatbox",
+            "${selectedUser.name} ",
             style: TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 16,
@@ -336,12 +305,12 @@ class ChatBoxHeading extends StatelessWidget {
   }
 }
 
-class ChatModel {
+class ChatMessageModel {
   String name;
   String lastOnline;
   String issueType;
   List<MessageModel> msgs;
-  ChatModel(
+  ChatMessageModel(
       {required this.name,
       required this.lastOnline,
       required this.issueType,

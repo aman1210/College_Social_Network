@@ -1,3 +1,5 @@
+import 'package:ConnectUs/view_models/chat_view_model.dart';
+
 import '../../utils/theme.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../view_models/message_view_model.dart';
@@ -18,6 +20,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => AuthViewModel()),
+        ChangeNotifierProvider(create: (ctx) => ChatModel()),
         ChangeNotifierProvider(create: (ctx) => MessageViewModel()),
       ],
       child: Consumer<AuthViewModel>(

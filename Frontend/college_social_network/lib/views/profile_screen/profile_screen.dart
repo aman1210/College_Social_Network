@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '../../responsive.dart';
 import '../../utils/constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -146,40 +148,16 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(kDefaultPadding),
-                        topRight: Radius.circular(kDefaultPadding)),
-                    child: ImageFade(
-                      image: NetworkImage(
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(kDefaultPadding),
+                      topRight: Radius.circular(kDefaultPadding)),
+                  child: CachedNetworkImage(
+                    imageUrl:
                         "https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-                      ),
-                      placeholder: SpinKitWave(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    )),
-                Positioned(
-                  right: kDefaultPadding / 2,
-                  bottom: kDefaultPadding / 2,
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.cloud_upload_outlined,
-                      size: 18,
-                    ),
-                    label: const Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Text(
-                        "Edit Cover Photo",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 12),
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.white),
-                      foregroundColor: MaterialStateProperty.all(
-                          Colors.black.withOpacity(0.7)),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    placeholder: (context, progress) => SpinKitWave(
+                      color: Theme.of(context).primaryColor,
                     ),
                   ),
                 ),

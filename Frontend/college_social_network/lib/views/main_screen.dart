@@ -1,3 +1,6 @@
+import 'package:ConnectUs/view_models/chat_view_model.dart';
+import 'package:scoped_model/scoped_model.dart';
+
 import '/components/app_bar.dart';
 import '/components/current_state.dart';
 import '/components/side_bar.dart';
