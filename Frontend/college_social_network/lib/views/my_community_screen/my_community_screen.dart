@@ -20,6 +20,18 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
 
   bool viewProfile = false;
 
+  List<String> url = [
+    "https://www.theladders.com/wp-content/uploads/coder_190517-800x450.jpg",
+    "https://d2jyir0m79gs60.cloudfront.net/news/images/successful-college-student-lg.png",
+    "https://skillroads.com/images/blog//college_student.jpeg",
+    "https://assets.new.siemens.com/siemens/assets/api/uuid:3ab33ae4-1260-44b7-95e0-3b05515ccebb/width:1125/quality:high/engineer-siemens.jpg",
+    "https://www.ziprecruiter.com/svc/fotomat/public-ziprecruiter/uploads/job_description_template/Principal_Software_Engineer.jpg",
+    "https://www.industry.gov.au/sites/default/files/styles/space_career/public/March%202021/image/space-profile-eloise-matheson.png",
+    "https://cdn.mos.cms.futurecdn.net/Po8boBSzfQifAxkbgftCLV.jpg",
+    "https://ece.mst.edu/media/academic/ece/images/homepage/Ryan-Vasquez-lead.jpg",
+    "https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+  ];
+
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
@@ -78,8 +90,7 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
                             child: SizedBox(
                               width: double.infinity,
                               child: CachedNetworkImage(
-                                imageUrl:
-                                    "https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+                                imageUrl: url[user % 9],
                                 fit: BoxFit.cover,
                                 placeholder: (context, progress) =>
                                     SpinKitCubeGrid(

@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
 import '../../responsive.dart';
 import '../../utils/constants.dart';
 import '../../utils/images.dart';
@@ -423,7 +424,7 @@ class PostHead extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Person Name",
+              "Ayush Gupta",
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -432,7 +433,7 @@ class PostHead extends StatelessWidget {
             ),
             const SizedBox(height: kDefaultPadding / 5),
             Text(
-              "Time",
+              "${DateFormat().format(DateTime.now())}",
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,

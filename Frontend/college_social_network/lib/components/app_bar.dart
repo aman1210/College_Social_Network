@@ -64,7 +64,7 @@ class CustomAppBar extends StatelessWidget {
           Row(
             children: [
               Text(
-                "User Name",
+                "Aman Srivastava",
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

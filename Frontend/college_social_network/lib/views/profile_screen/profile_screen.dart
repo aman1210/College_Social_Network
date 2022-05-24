@@ -54,14 +54,13 @@ class ProfileScreen extends StatelessWidget {
                               : Colors.blueGrey.shade700),
                     ),
                     SizedBox(height: kDefaultPadding / 5),
-                    introField(Icons.web, "www.portfolio.com", context),
+                    introField(Icons.web, "www.amansri.me", context),
                     introField(CupertinoIcons.person, "Male", context),
                     introField(
                         Icons.cake_outlined, "Born October 12, 1998", context),
                     introField(Icons.map_rounded, "Varanasi, India", context),
-                    introField(
-                        Icons.facebook_outlined, "Facebook name", context),
-                    introField(Icons.facebook, "Instagram name", context),
+                    introField(Icons.facebook_outlined, "aman1210", context),
+                    introField(Icons.facebook, "aman1210", context),
                     Divider(thickness: 1, height: kDefaultPadding * 2),
                     Text(
                       "About",
@@ -170,6 +169,9 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                       CircleAvatar(
                         maxRadius: isMobile ? 40 : 60,
                         backgroundColor: Colors.blue,
+                        backgroundImage: NetworkImage(
+                          "https://assets.entrepreneur.com/content/3x2/2000/1396294231-why-college-students-need-entrepreneurial-careers.jpg",
+                        ),
                       ),
                       Positioned(
                         bottom: 15,
@@ -225,7 +227,7 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Person Name",
+                      "Aman Srivastava",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -235,7 +237,7 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "One liner about",
+                      "Flutter Developer",
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).brightness == Brightness.dark
