@@ -1,12 +1,14 @@
 const express = require("express");
 const multer = require("multer");
 
+const postController = require("../controllers/post-controller");
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb("null", "uploads/");
+    cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    cb("null", Date.now() + file.originalname);
+    cb(null, file.originalname);
   },
 });
 
@@ -23,7 +25,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({
-  storage: stroage,
+  storage: storage,
   limits: {
     fileSize: 1024 * 1024 * 2,
   },
@@ -31,5 +33,9 @@ const upload = multer({
 });
 
 const router = express.Router();
+
+router.get("/", postController.posts_get_user_post);
+
+router.post("/", upload.array("images", 5), postController.posts_add_post);
 
 module.exports = router;

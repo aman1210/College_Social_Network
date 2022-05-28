@@ -1,9 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
 const dotenv = require("dotenv");
-const bodyParser = require("body-parser");
+
 const authRoutes = require("./routes/authRoute");
+const postRoutes = require("./routes/postRoute");
 
 const session = require("express-session");
 dotenv.config();
@@ -36,7 +36,6 @@ mongoose
   .connect(dbURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true,
   })
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log("Failed to connect to MongoDB", err));
@@ -51,9 +50,11 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(express.static(__dirname + "/public"));
 app.use("/uploads", express.static("uploads"));
 
 app.use("/auth", authRoutes);
+app.use("/posts", postRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
