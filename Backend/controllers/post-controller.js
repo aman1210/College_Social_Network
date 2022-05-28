@@ -2,11 +2,19 @@ const Post = require("../models/postModel");
 const Comment = require("../models/commentModel");
 const fs = require("fs");
 
-exports.posts_add_post = (req, res, next) => {
+const cloudinary = require("./cloudinary").v2;
+
+exports.posts_add_post = async (req, res, next) => {
   var imageslist = [];
   if (req.files != null) {
-    for (var i = 0; i < req.files.length; i++) {
-      imageslist.push(req.files[i].destination + req.files[i].filename);
+    const uploader = async (path) => await cloudinary.uploads(path, "Images");
+    console.log(path);
+    const files = req.files;
+    for (const file of files) {
+      const { path } = files;
+      const newPath = await uploader(path);
+      imageslist.push(newPath);
+      fs.unlinkSync(path);
     }
   }
   const post = new Post({

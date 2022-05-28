@@ -1,9 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
 const dotenv = require("dotenv");
-const bodyParser = require("body-parser");
+
 const authRoutes = require("./routes/authRoute");
+const postRoutes = require("./routes/postRoute");
 
 const session = require("express-session");
 dotenv.config();
@@ -32,6 +32,14 @@ app.use((req, res, next) => {
   return next();
 });
 
+mongoose
+  .connect(dbURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.log("Failed to connect to MongoDB", err));
+
 app.use(
   session({
     resave: false,
@@ -39,19 +47,32 @@ app.use(
     secret: "SECRET",
   })
 );
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use(express.static(__dirname + "/public"));
+app.use("/uploads", express.static("uploads"));
 
 app.use("/auth", authRoutes);
-
-mongoose
-  .connect(dbURI, { useNewUrlParser: true })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.log("Failed to connect to MongoDB", err));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/posts", postRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
+});
+
+//Handling error likes invalid pages
+app.use((req, res, next) => {
+  let err = new Error("Not Found");
+  err.status = 404;
+  next(err);
+});
+
+//Handling error in database
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json({
+    error: err.message,
+  });
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}..`));
