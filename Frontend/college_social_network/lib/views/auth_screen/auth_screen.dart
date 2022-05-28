@@ -14,10 +14,12 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool showPassword = false;
+  bool isSignUpMode = false;
 
   final _key = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
   final TextEditingController _passwordController = TextEditingController();
 
@@ -32,65 +34,70 @@ class _AuthScreenState extends State<AuthScreen> {
         width: Responsive.isDesktop(context)
             ? _size.width / 3
             : Responsive.isTablet(context)
-                ? _size.width / 1.5
+                ? _size.width / 2
                 : _size.width / 1.2,
         alignment: Alignment.center,
         child: SingleChildScrollView(
           child: Container(
             margin: Responsive.isMobile(context)
-                ? const EdgeInsets.all(kDefaultPadding / 4)
-                : const EdgeInsets.all(kDefaultPadding),
-            padding: EdgeInsets.symmetric(
-                horizontal: Responsive.isMobile(context)
-                    ? kDefaultPadding
-                    : kDefaultPadding * 1.5,
-                vertical: kDefaultPadding),
+                ? EdgeInsets.all(kDefaultPadding / 4)
+                : EdgeInsets.all(kDefaultPadding),
+            padding: const EdgeInsets.symmetric(
+                horizontal: kDefaultPadding * 1.5, vertical: kDefaultPadding),
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
                   blurRadius: 22,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
-                      : Colors.black.withOpacity(0.07),
+                  color: Colors.black.withOpacity(0.07),
                 )
               ],
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? const Color(0xff1a1d22)
-                  : Colors.white,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  "Sign In",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headline4?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white70
-                          : null),
+                CrossFade(
+                  showSecond: isSignUpMode,
+                  firstWidget: Text(
+                    "Sign In",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline4
+                        ?.copyWith(fontWeight: FontWeight.bold, fontSize: 28),
+                  ),
+                  secondWidget: Text(
+                    "Getting Started",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline4
+                        ?.copyWith(fontWeight: FontWeight.bold, fontSize: 28),
+                  ),
                 ),
                 const SizedBox(height: kDefaultPadding / 4),
-                Text(
-                  "Welcome back, you've been missed!",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headline6?.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white70
-                          : null),
-                ),
+                CrossFade(
+                    firstWidget: Text(
+                      "Welcome back, you've been missed!",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          ?.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                    secondWidget: Text(
+                      "Create an account to connect with friends",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          ?.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                    showSecond: isSignUpMode),
                 const SizedBox(height: kDefaultPadding * 2),
                 TextFormField(
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white70
-                          : null),
                   controller: _emailController,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
@@ -101,18 +108,38 @@ class _AuthScreenState extends State<AuthScreen> {
                     }
                     return null;
                   },
-                  decoration: const InputDecoration(
-                      hintText: "name@knit.ac.in",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.alternate_email_rounded)),
+                  decoration: InputDecoration(
+                      hintText: isSignUpMode ? "Your email" : "name@knit.ac.in",
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.alternate_email_rounded)),
+                ),
+                if (isSignUpMode) const SizedBox(height: kDefaultPadding),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: isSignUpMode ? 60 : 0,
+                  child: TextFormField(
+                    controller: _nameController,
+                    validator: (val) {
+                      if (val == null || val.isEmpty) {
+                        return 'Please enter your name';
+                      }
+                      if (val.trim().length < 6) {
+                        return 'Please enter valid/full name';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                        hintText: !isSignUpMode ? null : "Your Name",
+                        border: !isSignUpMode
+                            ? InputBorder.none
+                            : const OutlineInputBorder(),
+                        prefixIcon: !isSignUpMode
+                            ? null
+                            : const Icon(Icons.face_outlined)),
+                  ),
                 ),
                 const SizedBox(height: kDefaultPadding),
                 TextFormField(
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white70
-                          : null),
                   controller: _passwordController,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
@@ -120,31 +147,15 @@ class _AuthScreenState extends State<AuthScreen> {
                     }
                     return null;
                   },
-                  onFieldSubmitted: (val) {
-                    if (submit()) {
-                      authViewModel.loginUser("");
-                    }
-                  },
-                  obscureText: !showPassword,
-                  decoration: InputDecoration(
-                    hintText: "********",
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.lock_outline_rounded),
-                    suffixIcon: GestureDetector(
-                      onTapDown: (details) => setState(() {
-                        showPassword = true;
-                      }),
-                      onTapUp: (details) => setState(() {
-                        showPassword = false;
-                      }),
-                      child: const Icon(Icons.remove_red_eye_outlined),
-                    ),
-                  ),
+                  decoration: const InputDecoration(
+                      hintText: "********",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.lock_outline_rounded)),
                 ),
                 const SizedBox(height: kDefaultPadding / 2),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
-                  height: Responsive.isMobile(context) ? 40 : 20,
+                  height: isSignUpMode ? 0 : 20,
                   child: Row(
                     children: [
                       const Expanded(child: SizedBox()),
@@ -155,86 +166,72 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
                 const SizedBox(height: kDefaultPadding / 2),
-                _button(context, authViewModel),
-                const SizedBox(height: kDefaultPadding),
-                InkWell(
-                  onTap: () {},
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: kDefaultPadding,
-                        vertical: kDefaultPadding / 2),
-                    decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.09),
-                        borderRadius:
-                            BorderRadius.circular(kDefaultPadding / 4)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          FontAwesomeIcons.google,
-                          color: Colors.blue,
-                          size: 20,
-                        ),
-                        new Container(
-                          padding: const EdgeInsets.only(left: 10.0),
-                          child: new Text(
-                            "Sign in with Google",
-                            style: const TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(
+                            Theme.of(context).primaryColor),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.white)),
+                    onPressed: () {},
+                    child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: CrossFade(
+                          showSecond: isSignUpMode,
+                          firstWidget: const Text(
+                            "Sign In",
+                            style: TextStyle(letterSpacing: 1.2, fontSize: 16),
                           ),
-                        ),
-                      ],
-                    ),
+                          secondWidget: const Text(
+                            "Sign Up",
+                            style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+                          ),
+                        )),
                   ),
-                )
+                ),
+                const SizedBox(height: kDefaultPadding / 2),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: CrossFade(
+                        showSecond: isSignUpMode,
+                        firstWidget: const Text(
+                          "Already have an account?",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        secondWidget: const Text(
+                          "Don't have an account?",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: kDefaultPadding / 2),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          isSignUpMode = !isSignUpMode;
+                        });
+                      },
+                      child: CrossFade(
+                        showSecond: isSignUpMode,
+                        firstWidget: const Text(
+                          "Sign In",
+                          style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+                        ),
+                        secondWidget: const Text(
+                          "Sign Up",
+                          style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  bool submit() {
-    if (!_key.currentState!.validate()) {
-      return false;
-    }
-    _key.currentState!.save();
-
-    return true;
-  }
-
-  _button(BuildContext context, AuthViewModel authViewModel) {
-    if (authViewModel.isLoading) {
-      return const CircularProgressIndicator();
-    }
-    // if (authViewModel.userLoggedIn) {
-    //   Navigator.of(context).pushReplacement(MaterialPageRoute(
-    //     builder: (context) => Scaffold(
-    //       body: Center(child: Text("User Logged In")),
-    //     ),
-    //   ));
-    // }
-    return SizedBox(
-      width: double.infinity,
-      child: TextButton(
-        style: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all(Theme.of(context).primaryColor),
-            foregroundColor: MaterialStateProperty.all(Colors.white)),
-        onPressed: () {
-          if (submit()) {
-            authViewModel.loginUser("");
-          }
-        },
-        child: const Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Text(
-            "Sign In",
-            style: TextStyle(letterSpacing: 1.2, fontSize: 16),
           ),
         ),
       ),

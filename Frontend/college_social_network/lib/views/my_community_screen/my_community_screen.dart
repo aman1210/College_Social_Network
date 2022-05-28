@@ -32,6 +32,18 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
     "https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
   ];
 
+  List<String> names = [
+    "Ayush Gupta",
+    "Mayank Pratap Singh",
+    "Khushboo Arora",
+    "Shivam Sharma",
+    "Pratap Singh",
+    "Amrisha Pandey",
+    "Vijay Gupta",
+    "Ratnesh Verma",
+    "Aman Kumar Gupta"
+  ];
+
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
@@ -102,24 +114,25 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
                         ),
                         Padding(
                           padding:
-                              const EdgeInsets.only(left: kDefaultPadding / 2),
+                              const EdgeInsets.only(left: kDefaultPadding / 4),
                           child: Text(
-                            "User $user",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            "${names[user % 9]}",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13),
                           ),
                         ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: kDefaultPadding / 2),
-                          child: Text(
-                            "About $user",
-                            style: TextStyle(
-                                height: 1,
-                                fontWeight: FontWeight.w300,
-                                fontSize: 12,
-                                color: Colors.black.withOpacity(0.7)),
-                          ),
-                        ),
+                        // Padding(
+                        //   padding:
+                        //       const EdgeInsets.only(left: kDefaultPadding / 4),
+                        //   child: Text(
+                        //     "About $user",
+                        //     style: TextStyle(
+                        //         height: 1,
+                        //         fontWeight: FontWeight.w300,
+                        //         fontSize: 12,
+                        //         color: Colors.black.withOpacity(0.7)),
+                        //   ),
+                        // ),
                         Padding(
                           padding: const EdgeInsets.all(kDefaultPadding / 4),
                           child: Row(

@@ -1,3 +1,5 @@
+import 'package:image_picker/image_picker.dart';
+
 import '../../responsive.dart';
 import '../../utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -141,7 +143,11 @@ class NewPost extends StatelessWidget {
             ),
             const SizedBox(height: kDefaultPadding / 4),
             TextButton.icon(
-              onPressed: () {},
+              onPressed: () async {
+                ImagePicker picker = ImagePicker();
+                var x = await picker.pickMultiImage();
+                x!.forEach((e) => print(e.name));
+              },
               icon: const Icon(Icons.photo_outlined),
               label: const Text("Photo"),
             ),

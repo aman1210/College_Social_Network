@@ -128,6 +128,7 @@ class _MainScreenState extends State<MainScreen> {
             ui(authViewModel, pageController),
           ],
         ),
+        resizeToAvoidBottomInset: false,
       ),
     );
   }
