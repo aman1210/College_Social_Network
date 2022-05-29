@@ -1,5 +1,11 @@
+import 'dart:io';
+
+import 'package:ConnectUs/view_models/post_view_model.dart';
+import 'package:ConnectUs/views/home_screen/post_card.dart';
+import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import '../../utils/constants.dart';
 
@@ -16,13 +22,24 @@ class _NewPostState extends State<NewPost> {
   TextEditingController _editingController = TextEditingController();
   final _key = GlobalKey<FormState>();
   List<XFile> imagesPicked = [];
+  CarouselController buttonCarouselController = CarouselController();
 
-  submit() {
+  bool isLoading = false;
+
+  submit() async {
     if (_key.currentState!.validate()) {
       return;
     }
     _key.currentState!.save();
-    print(imagesPicked[0].name);
+    setState(() {
+      isLoading = true;
+    });
+    await Provider.of<PostViewModel>(context, listen: false)
+        .addNewPost(_editingController.text, imagesPicked);
+    print("hello");
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -72,9 +89,10 @@ class _NewPostState extends State<NewPost> {
                   child: TextFormField(
                     controller: _editingController,
                     validator: (val) {
-                      if (val == null || val.length == 0) {
+                      if (val == null || val.isEmpty) {
                         return "Please enter something to post!";
                       }
+                      return '';
                     },
                     decoration: const InputDecoration(
                       hintText: "What's happening?",
@@ -91,19 +109,47 @@ class _NewPostState extends State<NewPost> {
             ],
           ),
           const SizedBox(height: kDefaultPadding / 2),
+          if (imagesPicked.isNotEmpty)
+            PostImages(
+              buttonCarouselController: buttonCarouselController,
+              images: imagesPicked.map((e) => e.path).toList(),
+              isMobile: widget.isMobile,
+            ),
+          if (imagesPicked.isNotEmpty)
+            ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    imagesPicked.clear();
+                  });
+                },
+                child: Text("Remove image")),
           Row(
             children: [
               TextButton.icon(
                 onPressed: () async {
                   ImagePicker picker = ImagePicker();
                   var x = await picker.pickMultiImage();
-                  x!.forEach((e) => imagesPicked.add(e));
+                  if (x != null) {
+                    x.forEach((e) {
+                      var y = File(e.path);
+                      imagesPicked.add(e);
+                    });
+                    setState(() {});
+                  } else {
+                    print("no image selected");
+                  }
                 },
                 icon: const Icon(Icons.photo_outlined),
                 label: const Text("Photo"),
               ),
               const Expanded(child: SizedBox()),
-              ElevatedButton(onPressed: () {}, child: const Text("Post"))
+              if (isLoading) CircularProgressIndicator(),
+              if (!isLoading)
+                ElevatedButton(
+                    onPressed: () {
+                      submit();
+                    },
+                    child: const Text("Post"))
             ],
           ),
         ]),

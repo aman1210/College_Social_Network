@@ -93,7 +93,7 @@ class _PostCardState extends State<PostCard> {
                   images: widget.post!.images!,
                   isMobile: isMobile,
                 ),
-              const PostStats(),
+              PostStats(post: widget.post),
               const PostButtons(),
               Container(
                 padding: const EdgeInsets.only(top: kDefaultPadding / 2),
