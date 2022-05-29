@@ -1,55 +1,109 @@
-const express = require('express');
-const router = express.Router();
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/userModel");
 const dotenv = require('dotenv');
-const passport = require('passport');
-// const usersController = require('../controllers/user-controller')
+
 dotenv.config();
 
-// router.post("/googleLogin", usersController.googleLogin);
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const GOOGLE_CLIENT_ID = '248536460487-tm6tf1s7kds443ug3t0iaqt0mg72da1c.apps.googleusercontent.com';
-const GOOGLE_CLIENT_SECRET = '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';
+const signup = async (req, res, next) => {
 
-var userProfile;
- 
-router.use(passport.initialize());
-router.use(passport.session());
- 
-// router.get('/success', (req, res) => {
-//   res.render('pages/success', {user: userProfile});
-// });
-router.get('/error', (req, res) => res.send("error logging in"));
- 
-passport.serializeUser(function(user, cb) {
-  cb(null, user);
-});
- 
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
-});
-
-passport.use(new GoogleStrategy({
-    clientID: GOOGLE_CLIENT_ID,
-    clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/"
-  },
-  function(accessToken, refreshToken, profile, done) {
-      userProfile=profile;
-      console.log(userProfile);
-      return done(null, userProfile);
+  const { name, email, password, location } = req.body;
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email });
+  } catch (err) {
+    res.status(error.status || 500).json({ message: "Something went wrong", error: err });
   }
-));
- 
-router.get('/google', 
-  passport.authenticate('google', { scope : ['profile', 'email'] }));
- 
-router.get('/', 
-  passport.authenticate('google', { failureRedirect: '/error' }),
-  function(req, res) {
-    // Successful authentication, redirect success.
-    console.log(res);
-    res.redirect('https://connectus-9b0c5.web.app/');
+
+  if (existingUser) {
+    res.status(422).json({ error: "User already exists, Please login instead !!"});
+  }
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(password, 12);
+  } catch (err) {
+    res.status(500).json({ error: "Could not create user, Please try again !!"});
+  }
+  const createdUser = new User({
+    name,
+    email,
+    password: hashedPassword,
+    intro:"",
+    about:"",
+    dob:"",
+    location,
+    social_links:[],
+    profile_image:"",
+    post:[],
+    friendList:[]
   });
 
+  try {
+    await createdUser.save();
+  } catch (err) {
+    res.status(500).json({ error: "Signup failed, Please try again !!"});
+  }
 
-module.exports = router;
+  // toObject converts mongoose Object to default js object
+
+
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: createdUser.id, email: createdUser.email },
+      process.env.JWT_KEY,
+      { expiresIn: "1h" }
+    );
+  } catch (err) {
+    res.status(500).json({ error: "Signup failed, Please try again !!"});
+  }
+
+  res.status(201).json({ userId: createdUser.id, email: createdUser.email, token: token });
+};
+
+const login = async (req, res, next) => {
+  const { email, password } = req.body;
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email });
+  } catch (err) {
+    res.status(500).json({ error: "Login failed, Please try again !!"});
+  }
+
+  if (!existingUser) {
+    res.status(401).json({ error: "Could not identify user, Credentials seems wrong"});
+  }
+
+  let isValidPassword = false;
+  try {
+    isValidPassword = await bcrypt.compare(password, existingUser.password);
+  } catch (err) {
+    res.status(500).json({ error: "Could not log you in, please check your credentials"});
+  }
+
+  if (!isValidPassword) {
+    res.status(403).json({ error: "Invalid Credentials, could not log you in."});
+  }
+
+  let token;
+  try {
+    token = jwt.sign(
+      { userId: existingUser.id, email: existingUser.email },
+      process.env.JWT_KEY,
+      { expiresIn: "1h" }
+    );
+  } catch (err) {
+      res.status(500).json({ error: "Login failed, Please try again !!"});
+    }
+
+  res.json({
+    userId: existingUser.id,
+    email: existingUser.email,
+    token: token,
+  });
+};
+
+module.exports = {
+  signup,
+  login,
+};

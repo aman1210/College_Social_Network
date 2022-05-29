@@ -53,7 +53,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/public"));
 app.use("/uploads", express.static("uploads"));
 
-app.use("/auth", authRoutes);
+app.use("/signup", authRoutes.signup);
+app.use("/login",authRoutes.login);
 app.use("/posts", postRoutes);
 
 app.get("/", (req, res) => {
