@@ -31,14 +31,23 @@ class PostViewModel with ChangeNotifier {
     Uri uri = Uri.parse(server + "posts/");
     List<String> postImages = images.map((image) => image.secureUrl).toList();
 
-    var request = json.encode({
-      'text': text,
-      'timeStamp': DateTime.now().toIso8601String(),
-      'userName': 'Khushboo Arora',
-      'images': postImages
-    });
+    var data = {
+      "text": text,
+      "timeStamp": DateTime.now().toIso8601String(),
+      "userName": 'Khushboo Arora',
+      "images": postImages,
+    };
 
-    var response = await http.post(uri, body: request);
+    var request = json.encode(data);
+    print(DateTime.now().toIso8601String());
+
+    var response = await http.post(
+      uri,
+      body: request,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
     print(response.body);
   }
 }
