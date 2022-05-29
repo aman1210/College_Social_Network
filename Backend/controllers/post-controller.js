@@ -40,6 +40,7 @@ exports.posts_add_post = async (req, res, next) => {
 
 exports.posts_get_user_posts = (req, res, next) => {
   Post.find({ verified: false })
+    .sort({ timeStamp: -1 })
     .populate({
       path: "comments",
       options: {
