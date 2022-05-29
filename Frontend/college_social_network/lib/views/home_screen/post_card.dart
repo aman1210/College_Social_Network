@@ -18,18 +18,7 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
-  List<String> images = [
-    Images.img1,
-    Images.img2,
-    Images.img3,
-    Images.img4,
-    Images.img5,
-  ];
-
   CarouselController buttonCarouselController = CarouselController();
-
-  final String lp =
-      "Lorem ipsum dolor sit amet. Ut error rerum ut dolorem velit et iusto nulla qui nihil itaque qui facilis distinctio. Ut accusamus quisquam eos distinctio odit et labore provident aut odit molestiae hic fuga nulla. Et distinctio iure At accusantium quas sed placeat vero ut tempore necessitatibus et cu";
 
   bool _animate = false;
 
@@ -228,9 +217,8 @@ class PostButtons extends StatelessWidget {
 }
 
 class PostStats extends StatelessWidget {
-  const PostStats({
-    Key? key,
-  }) : super(key: key);
+  const PostStats({Key? key, this.post}) : super(key: key);
+  final Post? post;
 
   @override
   Widget build(BuildContext context) {
@@ -239,7 +227,8 @@ class PostStats extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            "100 Likes",
+            // ${post!.likeCount ?? 0}
+            " ${post?.likeCount == null ? 0 : post!.likeCount} Likes",
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
@@ -247,15 +236,8 @@ class PostStats extends StatelessWidget {
           ),
           const Expanded(child: SizedBox()),
           Text(
-            "3 Comments",
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                color: Colors.blueGrey.shade400),
-          ),
-          const SizedBox(width: kDefaultPadding),
-          Text(
-            "17 Share",
+            //
+            "${post?.comments == null ? 0 : post?.comments!.length} Comments",
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,

@@ -1,4 +1,6 @@
+import 'package:ConnectUs/models/postModel.dart';
 import 'package:ConnectUs/view_models/post_view_model.dart';
+import 'package:ConnectUs/views/home_screen/new_post.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -19,17 +21,35 @@ class _PostFeedState extends State<PostFeed> {
   final ScrollController _scrollController = ScrollController();
 
   final ScrollController _cardController = ScrollController();
+  List<Post> posts = [];
+
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    Provider.of<PostViewModel>(context, listen: false).getAllPosts();
+    setState(() {
+      isLoading = true;
+    });
+    Provider.of<PostViewModel>(context, listen: false)
+        .getAllPosts()
+        .then((value) {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant PostFeed oldWidget) {
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
     var istablet = Responsive.isTablet(context);
+    posts = Provider.of<PostViewModel>(context).posts;
     return Container(
       width: double.infinity,
       clipBehavior: Clip.hardEdge,
@@ -49,30 +69,24 @@ class _PostFeedState extends State<PostFeed> {
           Expanded(
             flex: 8,
             child: ScrollConfiguration(
-              behavior:
-                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
-              child: FutureBuilder(
-                future: Provider.of<PostViewModel>(context, listen: false)
-                    .getAllPosts(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  var posts = Provider.of<PostViewModel>(context).posts;
-                  return ListView.separated(
-                    clipBehavior: Clip.hardEdge,
-                    scrollDirection: Axis.vertical,
-                    controller: _scrollController,
-                    itemBuilder: (context, index) => index == 0
-                        ? NewPost(isMobile: isMobile)
-                        : PostCard(index: index - 1, post: posts[index - 1]),
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: kDefaultPadding),
-                    itemCount: posts.length + 1,
-                  );
-                },
-              ),
-            ),
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : ListView.separated(
+                        clipBehavior: Clip.hardEdge,
+                        scrollDirection: Axis.vertical,
+                        controller: _scrollController,
+                        itemBuilder: (context, index) => index == 0
+                            ? NewPost(isMobile: isMobile)
+                            : PostCard(
+                                index: index - 1, post: posts[index - 1]),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: kDefaultPadding),
+                        itemCount: posts.length + 1,
+                      )),
           ),
           if (!isMobile && !istablet)
             Expanded(
@@ -88,96 +102,6 @@ class _PostFeedState extends State<PostFeed> {
             )
         ],
       ),
-    );
-  }
-}
-
-class NewPost extends StatelessWidget {
-  const NewPost({
-    Key? key,
-    required this.isMobile,
-  }) : super(key: key);
-
-  final bool isMobile;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(
-          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
-      padding: EdgeInsets.symmetric(
-          vertical: kDefaultPadding / 2,
-          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
-      decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Theme.of(context).scaffoldBackgroundColor
-              : Colors.white,
-          borderRadius: BorderRadius.circular(kDefaultPadding),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 20,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white.withOpacity(0.03)
-                  : Colors.black.withOpacity(0.07),
-              offset: const Offset(0, 5),
-            )
-          ]),
-      child: Column(children: [
-        Row(
-          children: [
-            const CircleAvatar(
-              child: Icon(Icons.person),
-            ),
-            const SizedBox(width: kDefaultPadding / 2),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.only(
-                  left: kDefaultPadding / 2,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.blueGrey.withOpacity(0.2)
-                      : Colors.grey[200],
-                  borderRadius: BorderRadius.circular(kDefaultPadding / 2),
-                ),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: "What's happening?",
-                    hintStyle: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.1),
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-        const SizedBox(height: kDefaultPadding / 2),
-        Row(
-          children: [
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.emoji_emotions_outlined),
-              label: const Text("Feeling"),
-            ),
-            const SizedBox(height: kDefaultPadding / 4),
-            TextButton.icon(
-              onPressed: () async {
-                ImagePicker picker = ImagePicker();
-                var x = await picker.pickMultiImage();
-                x!.forEach((e) => print(e.name));
-              },
-              icon: const Icon(Icons.photo_outlined),
-              label: const Text("Photo"),
-            ),
-            const Expanded(child: SizedBox()),
-            ElevatedButton(onPressed: () {}, child: const Text("Post"))
-          ],
-        ),
-      ]),
     );
   }
 }

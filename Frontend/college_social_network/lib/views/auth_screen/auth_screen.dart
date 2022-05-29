@@ -2,7 +2,6 @@ import '../../responsive.dart';
 import '../../utils/constants.dart';
 import '../../view_models/auth_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -22,6 +21,13 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _nameController = TextEditingController();
 
   final TextEditingController _passwordController = TextEditingController();
+
+  submit() {
+    if (_key.currentState!.validate()) {
+      return;
+    }
+    _key.currentState!.save();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +202,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   children: [
                     Flexible(
                       child: CrossFade(
-                        showSecond: isSignUpMode,
+                        showSecond: !isSignUpMode,
                         firstWidget: const Text(
                           "Already have an account?",
                           textAlign: TextAlign.center,
@@ -217,7 +223,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         });
                       },
                       child: CrossFade(
-                        showSecond: isSignUpMode,
+                        showSecond: !isSignUpMode,
                         firstWidget: const Text(
                           "Sign In",
                           style: TextStyle(letterSpacing: 1.2, fontSize: 16),
