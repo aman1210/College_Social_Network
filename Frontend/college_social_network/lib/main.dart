@@ -1,4 +1,5 @@
 import 'package:ConnectUs/view_models/chat_view_model.dart';
+import 'package:ConnectUs/view_models/post_view_model.dart';
 
 import '../../utils/theme.dart';
 import '../../view_models/auth_view_model.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => AuthViewModel()),
         ChangeNotifierProvider(create: (ctx) => ChatModel()),
         ChangeNotifierProvider(create: (ctx) => MessageViewModel()),
+        ChangeNotifierProvider(create: (ctx) => PostViewModel()),
       ],
       child: Consumer<AuthViewModel>(
         builder: (context, value, child) {

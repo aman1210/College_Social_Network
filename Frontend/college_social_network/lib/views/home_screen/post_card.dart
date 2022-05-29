@@ -1,3 +1,4 @@
+import 'package:ConnectUs/models/postModel.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import '../../responsive.dart';
@@ -8,8 +9,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_fade/image_fade.dart';
 
 class PostCard extends StatefulWidget {
-  PostCard({Key? key, required this.index}) : super(key: key);
+  PostCard({Key? key, required this.index, this.post}) : super(key: key);
   final int index;
+  final Post? post;
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -80,13 +82,15 @@ class _PostCardState extends State<PostCard> {
               ]),
           child: Column(
             children: [
-              const PostHead(),
-              if (lp != null)
-                Padding(
+              PostHead(post: widget.post),
+              if (widget.post?.text != null)
+                Container(
+                  width: double.infinity,
                   padding:
                       const EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
                   child: Text(
-                    lp,
+                    widget.post!.text!,
+                    textAlign: TextAlign.left,
                     style: TextStyle(
                         fontSize: 14,
                         color: Theme.of(context).brightness == Brightness.dark
@@ -94,11 +98,12 @@ class _PostCardState extends State<PostCard> {
                             : null),
                   ),
                 ),
-              PostImages(
-                buttonCarouselController: buttonCarouselController,
-                images: images,
-                isMobile: isMobile,
-              ),
+              if (widget.post != null && widget.post!.images != null)
+                PostImages(
+                  buttonCarouselController: buttonCarouselController,
+                  images: widget.post!.images!,
+                  isMobile: isMobile,
+                ),
               const PostStats(),
               const PostButtons(),
               Container(
@@ -308,7 +313,7 @@ class PostImages extends StatelessWidget {
                         borderRadius: BorderRadius.circular(
                             isMobile ? kDefaultPadding / 2 : kDefaultPadding),
                         child: ImageFade(
-                          image: AssetImage(e),
+                          image: NetworkImage(e),
                           placeholder: SpinKitCubeGrid(
                               color: Theme.of(context).primaryColor),
                           fit: BoxFit.cover,
@@ -404,9 +409,8 @@ class PostImages extends StatelessWidget {
 }
 
 class PostHead extends StatelessWidget {
-  const PostHead({
-    Key? key,
-  }) : super(key: key);
+  const PostHead({Key? key, this.post}) : super(key: key);
+  final Post? post;
 
   @override
   Widget build(BuildContext context) {
@@ -424,7 +428,7 @@ class PostHead extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Ayush Gupta",
+              post?.userName ?? "Aman",
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -433,7 +437,7 @@ class PostHead extends StatelessWidget {
             ),
             const SizedBox(height: kDefaultPadding / 5),
             Text(
-              "${DateFormat().format(DateTime.now())}",
+              post?.timeStamp ?? "${DateFormat().format(DateTime.now())}",
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,

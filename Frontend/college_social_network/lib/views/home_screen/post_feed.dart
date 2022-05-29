@@ -1,4 +1,6 @@
+import 'package:ConnectUs/view_models/post_view_model.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 import '../../responsive.dart';
 import '../../utils/constants.dart';
@@ -6,11 +8,23 @@ import 'package:flutter/material.dart';
 
 import 'post_card.dart';
 
-class PostFeed extends StatelessWidget {
+class PostFeed extends StatefulWidget {
   PostFeed({Key? key}) : super(key: key);
 
+  @override
+  State<PostFeed> createState() => _PostFeedState();
+}
+
+class _PostFeedState extends State<PostFeed> {
   final ScrollController _scrollController = ScrollController();
+
   final ScrollController _cardController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<PostViewModel>(context, listen: false).getAllPosts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,18 +51,26 @@ class PostFeed extends StatelessWidget {
             child: ScrollConfiguration(
               behavior:
                   ScrollConfiguration.of(context).copyWith(scrollbars: false),
-              child: ListView.separated(
-                clipBehavior: Clip.hardEdge,
-                scrollDirection: Axis.vertical,
-                controller: _scrollController,
-                itemBuilder: (context, index) => index == 0
-                    ? NewPost(isMobile: isMobile)
-                    : PostCard(
-                        index: index - 1,
-                      ),
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: kDefaultPadding),
-                itemCount: 10 + 1,
+              child: FutureBuilder(
+                future: Provider.of<PostViewModel>(context, listen: false)
+                    .getAllPosts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  var posts = Provider.of<PostViewModel>(context).posts;
+                  return ListView.separated(
+                    clipBehavior: Clip.hardEdge,
+                    scrollDirection: Axis.vertical,
+                    controller: _scrollController,
+                    itemBuilder: (context, index) => index == 0
+                        ? NewPost(isMobile: isMobile)
+                        : PostCard(index: index - 1, post: posts[index - 1]),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: kDefaultPadding),
+                    itemCount: posts.length + 1,
+                  );
+                },
               ),
             ),
           ),
