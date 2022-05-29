@@ -5,20 +5,9 @@ const fs = require("fs");
 const cloudinary = require("./cloudinary");
 
 exports.posts_add_post = async (req, res, next) => {
-  var imageslist = [];
-  if (req.files != null) {
-    const files = req.files;
-    for (const file of files) {
-      const fileLoc = file.destination + "/" + file.originalname;
-
-      const newPath = await cloudinary.uploads(fileLoc);
-
-      imageslist.push(newPath.url);
-    }
-  }
   const post = new Post({
     text: req.body.text,
-    images: imageslist,
+    images: req.body.images,
     timeStamp: req.body.timeStamp,
     userName: req.body.userName,
   });
@@ -49,6 +38,7 @@ exports.posts_get_user_posts = (req, res, next) => {
         // skip: req.params.pageIndex * 2,
       },
     })
+    .exec()
     .then((posts) => {
       const response = {
         message: "fetched successfully",

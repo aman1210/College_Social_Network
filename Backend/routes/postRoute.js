@@ -41,7 +41,7 @@ router.get("/", postController.posts_get_user_posts);
 
 router.get("/:id", postController.posts_get_post);
 
-router.post("/", upload.array("images", 5), postController.posts_add_post);
+router.post("/", postController.posts_add_post);
 
 router.post("/:id", postController.posts_like_post);
 
