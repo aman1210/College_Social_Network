@@ -44,8 +44,9 @@ class _NewPostState extends State<NewPost> {
         return CloudinaryFile.fromFile(image.path,
             resourceType: CloudinaryResourceType.Image);
       }).toList());
-      //  await Provider.of<PostViewModel>(context, listen: false)
-      //     .addNewPost(_editingController.text, imagesPicked);
+      print("Image uploaded");
+      await Provider.of<PostViewModel>(context, listen: false)
+          .addNewPost(_editingController.text, response);
     } catch (e) {
       showDialog(
           context: context,

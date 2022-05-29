@@ -31,13 +31,14 @@ class PostViewModel with ChangeNotifier {
     Uri uri = Uri.parse(server + "posts/");
     List<String> postImages = images.map((image) => image.secureUrl).toList();
 
-    var request = http.MultipartRequest('POST', uri)
-      ..fields['text'] = text
-      ..fields['timeStamp'] = DateTime.now().toIso8601String()
-      ..fields['userName'] = "Khushboo Arora"
-      ..fields['images'];
+    var request = json.encode({
+      'text': text,
+      'timeStamp': DateTime.now().toIso8601String(),
+      'userName': 'Khushboo Arora',
+      'images': postImages
+    });
 
-    var response = await request.send();
-    print(response.reasonPhrase);
+    var response = await http.post(uri, body: request);
+    print(response.body);
   }
 }
