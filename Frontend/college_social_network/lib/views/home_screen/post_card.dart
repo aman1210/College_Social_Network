@@ -87,7 +87,9 @@ class _PostCardState extends State<PostCard> {
                             : null),
                   ),
                 ),
-              if (widget.post != null && widget.post!.images != null)
+              if (widget.post != null &&
+                  widget.post!.images != null &&
+                  widget.post!.images!.length != 0)
                 PostImages(
                   buttonCarouselController: buttonCarouselController,
                   images: widget.post!.images!,
@@ -178,10 +180,17 @@ class _PostCardState extends State<PostCard> {
   }
 }
 
-class PostButtons extends StatelessWidget {
+class PostButtons extends StatefulWidget {
   const PostButtons({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<PostButtons> createState() => _PostButtonsState();
+}
+
+class _PostButtonsState extends State<PostButtons> {
+  bool isLiked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -196,8 +205,19 @@ class PostButtons extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TextButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.favorite_border_rounded),
+            onPressed: () {
+              setState(() {
+                isLiked = true;
+              });
+            },
+            icon: isLiked
+                ? Icon(
+                    Icons.favorite_rounded,
+                    color: Colors.red,
+                  )
+                : Icon(
+                    Icons.favorite_border_rounded,
+                  ),
             label: const Text("Like"),
           ),
           TextButton.icon(
