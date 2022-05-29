@@ -32,7 +32,7 @@ const upload = multer({
   limits: {
     fileSize: 1024 * 1024 * 2,
   },
-  // fileFilter: fileFilter,
+  fileFilter: fileFilter,
 });
 
 const router = express.Router();
@@ -42,6 +42,8 @@ router.get("/", postController.posts_get_user_posts);
 router.get("/:id", postController.posts_get_post);
 
 router.post("/", upload.array("images", 5), postController.posts_add_post);
+
+router.post("/:id", postController.posts_like_post);
 
 router.post("/:id/comment", postController.posts_add_comment);
 

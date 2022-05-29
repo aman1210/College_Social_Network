@@ -105,3 +105,12 @@ exports.posts_get_post = (req, res, next) => {
       });
     });
 };
+
+exports.posts_like_post = (req, res, next) => {
+  Post.findByIdAndUpdate(
+    { _id: req.params.id },
+    { $inc: { likeCount: 1 } }
+  ).then((post) => {
+    res.status(201).json({ message: "Post liked!" });
+  });
+};
