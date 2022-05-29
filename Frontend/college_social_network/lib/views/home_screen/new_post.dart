@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:ConnectUs/view_models/post_view_model.dart';
 import 'package:ConnectUs/views/home_screen/post_card.dart';
 import 'package:carousel_slider/carousel_controller.dart';
+import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -21,10 +23,12 @@ class NewPost extends StatefulWidget {
 class _NewPostState extends State<NewPost> {
   TextEditingController _editingController = TextEditingController();
   final _key = GlobalKey<FormState>();
-  List<XFile> imagesPicked = [];
+  List<File> imagesPicked = [];
   CarouselController buttonCarouselController = CarouselController();
 
   bool isLoading = false;
+  final cloudinary =
+      CloudinaryPublic('knitconnectus', 'gjj0b8fp', cache: false);
 
   submit() async {
     if (_key.currentState!.validate()) {
@@ -34,9 +38,31 @@ class _NewPostState extends State<NewPost> {
     setState(() {
       isLoading = true;
     });
-    await Provider.of<PostViewModel>(context, listen: false)
-        .addNewPost(_editingController.text, imagesPicked);
-    print("hello");
+    try {
+      List<CloudinaryResponse> response =
+          await cloudinary.multiUpload(imagesPicked.map((image) async {
+        return CloudinaryFile.fromFile(image.path,
+            resourceType: CloudinaryResourceType.Image);
+      }).toList());
+      //  await Provider.of<PostViewModel>(context, listen: false)
+      //     .addNewPost(_editingController.text, imagesPicked);
+    } catch (e) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text("Something went wrong!"),
+                content: Text("Please try after sometime"),
+                actions: [
+                  ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.check),
+                      label: Text("Okay"))
+                ],
+              ));
+    }
+
     setState(() {
       isLoading = false;
     });
@@ -132,7 +158,7 @@ class _NewPostState extends State<NewPost> {
                   if (x != null) {
                     x.forEach((e) {
                       var y = File(e.path);
-                      imagesPicked.add(e);
+                      imagesPicked.add(y);
                     });
                     setState(() {});
                   } else {
