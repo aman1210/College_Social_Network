@@ -1,5 +1,6 @@
 const Post = require("../models/postModel");
 const User = require("../models/userModel");
+const Event = require("../models/eventModel");
 
 exports.admin_get_all_post = (req, res, next) => {
   Post.find({ verified: false })
@@ -45,15 +46,44 @@ exports.admin_get_all_reports = (req, res, next) => {
     .gt(10)
     .exec()
     .then((posts) => {
-      var response = {
-        message: "Fetching successful!",
-        ports: posts,
-      };
-      res.status(201).json(response);
+      if (posts.length > 0) {
+        var response = {
+          message: "Fetching successful!",
+          reports: posts,
+        };
+        res.status(201).json(response);
+      } else {
+        res.status(201).json({
+          message: "No reports pending!",
+        });
+      }
     })
     .catch((err) => {
       res.status(402).json({
         message: "No reports found!",
+        error: err,
+      });
+    });
+};
+
+exports.admin_create_event = (req, res, next) => {
+  const event = new Event({
+    title: req.body.title,
+    detail: req.body.detail,
+    venue: req.body.venue,
+    time: req.body.time,
+  });
+  event
+    .save()
+    .then((result) => {
+      res.status(201).json({
+        message: "Event created successfully!",
+        event: result,
+      });
+    })
+    .catch((err) => {
+      res.status(401).json({
+        message: "Something is wrong!",
         error: err,
       });
     });

@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 
 const authRoutes = require("./routes/authRoute");
 const postRoutes = require("./routes/postRoute");
+const adminRoutes = require("./routes/adminRoute");
 
 const session = require("express-session");
 dotenv.config();
@@ -54,7 +55,8 @@ app.use(express.static(__dirname + "/public"));
 app.use("/uploads", express.static("uploads"));
 
 app.use("/signup", authRoutes.signup);
-app.use("/login",authRoutes.login);
+app.use("/login", authRoutes.login);
+app.use("/admin", adminRoutes);
 app.use("/posts", postRoutes);
 
 app.get("/", (req, res) => {

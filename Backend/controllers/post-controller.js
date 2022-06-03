@@ -1,8 +1,5 @@
 const Post = require("../models/postModel");
 const Comment = require("../models/commentModel");
-const fs = require("fs");
-
-const cloudinary = require("./cloudinary");
 
 exports.posts_add_post = async (req, res, next) => {
   const post = new Post({
