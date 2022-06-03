@@ -7,22 +7,30 @@ dotenv.config();
 
 const signup = async (req, res, next) => {
 
-  const { name, email, password, location } = req.body;
+  const { name, email, password, location, profile_image } = req.body;
+  // console.log(req.body);
+  let verified = true;
   let existingUser;
   try {
     existingUser = await User.findOne({ email });
   } catch (err) {
-    res.status(error.status || 500).json({ message: "Something went wrong", error: err });
+    res.status(500).json({ error: "Something went wrong"});
+    return;
   }
 
   if (existingUser) {
     res.status(422).json({ error: "User already exists, Please login instead !!"});
+    return;
   }
   let hashedPassword;
   try {
     hashedPassword = await bcrypt.hash(password, 12);
   } catch (err) {
     res.status(500).json({ error: "Could not create user, Please try again !!"});
+    return;
+  }
+  if(!(/@knit.ac.in/.test(email))){
+    verified=false;
   }
   const createdUser = new User({
     name,
@@ -33,15 +41,18 @@ const signup = async (req, res, next) => {
     dob:"",
     location,
     social_links:[],
-    profile_image:"",
+    profile_image,
+    verified,
     post:[],
-    friendList:[]
+    friendList:[],
+    friendRequest:[]
   });
 
   try {
     await createdUser.save();
   } catch (err) {
     res.status(500).json({ error: "Signup failed, Please try again !!"});
+    return;
   }
 
   // toObject converts mongoose Object to default js object
@@ -56,6 +67,7 @@ const signup = async (req, res, next) => {
     );
   } catch (err) {
     res.status(500).json({ error: "Signup failed, Please try again !!"});
+    return;
   }
 
   res.status(201).json({ userId: createdUser.id, email: createdUser.email, token: token });

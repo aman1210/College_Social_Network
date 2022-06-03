@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const postSchema = new Schema({
-  createdBy: { type: String },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref:"User" },
   text: { type: String },
   images: [{ type: String }],
   timeStamp: { type: String, required: true },

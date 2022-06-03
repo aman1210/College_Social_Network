@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
 const authRoutes = require("./routes/authRoute");
+const userRoutes = require("./routes/userRoute");
 const postRoutes = require("./routes/postRoute");
 const adminRoutes = require("./routes/adminRoute");
 const otherRoutes = require("./routes/otherRoute");
@@ -42,6 +43,7 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log("Failed to connect to MongoDB", err));
 
+  
 app.use(
   session({
     resave: false,
@@ -58,6 +60,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/signup", authRoutes.signup);
 app.use("/login", authRoutes.login);
 app.use("/admin", adminRoutes);
+app.use("/user", userRoutes);
 app.use("/posts", postRoutes);
 app.use("/other", otherRoutes);
 

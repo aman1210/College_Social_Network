@@ -11,9 +11,11 @@ const userSchema = new Schema({
     dob:{type:String},
     location:{type:String, required:true},
     social_links:[{type:String}],
-    profile_image:{type:String},
-    post:[{type:String}],
-    friendList:[{type:String}]
+    profile_image:{type:String, required:true},
+    verified:{type:Boolean, default:true},
+    post:[{type:mongoose.Schema.Types.ObjectId, ref:"Post"}],
+    friendList:[{type:mongoose.Schema.Types.ObjectId, ref:"User"}],
+    friendRequest:[{type:mongoose.Schema.Types.ObjectId, ref:"User"}],
 })
 
 module.exports = mongoose.model("User", userSchema);
