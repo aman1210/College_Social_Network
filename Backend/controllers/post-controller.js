@@ -1,24 +1,11 @@
 const Post = require("../models/postModel");
 const Comment = require("../models/commentModel");
-const fs = require("fs");
-
-const cloudinary = require("./cloudinary");
 
 exports.posts_add_post = async (req, res, next) => {
-  var imageslist = [];
-  if (req.files != null) {
-    const files = req.files;
-    for (const file of files) {
-      const fileLoc = file.destination + "/" + file.originalname;
-
-      const newPath = await cloudinary.uploads(fileLoc);
-
-      imageslist.push(newPath.url);
-    }
-  }
   const post = new Post({
+    // ADD USER ID OF THE POST CREATOR
     text: req.body.text,
-    images: imageslist,
+    images: req.body.images,
     timeStamp: req.body.timeStamp,
     userName: req.body.userName,
   });
@@ -39,16 +26,16 @@ exports.posts_add_post = async (req, res, next) => {
 };
 
 exports.posts_get_user_posts = (req, res, next) => {
-  Post.find({ verified: false })
+  Post.find({ verified: true })
     .sort({ timeStamp: -1 })
     .populate({
       path: "comments",
       options: {
         limit: 2,
         sort: { timeStamp: -1 },
-        // skip: req.params.pageIndex * 2,
       },
     })
+    .exec()
     .then((posts) => {
       const response = {
         message: "fetched successfully",
@@ -74,11 +61,11 @@ exports.posts_add_comment = (req, res, next) => {
   newcomment.save();
   Post.findOneAndUpdate(
     { _id: req.params.id },
-    { $push: { comments: newcomment } }
+    { $push: { comments: newcomment }, $inc: { commentCount: 1 } }
   )
 
     .then((post) => {
-      console.log(newcomment);
+      // console.log(newcomment);
       res.status(200).json({
         message: "comment added",
         post: post,
@@ -113,5 +100,16 @@ exports.posts_like_post = (req, res, next) => {
     { $inc: { likeCount: 1 } }
   ).then((post) => {
     res.status(201).json({ message: "Post liked!" });
+  });
+};
+
+exports.posts_report_post = (req, res, next) => {
+  Post.findByIdAndUpdate(
+    { _id: req.params.id },
+    { $inc: { reportCount: 1 } }
+  ).then((post) => {
+    res.status(201).json({
+      message: "Post reported!",
+    });
   });
 };
