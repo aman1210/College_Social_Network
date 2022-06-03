@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const authRoutes = require("./routes/authRoute");
 const postRoutes = require("./routes/postRoute");
 const adminRoutes = require("./routes/adminRoute");
+const otherRoutes = require("./routes/otherRoute");
 
 const session = require("express-session");
 dotenv.config();
@@ -58,6 +59,7 @@ app.use("/signup", authRoutes.signup);
 app.use("/login", authRoutes.login);
 app.use("/admin", adminRoutes);
 app.use("/posts", postRoutes);
+app.use("/other", otherRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
