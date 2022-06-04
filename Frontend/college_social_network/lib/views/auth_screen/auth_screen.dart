@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
+
 import '../../responsive.dart';
 import '../../utils/constants.dart';
 import '../../view_models/auth_view_model.dart';
@@ -22,17 +26,24 @@ class _AuthScreenState extends State<AuthScreen> {
 
   final TextEditingController _passwordController = TextEditingController();
 
+  File? imagePicked;
+
   submit() {
     if (_key.currentState!.validate()) {
       return;
     }
     _key.currentState!.save();
+    if (!isSignUpMode) {
+      Provider.of<AuthViewModel>(context, listen: false)
+          .loginUser(_emailController.text, _passwordController.text);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     Size _size = MediaQuery.of(context).size;
     AuthViewModel authViewModel = context.watch<AuthViewModel>();
+    // print(imagePicked.uri)
     return Form(
       key: _key,
       child: Container(
@@ -46,8 +57,8 @@ class _AuthScreenState extends State<AuthScreen> {
         child: SingleChildScrollView(
           child: Container(
             margin: Responsive.isMobile(context)
-                ? EdgeInsets.all(kDefaultPadding / 4)
-                : EdgeInsets.all(kDefaultPadding),
+                ? const EdgeInsets.all(kDefaultPadding / 4)
+                : const EdgeInsets.all(kDefaultPadding),
             padding: const EdgeInsets.symmetric(
                 horizontal: kDefaultPadding * 1.5, vertical: kDefaultPadding),
             decoration: BoxDecoration(
@@ -102,16 +113,43 @@ class _AuthScreenState extends State<AuthScreen> {
                           ?.copyWith(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     showSecond: isSignUpMode),
-                const SizedBox(height: kDefaultPadding * 2),
+                const SizedBox(height: kDefaultPadding),
+                if (isSignUpMode)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      if (imagePicked != null)
+                        CircleAvatar(
+                            backgroundImage: NetworkImage(imagePicked!.path)),
+                      if (imagePicked == null)
+                        const CircleAvatar(
+                          child: Icon(Icons.person),
+                        ),
+                      ElevatedButton(
+                          onPressed: () async {
+                            var picker = ImagePicker();
+                            var image = await picker.pickImage(
+                                source: ImageSource.gallery);
+                            if (image != null) {
+                              setState(() {
+                                imagePicked = File(image.path);
+                              });
+                            }
+                          },
+                          child: const Text(
+                            "Pick Image",
+                            style: TextStyle(fontSize: 12),
+                          ))
+                    ],
+                  ),
+                if (isSignUpMode) const SizedBox(height: kDefaultPadding / 2),
                 TextFormField(
                   controller: _emailController,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
                       return 'Please enter valid email address';
                     }
-                    if (!val.endsWith('knit.ac.in')) {
-                      return 'Please enter college email address';
-                    }
+
                     return null;
                   },
                   decoration: InputDecoration(
@@ -119,7 +157,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       border: const OutlineInputBorder(),
                       prefixIcon: const Icon(Icons.alternate_email_rounded)),
                 ),
-                if (isSignUpMode) const SizedBox(height: kDefaultPadding),
+                if (isSignUpMode) const SizedBox(height: kDefaultPadding / 2),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   height: isSignUpMode ? 60 : 0,
@@ -144,12 +182,15 @@ class _AuthScreenState extends State<AuthScreen> {
                             : const Icon(Icons.face_outlined)),
                   ),
                 ),
-                const SizedBox(height: kDefaultPadding),
+                const SizedBox(height: kDefaultPadding / 2),
                 TextFormField(
                   controller: _passwordController,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
                       return 'Please enter password';
+                    }
+                    if (val.length < 6) {
+                      return 'Please enter correct password';
                     }
                     return null;
                   },
@@ -180,20 +221,23 @@ class _AuthScreenState extends State<AuthScreen> {
                             Theme.of(context).primaryColor),
                         foregroundColor:
                             MaterialStateProperty.all(Colors.white)),
-                    onPressed: () {},
+                    onPressed: () {
+                      submit();
+                    },
                     child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: CrossFade(
-                          showSecond: isSignUpMode,
-                          firstWidget: const Text(
-                            "Sign In",
-                            style: TextStyle(letterSpacing: 1.2, fontSize: 16),
-                          ),
-                          secondWidget: const Text(
-                            "Sign Up",
-                            style: TextStyle(letterSpacing: 1.2, fontSize: 16),
-                          ),
-                        )),
+                      padding: const EdgeInsets.all(12.0),
+                      child: CrossFade(
+                        showSecond: isSignUpMode,
+                        firstWidget: const Text(
+                          "Sign In",
+                          style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+                        ),
+                        secondWidget: const Text(
+                          "Sign Up",
+                          style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: kDefaultPadding / 2),
