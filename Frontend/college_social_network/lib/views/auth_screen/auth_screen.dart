@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:ConnectUs/components/custom_dialog.dart';
+import 'package:ConnectUs/models/HttpExceptions.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../responsive.dart';
@@ -28,14 +30,26 @@ class _AuthScreenState extends State<AuthScreen> {
 
   File? imagePicked;
 
-  submit() {
+  submit() async {
     if (_key.currentState!.validate()) {
       return;
     }
     _key.currentState!.save();
     if (!isSignUpMode) {
-      Provider.of<AuthViewModel>(context, listen: false)
-          .loginUser(_emailController.text, _passwordController.text);
+      try {
+        Provider.of<AuthViewModel>(context, listen: false)
+            .loginUser(_emailController.text, _passwordController.text);
+      } on HttpExceptions catch (err) {
+        showDialog(
+            context: context,
+            builder: (context) => CustomDialog(msg: err.toString()));
+      } catch (err) {
+        print("hello");
+        showDialog(
+            context: context,
+            builder: (context) => CustomDialog(
+                msg: "Something went wrong! Please try again later"));
+      }
     }
   }
 
@@ -185,6 +199,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 const SizedBox(height: kDefaultPadding / 2),
                 TextFormField(
                   controller: _passwordController,
+                  obscureText: showPassword ? false : true,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
                       return 'Please enter password';
@@ -194,10 +209,17 @@ class _AuthScreenState extends State<AuthScreen> {
                     }
                     return null;
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                       hintText: "********",
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock_outline_rounded)),
+                      prefixIcon: Icon(Icons.lock_outline_rounded),
+                      suffixIcon: InkWell(
+                          onTap: () {
+                            setState(() {
+                              showPassword = !showPassword;
+                            });
+                          },
+                          child: Icon(Icons.remove_red_eye_rounded))),
                 ),
                 const SizedBox(height: kDefaultPadding / 2),
                 AnimatedContainer(

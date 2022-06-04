@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 // import 'dart:html' as html;
 
+import 'package:ConnectUs/models/HttpExceptions.dart';
 import 'package:ConnectUs/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -20,21 +21,29 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<void> loginUser(String email, String password) async {
-    Uri uri = Uri.parse(server + "/login");
+    Uri uri = Uri.parse(server + "login");
 
     var data = {"email": email, "password": password};
 
     var request = json.encode(data);
 
-    var response = await http.post(
-      uri,
-      body: request,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+    try {
+      var response = await http.post(
+        uri,
+        body: request,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
 
-    print(response);
+      var body = json.decode(response.body);
+
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(body['error']);
+      }
+    } catch (err) {
+      throw err;
+    }
   }
 
   void logout() {
