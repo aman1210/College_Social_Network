@@ -9,7 +9,7 @@ const userSchema = new Schema({
     intro:{type:String},
     about:{type:String},
     dob:{type:String},
-    location:{type:String, required:true},
+    location:{type:String},
     social_links:[{type:String}],
     profile_image:{type:String, required:true},
     verified:{type:Boolean, default:true},

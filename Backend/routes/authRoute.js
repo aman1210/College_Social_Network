@@ -7,7 +7,7 @@ dotenv.config();
 
 const signup = async (req, res, next) => {
 
-  const { name, email, password, location, profile_image } = req.body;
+  const { name, email, password, profile_image } = req.body;
   // console.log(req.body);
   let verified = true;
   let existingUser;
@@ -39,7 +39,7 @@ const signup = async (req, res, next) => {
     intro:"",
     about:"",
     dob:"",
-    location,
+    location:"",
     social_links:[],
     profile_image,
     verified,
