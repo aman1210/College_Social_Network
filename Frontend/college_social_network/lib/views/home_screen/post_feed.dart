@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:ConnectUs/models/eventModel.dart';
 import 'package:ConnectUs/models/postModel.dart';
 import 'package:ConnectUs/view_models/post_view_model.dart';
 import 'package:ConnectUs/views/home_screen/new_post.dart';
@@ -50,6 +53,7 @@ class _PostFeedState extends State<PostFeed> {
     var isMobile = Responsive.isMobile(context);
     var istablet = Responsive.isTablet(context);
     posts = Provider.of<PostViewModel>(context).posts;
+
     return Container(
       width: double.infinity,
       clipBehavior: Clip.hardEdge,
@@ -96,7 +100,7 @@ class _PostFeedState extends State<PostFeed> {
                 children: const [
                   RecentEventCard(),
                   SizedBox(height: kDefaultPadding),
-                  BirthdayCard(),
+                  // BirthdayCard(),
                 ],
               ),
             )
@@ -263,13 +267,44 @@ class BirthdayCard extends StatelessWidget {
   }
 }
 
-class RecentEventCard extends StatelessWidget {
+class RecentEventCard extends StatefulWidget {
   const RecentEventCard({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<RecentEventCard> createState() => _RecentEventCardState();
+}
+
+class _RecentEventCardState extends State<RecentEventCard> {
+  bool isLoading = false;
+  List<Event> upcomingEvents = [];
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      isLoading = true;
+    });
+    Provider.of<PostViewModel>(context, listen: false)
+        .getAllEvents()
+        .then((value) {
+      print("Aman");
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant RecentEventCard oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    upcomingEvents = Provider.of<PostViewModel>(context).events;
     return Container(
       margin: const EdgeInsets.only(
           right: kDefaultPadding, top: kDefaultPadding * 0.2),
@@ -309,29 +344,21 @@ class RecentEventCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: Colors.blueGrey.shade700),
                 ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "See All",
-                    style: TextStyle(fontSize: 12),
-                  ),
-                )
               ],
             ),
           ),
           const SizedBox(height: kDefaultPadding / 2),
-          const EventListItem(
-            color: Colors.green,
-            icon: Icons.menu_book_rounded,
-            content: "The graduation ceremony is somtimes also called",
-            title: "Graduation Ceremony",
-          ),
-          const EventListItem(
-            color: Colors.red,
-            icon: Icons.camera_alt_outlined,
-            content: "Reflections. Reflections work because they can create",
-            title: "Photography Ideas",
-          ),
+          if (isLoading) CircularProgressIndicator(),
+          if (!isLoading && upcomingEvents.length == 0)
+            Text("No upcoming events for next 3 days!"),
+          if (!isLoading && upcomingEvents.length > 0)
+            ...upcomingEvents
+                .map((e) => EventListItem(
+                    color: Colors.green,
+                    content: e.detail,
+                    icon: Icons.calendar_month,
+                    title: e.title))
+                .toList()
         ],
         mainAxisSize: MainAxisSize.min,
       ),

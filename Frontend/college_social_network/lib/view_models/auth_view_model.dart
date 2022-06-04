@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 class AuthViewModel extends ChangeNotifier {
   bool _isLoading = false;
-  bool _userLoggedIn = false;
+  bool _userLoggedIn = true;
   bool isDarkMode = false;
 
   bool get isLoading => _isLoading;

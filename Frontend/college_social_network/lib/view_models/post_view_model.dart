@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:html';
 import 'dart:io';
 
+import 'package:ConnectUs/models/eventModel.dart';
 import 'package:ConnectUs/models/postModel.dart';
 import 'package:ConnectUs/utils/constants.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
@@ -11,6 +12,7 @@ import 'package:image_picker/image_picker.dart';
 
 class PostViewModel with ChangeNotifier {
   List<Post> posts = [];
+  List<Event> events = [];
 
   Future<void> getAllPosts() async {
     Uri uri = Uri.parse(server + "posts");
@@ -25,6 +27,26 @@ class PostViewModel with ChangeNotifier {
     });
     posts = temp;
     notifyListeners();
+  }
+
+  Future<void> getAllEvents() async {
+    Uri uri = Uri.parse(server + "other/events");
+    try {
+      var response = await http.get(uri);
+      var responseBody = json.decode(response.body);
+      List<Event> temp = [];
+      if (responseBody['events'] != null) {
+        var resposts = responseBody['events'] as List<dynamic>;
+        resposts.forEach((element) {
+          var event = Event.fromJson(element);
+          temp.add(event);
+        });
+        events = temp;
+        notifyListeners();
+      }
+    } catch (error) {
+      rethrow;
+    }
   }
 
   Future<void> addNewPost(String text, List<CloudinaryResponse> images) async {

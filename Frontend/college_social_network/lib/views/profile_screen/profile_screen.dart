@@ -1,3 +1,4 @@
+import 'package:ConnectUs/views/profile_screen/edit_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../responsive.dart';
@@ -249,7 +250,11 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                 ),
                 Expanded(child: SizedBox()),
                 TextButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) => EditProfieForm());
+                  },
                   icon: const Icon(
                     Icons.cloud_upload_outlined,
                     size: 18,

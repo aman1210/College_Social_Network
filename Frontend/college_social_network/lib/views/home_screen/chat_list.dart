@@ -23,7 +23,7 @@ class _ChatListState extends State<ChatList> {
   @override
   void initState() {
     super.initState();
-    Provider.of<ChatModel>(context, listen: false).init();
+    // Provider.of<ChatModel>(context, listen: false).init();
   }
 
   @override
