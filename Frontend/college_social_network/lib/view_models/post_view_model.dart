@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:html';
 import 'dart:io';
 
+import 'package:ConnectUs/models/HttpExceptions.dart';
 import 'package:ConnectUs/models/eventModel.dart';
 import 'package:ConnectUs/models/postModel.dart';
 import 'package:ConnectUs/utils/constants.dart';
@@ -22,7 +23,7 @@ class PostViewModel with ChangeNotifier {
     var resposts = responseBody['posts'] as List<dynamic>;
     resposts.forEach((element) {
       var post = Post.fromJson(element);
-      print(post.likeCount);
+
       temp.add(post);
     });
     posts = temp;
@@ -61,7 +62,6 @@ class PostViewModel with ChangeNotifier {
     };
 
     var request = json.encode(data);
-    print(DateTime.now().toIso8601String());
 
     var response = await http.post(
       uri,
@@ -70,6 +70,68 @@ class PostViewModel with ChangeNotifier {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    print(response.body);
+  }
+
+  Future<void> reportPost(String id) async {
+    Uri uri = Uri.parse(server + "posts/$id/report");
+    try {
+      var response = await http.post(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      var responseBody = json.decode(response.body);
+      if (response.statusCode >= 400) {
+        throw HttpExceptions("Something went wrong!");
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  Future<void> likePost(String id) async {
+    Uri uri = Uri.parse(server + "posts/$id");
+    try {
+      var response = await http.post(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      var responseBody = json.decode(response.body);
+      if (response.statusCode >= 400) {
+        throw HttpExceptions("Something went wrong!");
+      }
+      var post = posts.firstWhere((element) => element.id == id);
+      if (post != null) post.likeCount = post.likeCount! + 1;
+      notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  Future<void> commentOnPost(String id, String userName, String text) async {
+    Uri uri = Uri.parse(server + "posts/$id/comment");
+
+    var data = {
+      "userName": userName,
+      "text": text,
+      "timeStamp": DateTime.now().toIso8601String()
+    };
+
+    var request = json.encode(data);
+
+    var respose = await http.post(
+      uri,
+      body: request,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    var responseBody = json.decode(respose.body);
+
+    print(responseBody);
   }
 }

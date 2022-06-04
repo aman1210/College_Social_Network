@@ -44,7 +44,6 @@ class _AuthScreenState extends State<AuthScreen> {
             context: context,
             builder: (context) => CustomDialog(msg: err.toString()));
       } catch (err) {
-        print("hello");
         showDialog(
             context: context,
             builder: (context) => CustomDialog(

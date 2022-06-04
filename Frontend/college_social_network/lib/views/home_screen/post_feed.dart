@@ -289,7 +289,6 @@ class _RecentEventCardState extends State<RecentEventCard> {
     Provider.of<PostViewModel>(context, listen: false)
         .getAllEvents()
         .then((value) {
-      print("Aman");
       setState(() {
         isLoading = false;
       });

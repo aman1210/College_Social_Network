@@ -1,6 +1,11 @@
+import 'package:ConnectUs/components/custom_dialog.dart';
+import 'package:ConnectUs/models/HttpExceptions.dart';
 import 'package:ConnectUs/models/postModel.dart';
+import 'package:ConnectUs/view_models/post_view_model.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../responsive.dart';
 import '../../utils/constants.dart';
 import '../../utils/images.dart';
@@ -23,6 +28,23 @@ class _PostCardState extends State<PostCard> {
   bool _animate = false;
 
   static bool _isStart = true;
+
+  TextEditingController _commentController = TextEditingController();
+  bool disableComment = false;
+
+  submit() async {
+    if (_commentController.text.length == 0) {
+      return;
+    }
+    setState(() {
+      disableComment = true;
+    });
+    await Provider.of<PostViewModel>(context, listen: false)
+        .commentOnPost(widget.post!.id!, "Aman", _commentController.text);
+    setState(() {
+      disableComment = false;
+    });
+  }
 
   @override
   void initState() {
@@ -96,7 +118,9 @@ class _PostCardState extends State<PostCard> {
                   isMobile: isMobile,
                 ),
               PostStats(post: widget.post),
-              const PostButtons(),
+              PostButtons(
+                post: widget.post,
+              ),
               Container(
                 padding: const EdgeInsets.only(top: kDefaultPadding / 2),
                 child: Row(
@@ -126,52 +150,48 @@ class _PostCardState extends State<PostCard> {
                         child: TextFormField(
                           maxLines: 5,
                           minLines: 1,
+                          controller: _commentController,
+                          readOnly: disableComment,
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: "Write a comment..",
-                            suffixIcon: isMobile
-                                ? null
-                                : Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.gif_box_outlined,
-                                        color: Colors.blueGrey.shade500,
-                                      ),
-                                      const SizedBox(
-                                          width: kDefaultPadding / 4),
-                                      Icon(
-                                        Icons.image_outlined,
-                                        color: Colors.blueGrey.shade500,
-                                      ),
-                                      const SizedBox(
-                                          width: kDefaultPadding / 4),
-                                      Icon(
-                                        Icons.emoji_emotions_outlined,
-                                        color: Colors.blueGrey.shade500,
-                                      ),
-                                    ],
-                                  ),
                           ),
                         ),
                       ),
                     ),
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(kDefaultPadding / 4),
-                        color: Colors.blue.withOpacity(0.1),
-                      ),
-                      child: Icon(
-                        Icons.send,
-                        color: Theme.of(context).primaryColor,
+                    InkWell(
+                      onTap: () {
+                        submit();
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(kDefaultPadding / 4),
+                          color: Colors.blue.withOpacity(0.1),
+                        ),
+                        child: Icon(
+                          Icons.send,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                     )
                   ],
                 ),
-              )
+              ),
+              if (widget.post!.comments != null &&
+                  widget.post!.comments!.length > 0)
+                ...widget.post!.comments!.map((c) => ListTile(
+                      title: Text(
+                        c['text'],
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      subtitle: Text(
+                        c['userName'],
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ))
             ],
           ),
         ),
@@ -181,9 +201,9 @@ class _PostCardState extends State<PostCard> {
 }
 
 class PostButtons extends StatefulWidget {
-  const PostButtons({
-    Key? key,
-  }) : super(key: key);
+  PostButtons({Key? key, this.post}) : super(key: key);
+
+  Post? post;
 
   @override
   State<PostButtons> createState() => _PostButtonsState();
@@ -205,10 +225,18 @@ class _PostButtonsState extends State<PostButtons> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TextButton.icon(
-            onPressed: () {
+            onPressed: () async {
               setState(() {
-                isLiked = true;
+                isLiked = !isLiked;
               });
+              try {
+                await Provider.of<PostViewModel>(context, listen: false)
+                    .likePost(widget.post!.id!);
+              } catch (err) {
+                showDialog(
+                    context: context,
+                    builder: (context) => CustomDialog(msg: err.toString()));
+              }
             },
             icon: isLiked
                 ? Icon(
@@ -226,7 +254,16 @@ class _PostButtonsState extends State<PostButtons> {
             label: const Text("Comments"),
           ),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              Clipboard.setData(ClipboardData(
+                  text:
+                      "http://connectus-9b0c5.web.app/post/${widget.post!.id!}"));
+
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text("URL copied to clipboard!"),
+                duration: Duration(seconds: 1),
+              ));
+            },
             icon: const Icon(Icons.share_outlined),
             label: const Text("Share"),
           ),
@@ -439,7 +476,9 @@ class PostHead extends StatelessWidget {
             ),
             const SizedBox(height: kDefaultPadding / 5),
             Text(
-              post?.timeStamp ?? "${DateFormat().format(DateTime.now())}",
+              DateFormat('EEE, MMM d, yy')
+                  .add_jm()
+                  .format(DateTime.parse(post!.timeStamp!)),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -451,7 +490,46 @@ class PostHead extends StatelessWidget {
         ),
         const Expanded(child: SizedBox()),
         IconButton(
-          onPressed: () {},
+          onPressed: () async {
+            bool res = await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      content:
+                          Text("Do you want to report this post to admin?"),
+                      actions: [
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context, true);
+                            },
+                            child: Text("Yes")),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                            child: Text("No")),
+                      ],
+                    ));
+            if (res) {
+              try {
+                await Provider.of<PostViewModel>(context, listen: false)
+                    .reportPost(post!.id!);
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        CustomDialog(msg: "Post reported Successfully!"));
+              } on HttpExceptions catch (err) {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        CustomDialog(msg: "Something went wrong!"));
+              } catch (err) {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        CustomDialog(msg: "Something went wrong!"));
+              }
+            }
+          },
           icon: Icon(
             Icons.more_horiz_outlined,
             color: Colors.grey.shade700,
