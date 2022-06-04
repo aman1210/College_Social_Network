@@ -79,11 +79,12 @@ const login = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ email });
   } catch (err) {
-    res.status(500).json({ error: "Login failed, Please try again !!"});
+    return res.status(500).json({ error: "Login failed, Please try again !!"});
   }
 
   if (!existingUser) {
     res.status(401).json({ error: "Could not identify user, Credentials seems wrong"});
+    return;
   }
 
   let isValidPassword = false;
@@ -91,10 +92,13 @@ const login = async (req, res, next) => {
     isValidPassword = await bcrypt.compare(password, existingUser.password);
   } catch (err) {
     res.status(500).json({ error: "Could not log you in, please check your credentials"});
+
+    return;
   }
 
   if (!isValidPassword) {
     res.status(403).json({ error: "Invalid Credentials, could not log you in."});
+    return;
   }
 
   let token;
@@ -106,6 +110,7 @@ const login = async (req, res, next) => {
     );
   } catch (err) {
       res.status(500).json({ error: "Login failed, Please try again !!"});
+      return;
     }
 
   res.json({
