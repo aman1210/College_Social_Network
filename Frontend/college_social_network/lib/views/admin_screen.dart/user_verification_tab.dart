@@ -1,5 +1,8 @@
+import 'package:ConnectUs/components/custom_dialog.dart';
+import 'package:ConnectUs/models/HttpExceptions.dart';
 import 'package:ConnectUs/responsive.dart';
 import 'package:ConnectUs/view_models/admin_view_model.dart';
+import 'package:ConnectUs/view_models/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
 import '../../utils/constants.dart';
@@ -68,8 +71,28 @@ class _UsersVerificationState extends State<UsersVerification> {
 }
 
 class UserVerificationCard extends StatelessWidget {
-  UserVerificationCard({Key? key, required this.user}) : super(key: key);
-  AdminUsers user;
+  const UserVerificationCard({Key? key, required this.user}) : super(key: key);
+  final AdminUsers user;
+
+  decision(String decision, BuildContext context) async {
+    try {
+      if (decision == "approve") {
+        await Provider.of<AdminViewModel>(context, listen: false)
+            .verifyUser(user.id);
+      } else {
+        await Provider.of<AdminViewModel>(context, listen: false)
+            .deleteUser(user.id);
+      }
+    } on HttpExceptions catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
+    } catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +155,9 @@ class UserVerificationCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      decision("approve", context);
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor,
@@ -148,7 +173,9 @@ class UserVerificationCard extends StatelessWidget {
                 ),
                 Expanded(
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      decision("delete", context);
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                           color: Colors.white,

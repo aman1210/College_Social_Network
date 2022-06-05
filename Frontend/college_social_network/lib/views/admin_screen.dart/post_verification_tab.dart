@@ -1,3 +1,5 @@
+import 'package:ConnectUs/components/custom_dialog.dart';
+import 'package:ConnectUs/models/HttpExceptions.dart';
 import 'package:ConnectUs/models/adminPosts.dart';
 import 'package:ConnectUs/responsive.dart';
 import 'package:ConnectUs/view_models/admin_view_model.dart';
@@ -42,17 +44,18 @@ class _PostsVerificationState extends State<PostsVerification> {
   @override
   Widget build(BuildContext context) {
     posts = Provider.of<AdminViewModel>(context).posts;
+
     return isLoading
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator())
         : posts.length == 0
-            ? Center(
+            ? const Center(
                 child: Text("No new post to verify"),
               )
             : Container(
                 child: ListView.separated(
                   itemBuilder: (context, index) =>
                       PostsVerificationItem(post: posts[index]),
-                  separatorBuilder: (context, index) => Divider(),
+                  separatorBuilder: (context, index) => const Divider(),
                   itemCount: posts.length,
                 ),
               );
@@ -81,11 +84,12 @@ class PostsVerificationItem extends StatelessWidget {
                 width: 60,
                 child: CachedNetworkImage(
                   imageUrl: post.images![0],
-                  placeholder: (context, string) => CircularProgressIndicator(),
+                  placeholder: (context, string) =>
+                      const CircularProgressIndicator(),
                   fit: BoxFit.cover,
                 ),
               ),
-            SizedBox(width: kDefaultPadding),
+            const SizedBox(width: kDefaultPadding),
             if (post.text != null)
               Expanded(
                 child: Text(
@@ -94,19 +98,20 @@ class PostsVerificationItem extends StatelessWidget {
                       : post.text!,
                 ),
               ),
-            SizedBox(width: kDefaultPadding),
+            const SizedBox(width: kDefaultPadding),
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
                   post.userName,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                SizedBox(width: kDefaultPadding / 4),
+                const SizedBox(width: kDefaultPadding / 4),
                 Text(
                   DateFormat('EE, d/MM/yyyy').add_jm().format(post.timeStamp),
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w300),
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w300),
                 )
               ],
             ),
@@ -122,21 +127,109 @@ class PostVerificationPostDetail extends StatelessWidget {
 
   final AdminPosts post;
   final buttonCarouselController = CarouselController();
+  ScrollController controller = ScrollController();
+
+  decision(String decision, BuildContext context) async {
+    try {
+      if (decision == "approve") {
+        await Provider.of<AdminViewModel>(context, listen: false)
+            .verifyPost(post.id)
+            .then((value) => showDialog(
+                context: context,
+                builder: (context) =>
+                    const CustomDialog(msg: "Task Successful")));
+      } else {
+        await Provider.of<AdminViewModel>(context, listen: false)
+            .deletePost(post.id)
+            .then((value) => showDialog(
+                context: context,
+                builder: (context) =>
+                    const CustomDialog(msg: "Task Successful")));
+      }
+    } on HttpExceptions catch (err) {
+      showDialog(
+          context: context, builder: (context) => CustomDialog(msg: "Error"));
+    } catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
+    }
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
+    var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(),
-      body: Column(
-        children: [
-          PostImages(
-            buttonCarouselController: buttonCarouselController,
-            images: post.images!,
-            isMobile: isMobile,
+      body: Container(
+        width: double.infinity,
+        alignment: Alignment.topCenter,
+        child: SizedBox(
+          width: isMobile ? size.width * 0.9 : size.width * 0.5,
+          child: SingleChildScrollView(
+            controller: controller,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PostImages(
+                  buttonCarouselController: buttonCarouselController,
+                  images: post.images!,
+                  isMobile: isMobile,
+                ),
+                const SizedBox(height: kDefaultPadding),
+                Text(
+                  post.text!,
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: kDefaultPadding),
+                const Text("User and post Detail:"),
+                Text(
+                  post.userName,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  DateFormat('d/MM/yy').add_jm().format(post.timeStamp),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: kDefaultPadding * 2),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () {
+                        decision("approve", context);
+                      },
+                      icon: const Icon(
+                        Icons.check,
+                        size: 40,
+                        color: Colors.green,
+                      ),
+                      label: const Text("Approve",
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {
+                        decision("delete", context);
+                      },
+                      icon: const Icon(
+                        Icons.close,
+                        size: 40,
+                        color: Colors.red,
+                      ),
+                      label: const Text("Decline",
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
-          Text(post.text!),
-        ],
+        ),
       ),
     );
   }

@@ -101,6 +101,69 @@ class AdminViewModel extends ChangeNotifier {
       throw err;
     }
   }
+
+  Future<void> verifyUser(String id) async {
+    Uri uri = Uri.parse(server + "admin/users/$id");
+    try {
+      var response = await http.patch(uri);
+      var responseBody = json.decode(response.body);
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['message']);
+      }
+      users.removeWhere((user) => user.id == id);
+      notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  Future<void> deleteUser(String id) async {
+    Uri uri = Uri.parse(server + "admin/users/$id");
+    try {
+      var response = await http.delete(uri);
+      var responseBody = json.decode(response.body);
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['message']);
+      }
+      users.removeWhere((user) => user.id == id);
+      notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  Future<void> verifyPost(String id) async {
+    Uri uri = Uri.parse(server + "admin/posts/$id");
+    try {
+      var response = await http.patch(uri);
+      var responseBody = json.decode(response.body);
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['message']);
+      }
+      // print(responseBody);
+      posts.removeWhere((post) => post.id == id);
+      notifyListeners();
+    } catch (err) {
+      print("hello $err");
+      throw err;
+    }
+  }
+
+  Future<void> deletePost(String id) async {
+    Uri uri = Uri.parse(server + "admin/posts/$id");
+    try {
+      var response = await http.delete(uri);
+      var responseBody = json.decode(response.body);
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['message']);
+      }
+      print(responseBody);
+      posts.removeWhere((post) => post.id == id);
+      notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 // To parse this JSON data, do
