@@ -3,7 +3,7 @@ const Comment = require("../models/commentModel");
 
 exports.posts_add_post = async (req, res, next) => {
   const post = new Post({
-    // ADD USER ID OF THE POST CREATOR
+    createdBy: req.body.userId,
     text: req.body.text,
     images: req.body.images,
     timeStamp: req.body.timeStamp,
