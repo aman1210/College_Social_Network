@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:ConnectUs/models/eventModel.dart';
 import 'package:ConnectUs/models/postModel.dart';
 import 'package:ConnectUs/view_models/post_view_model.dart';
 import 'package:ConnectUs/views/home_screen/new_post.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../responsive.dart';
@@ -279,6 +281,7 @@ class RecentEventCard extends StatefulWidget {
 class _RecentEventCardState extends State<RecentEventCard> {
   bool isLoading = false;
   List<Event> upcomingEvents = [];
+  List<Color> color = [Colors.green, Colors.blue, Colors.purple, Colors.brown];
 
   @override
   void initState() {
@@ -353,10 +356,10 @@ class _RecentEventCardState extends State<RecentEventCard> {
           if (!isLoading && upcomingEvents.length > 0)
             ...upcomingEvents
                 .map((e) => EventListItem(
-                    color: Colors.green,
-                    content: e.detail,
-                    icon: Icons.calendar_month,
-                    title: e.title))
+                      color: color[math.Random().nextInt(4)],
+                      icon: Icons.calendar_month,
+                      event: e,
+                    ))
                 .toList()
         ],
         mainAxisSize: MainAxisSize.min,
@@ -369,14 +372,12 @@ class EventListItem extends StatelessWidget {
   const EventListItem({
     Key? key,
     required this.color,
-    required this.content,
+    required this.event,
     required this.icon,
-    required this.title,
   }) : super(key: key);
 
   final Color color;
-  final String title;
-  final String content;
+  final Event event;
   final IconData icon;
 
   @override
@@ -402,7 +403,7 @@ class EventListItem extends StatelessWidget {
                     color: color.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(kDefaultPadding / 4)),
                 child: Icon(
-                  Icons.headphones,
+                  Icons.calendar_month,
                   color: color,
                 ),
               ),
@@ -412,7 +413,7 @@ class EventListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      event.title,
                       style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).brightness == Brightness.dark
@@ -422,7 +423,7 @@ class EventListItem extends StatelessWidget {
                     ),
                     const SizedBox(height: kDefaultPadding / 5),
                     Text(
-                      content,
+                      event.detail,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -441,7 +442,9 @@ class EventListItem extends StatelessWidget {
           Row(
             children: [
               Text(
-                "8 seen",
+                DateFormat('EE, d/MM/yy')
+                    .add_jm()
+                    .format(event.time!.toLocal()),
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(context).brightness == Brightness.dark

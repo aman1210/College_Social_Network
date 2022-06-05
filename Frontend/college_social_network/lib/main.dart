@@ -2,6 +2,7 @@ import 'package:ConnectUs/view_models/admin_view_model.dart';
 import 'package:ConnectUs/view_models/chat_view_model.dart';
 import 'package:ConnectUs/view_models/post_view_model.dart';
 import 'package:ConnectUs/views/admin_screen.dart/admin_screen.dart';
+import 'package:ConnectUs/views/auth_screen/auth_screen.dart';
 
 import '../../utils/theme.dart';
 import '../../view_models/auth_view_model.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<AuthViewModel>(
         builder: (context, value, child) {
           return MaterialApp(
-            title: 'Flutter Demo',
+            title: 'ConnectUs',
             theme: value.isDarkMode ? darkTheme : lightTheme,
             debugShowCheckedModeBanner: false,
             home: AdminScreen(),

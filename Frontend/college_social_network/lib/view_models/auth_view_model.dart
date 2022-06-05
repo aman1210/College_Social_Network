@@ -19,6 +19,9 @@ class AuthViewModel extends ChangeNotifier {
   String _token = '';
   DateTime _expiryDate = DateTime.now();
   String _userId = '';
+  String _userName = '';
+  String _email = '';
+  String _profileImage = '';
 
   final SecureStroage secureStroage = SecureStroage();
 
@@ -116,5 +119,30 @@ class AuthViewModel extends ChangeNotifier {
   void toggleDarkMode() {
     isDarkMode = !isDarkMode;
     notifyListeners();
+  }
+
+  Future<void> saveData() async {
+    secureStroage.writeSecureStorage('token', _token);
+    secureStroage.writeSecureStorage('userId', _userId);
+    secureStroage.writeSecureStorage('userName', _userName.toString());
+    secureStroage.writeSecureStorage('profileImage', _profileImage);
+    secureStroage.writeSecureStorage('email', _email);
+    secureStroage.writeSecureStorage(
+        'expiry', _expiryDate.add(const Duration(hours: 1)).toIso8601String());
+  }
+
+  Future<bool> tryAutoLogin() async {
+    Map<String, String> data = await secureStroage.realStorage();
+    _userId = data['userId'] ?? '';
+    _userName = data['userName'] ?? '';
+    _token = data['token'] ?? '';
+    _email = data['email'] ?? '';
+    _expiryDate =
+        DateTime.parse(data['expiry'] ?? DateTime.now().toIso8601String());
+    _profileImage = data['profileImage'] ?? '';
+
+    notifyListeners();
+
+    return (_token != '' && _expiryDate.isAfter(DateTime.now()));
   }
 }
