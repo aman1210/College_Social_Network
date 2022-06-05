@@ -23,7 +23,7 @@ exports.admin_get_all_post = (req, res, next) => {
 };
 
 exports.admin_get_all_user = (req, res, next) => {
-  User.find({ verified: false }, "name email profileImage")
+  User.find({ verified: false }, "name email profile_image _id")
     .then((users) => {
       var response = {
         message: "Fetching successful",
