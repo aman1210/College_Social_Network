@@ -1,3 +1,4 @@
+import 'package:ConnectUs/responsive.dart';
 import 'package:ConnectUs/view_models/admin_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -36,6 +37,8 @@ class _UsersVerificationState extends State<UsersVerification> {
   @override
   Widget build(BuildContext context) {
     users = Provider.of<AdminViewModel>(context).users;
+    var isMobile = Responsive.isMobile(context);
+    var isTab = Responsive.isTablet(context);
     return isLoading
         ? Center(child: CircularProgressIndicator())
         : users.length == 0
@@ -49,7 +52,11 @@ class _UsersVerificationState extends State<UsersVerification> {
                     right: kDefaultPadding),
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
+                      crossAxisCount: isMobile
+                          ? 2
+                          : isTab
+                              ? 3
+                              : 5,
                       childAspectRatio: 3 / 4,
                       crossAxisSpacing: kDefaultPadding,
                       mainAxisSpacing: kDefaultPadding),

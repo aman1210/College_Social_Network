@@ -75,6 +75,32 @@ class AdminViewModel extends ChangeNotifier {
       throw err;
     }
   }
+
+  Future<void> createEvent(
+      String title, String detail, String venue, String time) async {
+    Uri uri = Uri.parse(server + "admin/event");
+
+    var data = {"title": title, "detail": detail, "venue": venue, "time": time};
+
+    var request = json.encode(data);
+    try {
+      var response = await http.post(
+        uri,
+        body: request,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      var responseBody = json.decode(response.body);
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['message']);
+      }
+
+      print(responseBody);
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 // To parse this JSON data, do
