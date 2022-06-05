@@ -61,7 +61,7 @@ const signup = async (req, res, next) => {
   let token;
   try {
     token = jwt.sign(
-      { userId: createdUser.id, email: createdUser.email },
+      { userId: createdUser.id, email: createdUser.email, profile_image: createdUser.profile_image, name: createdUser.name },
       process.env.JWT_KEY,
       { expiresIn: "1h" }
     );
@@ -104,7 +104,7 @@ const login = async (req, res, next) => {
   let token;
   try {
     token = jwt.sign(
-      { userId: existingUser.id, email: existingUser.email },
+      { userId: existingUser.id, email: existingUser.email, profile_image: existingUser.profile_image, name: existingUser.name },
       process.env.JWT_KEY,
       { expiresIn: "1h" }
     );

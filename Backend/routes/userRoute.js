@@ -6,5 +6,6 @@ const router=express.Router();
 
 router.use(checkAuth);
 router.get("/myCommunity/", userController.user_show_friends);
+router.get("/profile/:uid", userController.user_profile);
 
 module.exports = router;
