@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 
 class AuthViewModel extends ChangeNotifier {
   bool _isLoading = false;
-  bool _userLoggedIn = true;
+  bool _userLoggedIn = false;
   bool isDarkMode = false;
 
   bool get isLoading => _isLoading;
@@ -24,6 +24,10 @@ class AuthViewModel extends ChangeNotifier {
   String _profileImage = '';
 
   final SecureStroage secureStroage = SecureStroage();
+
+  AuthViewModel() {
+    tryAutoLogin();
+  }
 
   setLoading(bool loading) {
     _isLoading = loading;
@@ -45,6 +49,14 @@ class AuthViewModel extends ChangeNotifier {
 
   String get userId {
     return _userId;
+  }
+
+  String get userName {
+    return _userName;
+  }
+
+  String get profileImage {
+    return _profileImage;
   }
 
   Future<void> loginUser(String email, String password) async {
@@ -69,6 +81,13 @@ class AuthViewModel extends ChangeNotifier {
         throw HttpExceptions(bodyresponse['error']);
       }
 
+      _email = bodyresponse['body'];
+      _userId = bodyresponse['userId'];
+      _userName = bodyresponse['userName'];
+      _profileImage = bodyresponse['profile_image'];
+      _token = bodyresponse['token'];
+
+      saveData();
       _userLoggedIn = true;
       notifyListeners();
     } catch (err) {
@@ -104,6 +123,14 @@ class AuthViewModel extends ChangeNotifier {
         throw HttpExceptions(bodyresponse['error']);
       }
 
+      _email = bodyresponse['body'];
+      _userId = bodyresponse['userId'];
+      _userName = bodyresponse['userName'];
+      _profileImage = bodyresponse['profile_image'];
+      _token = bodyresponse['token'];
+
+      saveData();
+
       _userLoggedIn = true;
       notifyListeners();
     } catch (err) {
@@ -112,8 +139,15 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   void logout() {
+    _expiryDate = DateTime.now();
+    _userId = '';
+    _userName = '';
+    _token = "";
+    _userId = "";
+    _profileImage = '';
     _userLoggedIn = false;
-    setLoading(false);
+    notifyListeners();
+    secureStroage.deleteStorage();
   }
 
   void toggleDarkMode() {
@@ -124,7 +158,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> saveData() async {
     secureStroage.writeSecureStorage('token', _token);
     secureStroage.writeSecureStorage('userId', _userId);
-    secureStroage.writeSecureStorage('userName', _userName.toString());
+    secureStroage.writeSecureStorage('userName', _userName);
     secureStroage.writeSecureStorage('profileImage', _profileImage);
     secureStroage.writeSecureStorage('email', _email);
     secureStroage.writeSecureStorage(
@@ -141,8 +175,14 @@ class AuthViewModel extends ChangeNotifier {
         DateTime.parse(data['expiry'] ?? DateTime.now().toIso8601String());
     _profileImage = data['profileImage'] ?? '';
 
-    notifyListeners();
+    if (_token != '' && _expiryDate.isAfter(DateTime.now())) {
+      _userLoggedIn = true;
+    } else {
+      _userLoggedIn = false;
+      logout();
+    }
 
-    return (_token != '' && _expiryDate.isAfter(DateTime.now()));
+    notifyListeners();
+    return true;
   }
 }

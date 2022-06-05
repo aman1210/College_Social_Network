@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '../../components/current_state.dart';
 import '../../responsive.dart';
 import '../../utils/constants.dart';
@@ -18,6 +20,7 @@ class CustomAppBar extends StatelessWidget {
     var isMobile = Responsive.isMobile(context);
     var isTablet = Responsive.isTablet(context);
     AuthViewModel authViewModel = context.watch<AuthViewModel>();
+    var provider = Provider.of<AuthViewModel>(context);
     return Container(
       height: isMobile ? 60 : 70,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -65,7 +68,7 @@ class CustomAppBar extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  "Aman Srivastava",
+                  provider.userName,
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -81,10 +84,19 @@ class CustomAppBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(kDefaultPadding / 4),
                     color: Colors.blue.shade100,
                   ),
-                  child: const Icon(
-                    CupertinoIcons.person,
-                    color: Colors.blue,
-                  ),
+                  child: provider.profileImage == ''
+                      ? const Icon(
+                          CupertinoIcons.person,
+                          color: Colors.blue,
+                        )
+                      : ClipRRect(
+                          borderRadius:
+                              BorderRadius.circular(kDefaultPadding / 4),
+                          child: CachedNetworkImage(
+                            imageUrl: provider.profileImage,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                 )
               ],
             ),
