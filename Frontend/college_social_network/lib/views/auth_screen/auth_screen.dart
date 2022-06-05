@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:ConnectUs/components/custom_dialog.dart';
 import 'package:ConnectUs/models/HttpExceptions.dart';
+import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../responsive.dart';
@@ -20,36 +21,60 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   bool showPassword = false;
   bool isSignUpMode = false;
+  bool isLoading = false;
 
   final _key = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-
   final TextEditingController _passwordController = TextEditingController();
 
   File? imagePicked;
 
+  final cloudinary =
+      CloudinaryPublic('knitconnectus', 'jdwkfx7x', cache: false);
+
   submit() async {
-    if (_key.currentState!.validate()) {
+    if (!_key.currentState!.validate()) {
       return;
     }
     _key.currentState!.save();
-    if (!isSignUpMode) {
-      try {
-        Provider.of<AuthViewModel>(context, listen: false)
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      if (!isSignUpMode) {
+        await Provider.of<AuthViewModel>(context, listen: false)
             .loginUser(_emailController.text, _passwordController.text);
-      } on HttpExceptions catch (err) {
-        showDialog(
-            context: context,
-            builder: (context) => CustomDialog(msg: err.toString()));
-      } catch (err) {
-        showDialog(
-            context: context,
-            builder: (context) => CustomDialog(
-                msg: "Something went wrong! Please try again later"));
+      } else {
+        if (imagePicked == null)
+          throw HttpExceptions("Please select profile image");
+
+        var response = await cloudinary.uploadFile(
+          CloudinaryFile.fromFile(imagePicked!.path),
+        );
+        await Provider.of<AuthViewModel>(context, listen: false).signUpUser(
+            _nameController.text,
+            _emailController.text,
+            _passwordController.text,
+            response.secureUrl);
       }
+    } on HttpExceptions catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
+    } catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(
+              msg: "Something went wrong! Please try again later"));
     }
+    _nameController.clear();
+    _emailController.clear();
+    _passwordController.clear();
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -166,7 +191,9 @@ class _AuthScreenState extends State<AuthScreen> {
                     return null;
                   },
                   decoration: InputDecoration(
-                      hintText: isSignUpMode ? "Your email" : "name@knit.ac.in",
+                      hintText: isSignUpMode
+                          ? "Your email"
+                          : "name.rollNo@knit.ac.in",
                       border: const OutlineInputBorder(),
                       prefixIcon: const Icon(Icons.alternate_email_rounded)),
                 ),
@@ -176,15 +203,18 @@ class _AuthScreenState extends State<AuthScreen> {
                   height: isSignUpMode ? 60 : 0,
                   child: TextFormField(
                     controller: _nameController,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Please enter your name';
-                      }
-                      if (val.trim().length < 6) {
-                        return 'Please enter valid/full name';
-                      }
-                      return null;
-                    },
+                    readOnly: !isSignUpMode,
+                    validator: !isSignUpMode
+                        ? null
+                        : (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Please enter your name';
+                            }
+                            if (val.trim().length < 6) {
+                              return 'Please enter valid/full name';
+                            }
+                            return null;
+                          },
                     decoration: InputDecoration(
                         hintText: !isSignUpMode ? null : "Your Name",
                         border: !isSignUpMode
@@ -234,33 +264,35 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
                 const SizedBox(height: kDefaultPadding / 2),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            Theme.of(context).primaryColor),
-                        foregroundColor:
-                            MaterialStateProperty.all(Colors.white)),
-                    onPressed: () {
-                      submit();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: CrossFade(
-                        showSecond: isSignUpMode,
-                        firstWidget: const Text(
-                          "Sign In",
-                          style: TextStyle(letterSpacing: 1.2, fontSize: 16),
-                        ),
-                        secondWidget: const Text(
-                          "Sign Up",
-                          style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+                if (isLoading) CircularProgressIndicator(),
+                if (!isLoading)
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              Theme.of(context).primaryColor),
+                          foregroundColor:
+                              MaterialStateProperty.all(Colors.white)),
+                      onPressed: () {
+                        submit();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: CrossFade(
+                          showSecond: isSignUpMode,
+                          firstWidget: const Text(
+                            "Sign In",
+                            style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+                          ),
+                          secondWidget: const Text(
+                            "Sign Up",
+                            style: TextStyle(letterSpacing: 1.2, fontSize: 16),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
                 const SizedBox(height: kDefaultPadding / 2),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
