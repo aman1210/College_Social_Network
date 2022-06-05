@@ -22,72 +22,79 @@ class CustomAppBar extends StatelessWidget {
       height: isMobile ? 60 : 70,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       color: Theme.of(context).scaffoldBackgroundColor,
-      child: Row(children: [
-        if ((isMobile || isTablet) && authViewModel.userLoggedIn)
-          IconButton(
-            splashRadius: 25,
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-            icon: const Icon(Icons.menu),
-          ),
-        if (!isMobile || !authViewModel.userLoggedIn)
-          AppLogo(scrollPageView: scrollPageView),
-        const Expanded(flex: 1, child: SizedBox()),
-        if (!isTablet && !isMobile && authViewModel.userLoggedIn)
-          Expanded(
-            flex: 8,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-              child: TextFormField(
-                style: const TextStyle(fontSize: 16),
-                decoration: InputDecoration(
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(kDefaultPadding / 2),
-                    borderSide: const BorderSide(
-                      color: Colors.black12,
+      child: Row(
+        children: [
+          if ((isMobile || isTablet) && authViewModel.userLoggedIn)
+            IconButton(
+              splashRadius: 25,
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              icon: const Icon(Icons.menu),
+            ),
+          if (!isMobile || !authViewModel.userLoggedIn)
+            AppLogo(scrollPageView: scrollPageView),
+          const Expanded(flex: 1, child: SizedBox()),
+          if (!isTablet && !isMobile && authViewModel.userLoggedIn && !isAdmin)
+            Expanded(
+              flex: 8,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                child: TextFormField(
+                  style: const TextStyle(fontSize: 16),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(kDefaultPadding / 2),
+                      borderSide: const BorderSide(
+                        color: Colors.black12,
+                      ),
                     ),
-                  ),
-                  hintText: "Search for something here...",
-                  hintStyle: const TextStyle(fontSize: 14),
-                  prefixIcon: const Icon(
-                    CupertinoIcons.search,
-                    size: 15,
+                    hintText: "Search for something here...",
+                    hintStyle: const TextStyle(fontSize: 14),
+                    prefixIcon: const Icon(
+                      CupertinoIcons.search,
+                      size: 15,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        const Expanded(flex: 4, child: SizedBox()),
-        if (authViewModel.userLoggedIn && !isAdmin)
-          Row(
-            children: [
-              Text(
-                "Aman Srivastava",
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white.withOpacity(0.8)
-                        : Colors.blueGrey.shade700),
-              ),
-              const SizedBox(width: kDefaultPadding),
-              Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(kDefaultPadding / 4),
-                  color: Colors.blue.shade100,
+          const Expanded(flex: 4, child: SizedBox()),
+          if (authViewModel.userLoggedIn && !isAdmin)
+            Row(
+              children: [
+                Text(
+                  "Aman Srivastava",
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white.withOpacity(0.8)
+                          : Colors.blueGrey.shade700),
                 ),
-                child: const Icon(
-                  CupertinoIcons.person,
-                  color: Colors.blue,
-                ),
-              )
-            ],
-          )
-      ]),
+                const SizedBox(width: kDefaultPadding),
+                Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(kDefaultPadding / 4),
+                    color: Colors.blue.shade100,
+                  ),
+                  child: const Icon(
+                    CupertinoIcons.person,
+                    color: Colors.blue,
+                  ),
+                )
+              ],
+            ),
+          if (authViewModel.userLoggedIn && isAdmin)
+            TextButton.icon(
+                onPressed: () {},
+                icon: Icon(Icons.logout_rounded),
+                label: Text("Logout"))
+        ],
+      ),
     );
   }
 }

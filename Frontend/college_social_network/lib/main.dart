@@ -1,5 +1,7 @@
+import 'package:ConnectUs/view_models/admin_view_model.dart';
 import 'package:ConnectUs/view_models/chat_view_model.dart';
 import 'package:ConnectUs/view_models/post_view_model.dart';
+import 'package:ConnectUs/views/admin_screen.dart/admin_screen.dart';
 
 import '../../utils/theme.dart';
 import '../../view_models/auth_view_model.dart';
@@ -21,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => AuthViewModel()),
+        ChangeNotifierProvider(create: (ctx) => AdminViewModel()),
         ChangeNotifierProvider(create: (ctx) => ChatModel()),
         ChangeNotifierProvider(create: (ctx) => MessageViewModel()),
         ChangeNotifierProvider(create: (ctx) => PostViewModel()),
@@ -31,7 +34,7 @@ class MyApp extends StatelessWidget {
             title: 'Flutter Demo',
             theme: value.isDarkMode ? darkTheme : lightTheme,
             debugShowCheckedModeBanner: false,
-            home: MainScreen(),
+            home: AdminScreen(),
           );
         },
       ),
