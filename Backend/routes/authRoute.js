@@ -14,20 +14,20 @@ const signup = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ email });
   } catch (err) {
-    res.status(500).json({ error: "Something went wrong"});
-    return;
+    return res.status(500).json({ error: "Something went wrong"});
+
   }
 
   if (existingUser) {
-    res.status(422).json({ error: "User already exists, Please login instead !!"});
-    return;
+    return res.status(422).json({ error: "User already exists, Please login instead !!"});
+
   }
   let hashedPassword;
   try {
     hashedPassword = await bcrypt.hash(password, 12);
   } catch (err) {
-    res.status(500).json({ error: "Could not create user, Please try again !!"});
-    return;
+    return res.status(500).json({ error: "Could not create user, Please try again !!"});
+
   }
   if(!(/@knit.ac.in/.test(email))){
     verified=false;
@@ -51,8 +51,7 @@ const signup = async (req, res, next) => {
   try {
     await createdUser.save();
   } catch (err) {
-    res.status(500).json({ error: "Signup failed, Please try again !!"});
-    return;
+    return res.status(500).json({ error: "Signup failed, Please try again !!"});
   }
 
   // toObject converts mongoose Object to default js object
@@ -66,8 +65,7 @@ const signup = async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
-    res.status(500).json({ error: "Signup failed, Please try again !!"});
-    return;
+    return res.status(500).json({ error: "Signup failed, Please try again !!"});
   }
 
   res.status(201).json({ userId: createdUser.id, email: createdUser.email, token: token });
@@ -83,22 +81,18 @@ const login = async (req, res, next) => {
   }
 
   if (!existingUser) {
-    res.status(401).json({ error: "Could not identify user, Credentials seems wrong"});
-    return;
+    return res.status(401).json({ error: "Could not identify user, Credentials seems wrong"});
   }
 
   let isValidPassword = false;
   try {
     isValidPassword = await bcrypt.compare(password, existingUser.password);
   } catch (err) {
-    res.status(500).json({ error: "Could not log you in, please check your credentials"});
-
-    return;
+    return res.status(500).json({ error: "Could not log you in, please check your credentials"});
   }
 
   if (!isValidPassword) {
-    res.status(403).json({ error: "Invalid Credentials, could not log you in."});
-    return;
+    return res.status(403).json({ error: "Invalid Credentials, could not log you in."});
   }
 
   let token;
@@ -109,8 +103,7 @@ const login = async (req, res, next) => {
       { expiresIn: "1h" }
     );
   } catch (err) {
-      res.status(500).json({ error: "Login failed, Please try again !!"});
-      return;
+      return res.status(500).json({ error: "Login failed, Please try again !!"});
     }
 
   res.json({
