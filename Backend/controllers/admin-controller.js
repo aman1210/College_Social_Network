@@ -71,7 +71,7 @@ exports.admin_create_event = (req, res, next) => {
     title: req.body.title,
     detail: req.body.detail,
     venue: req.body.venue,
-    time: Date(req.body.time),
+    time: req.body.time,
   });
   event
     .save()
