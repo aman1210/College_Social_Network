@@ -22,7 +22,7 @@ class PostViewModel with ChangeNotifier {
     var resposts = responseBody['posts'] as List<dynamic>;
     resposts.forEach((element) {
       var post = Post.fromJson(element);
-
+      print(element);
       temp.add(post);
     });
     posts = temp;

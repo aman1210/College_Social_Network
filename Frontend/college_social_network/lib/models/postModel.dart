@@ -11,6 +11,7 @@ class Post {
     this.images,
     this.timeStamp,
     this.userName,
+    this.userProfileImage,
     this.likeCount,
     this.comments,
   });
@@ -20,6 +21,7 @@ class Post {
   List<String>? images;
   String? timeStamp;
   String? userName;
+  String? userProfileImage;
   int? likeCount;
   List<dynamic>? comments;
 

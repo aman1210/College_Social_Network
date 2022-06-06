@@ -2,6 +2,7 @@ import 'package:ConnectUs/components/custom_dialog.dart';
 import 'package:ConnectUs/models/HttpExceptions.dart';
 import 'package:ConnectUs/models/postModel.dart';
 import 'package:ConnectUs/view_models/post_view_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -469,9 +470,11 @@ class PostHead extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const CircleAvatar(
+        CircleAvatar(
           backgroundColor: Colors.black,
-          child: Icon(Icons.person),
+          child: post!.userProfileImage != null
+              ? CachedNetworkImage(imageUrl: post!.userProfileImage!)
+              : Icon(Icons.person),
           maxRadius: 20,
         ),
         const SizedBox(width: kDefaultPadding),
