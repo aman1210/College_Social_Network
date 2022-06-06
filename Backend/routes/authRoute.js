@@ -76,7 +76,7 @@ const signup = async (req, res, next) => {
     email: createdUser.email,
     token: token,
     profile_image: createdUser.profile_image,
-    userName: createdUser.userName,
+    userName: createdUser.name,
   });
 };
 
@@ -124,7 +124,7 @@ const login = async (req, res, next) => {
     userId: existingUser.id,
     email: existingUser.email,
     profile_image: existingUser.profile_image,
-    userName: existingUser.userName,
+    userName: existingUser.name,
     token: token,
   });
 };

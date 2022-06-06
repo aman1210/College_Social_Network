@@ -45,6 +45,8 @@ router.post("/", postController.posts_add_post);
 
 router.post("/:id", postController.posts_like_post);
 
+router.patch("/:id", postController.posts_edit_post);
+
 router.post("/:id/comment", postController.posts_add_comment);
 
 router.post("/:id/report", postController.posts_report_post);
