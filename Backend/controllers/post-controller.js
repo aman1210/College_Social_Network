@@ -1,5 +1,7 @@
 const Post = require("../models/postModel");
 const Comment = require("../models/commentModel");
+const User = require("../models/userModel");
+const Notification = require("../models/notificationModel");
 
 exports.posts_add_post = async (req, res, next) => {
   const post = new Post({
@@ -12,11 +14,23 @@ exports.posts_add_post = async (req, res, next) => {
   post
     .save()
     .then((result) => {
-      res.status(201).json({
-        message:
-          "Post created successfully! It will appear in feed after verification",
-        post: result,
-      });
+      User.findOneAndUpdate(
+        { _id: req.body.userId },
+        { $push: { posts: result._id } }
+      )
+        .then((post) => {
+          res.status(201).json({
+            message:
+              "Post created successfully! It will appear in feed after verification",
+            post: result,
+          });
+        })
+        .catch((err) => {
+          res.status(404).json({
+            message: "Something went wrong!",
+            error: err,
+          });
+        });
     })
     .catch((error) => {
       res
@@ -66,11 +80,29 @@ exports.posts_add_comment = (req, res, next) => {
   )
 
     .then((post) => {
-      // console.log(newcomment);
-      res.status(200).json({
-        message: "comment added",
-        post: post,
+      const newNotification = new Notification({
+        type: "commented",
+        postId: post._id,
+        senderId: req.body.userId,
+        timeStamp: req.body.time,
       });
+      newNotification.save();
+      User.findOneAndUpdate(
+        { _id: post.createdBy },
+        { $push: { notifications: newNotification } }
+      )
+        .then((result) => {
+          res.status(200).json({
+            message: "comment added",
+            post: post,
+          });
+        })
+        .catch((err) => {
+          res.status(402).json({
+            message: "something went wrong!",
+            error: err,
+          });
+        });
     })
     .catch((err) => {
       res.status(err.status || 404).json({
@@ -100,7 +132,23 @@ exports.posts_like_post = (req, res, next) => {
     { _id: req.params.id },
     { $inc: { likeCount: 1 } }
   ).then((post) => {
-    res.status(201).json({ message: "Post liked!" });
+    const newNotification = new Notification({
+      type: "liked",
+      postId: post._id,
+      senderId: req.body.userId,
+      timeStamp: req.body.timeStamp,
+    });
+    newNotification.save();
+    User.findOneAndUpdate(
+      { _id: post.createdBy },
+      { $push: { notifications: newNotification } }
+    )
+      .then((result) => {
+        res.status(201).json({ message: "Post liked!", result: result });
+      })
+      .catch((err) => {
+        res.status(402).json({ message: "Error", err: err });
+      });
   });
 };
 
