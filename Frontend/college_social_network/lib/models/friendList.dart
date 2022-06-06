@@ -41,7 +41,7 @@ class FriendListElement {
       FriendListElement(
         name: json["name"],
         profileImage: json["profile_image"],
-        id: json["id"],
+        id: json["_id"],
       );
 
   Map<String, dynamic> toJson() =>

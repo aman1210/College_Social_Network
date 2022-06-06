@@ -2,6 +2,7 @@ import 'package:ConnectUs/models/friendList.dart';
 import 'package:ConnectUs/view_models/auth_view_model.dart';
 import 'package:ConnectUs/view_models/user_view_model.dart';
 import 'package:ConnectUs/views/message_screen/message_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../../components/current_state.dart';
@@ -77,18 +78,20 @@ class _ChatListState extends State<ChatList> {
                   Center(child: Text("Please add friends!")),
                 if (friends.length > 0)
                   Expanded(
-                      child: ListView.separated(
-                          scrollDirection: Axis.vertical,
-                          controller: _controller,
-                          itemBuilder: (context, index) => AnimatedChatListItem(
-                                index: index,
-                                scrollPageView: widget.scrollPageView,
-                                name: friends[index].name!,
-                                chatId: friends[index].id!,
-                              ),
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 2),
-                          itemCount: friends.length)),
+                    child: ListView.separated(
+                        scrollDirection: Axis.vertical,
+                        controller: _controller,
+                        itemBuilder: (context, index) => AnimatedChatListItem(
+                              index: index,
+                              scrollPageView: widget.scrollPageView,
+                              name: friends[index].name!,
+                              chatId: friends[index].id!,
+                              profilePhoto: friends[index].profileImage,
+                            ),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 2),
+                        itemCount: friends.length),
+                  ),
               ],
             ),
           );
@@ -102,11 +105,13 @@ class AnimatedChatListItem extends StatefulWidget {
     this.scrollPageView,
     required this.name,
     required this.chatId,
+    this.profilePhoto,
   }) : super(key: key);
   final Function? scrollPageView;
   final int index;
   final String name;
   final String chatId;
+  final String? profilePhoto;
 
   @override
   State<AnimatedChatListItem> createState() => _AnimatedChatListItemState();
@@ -153,9 +158,14 @@ class _AnimatedChatListItemState extends State<AnimatedChatListItem> {
           contentPadding: EdgeInsets.symmetric(
               horizontal:
                   CurrentState.selectedIndex == 2 ? kDefaultPadding / 2 : 4),
-          leading: const CircleAvatar(
-            child: Icon(Icons.person_outline_rounded),
-          ),
+          leading: widget.profilePhoto != null && widget.profilePhoto != ''
+              ? CircleAvatar(
+                  backgroundImage:
+                      CachedNetworkImageProvider(widget.profilePhoto!),
+                )
+              : CircleAvatar(
+                  child: Icon(Icons.person_outline_rounded),
+                ),
           title: Text(
             widget.name,
             style: TextStyle(
