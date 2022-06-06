@@ -65,40 +65,46 @@ class CustomAppBar extends StatelessWidget {
             ),
           const Expanded(flex: 4, child: SizedBox()),
           if (authViewModel.userLoggedIn && !isAdmin)
-            Row(
-              children: [
-                Text(
-                  provider.userName,
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white.withOpacity(0.8)
-                          : Colors.blueGrey.shade700),
-                ),
-                const SizedBox(width: kDefaultPadding),
-                Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(kDefaultPadding / 4),
-                    color: Colors.blue.shade100,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.07),
+                  borderRadius: BorderRadius.circular(kDefaultPadding / 4)),
+              child: Row(
+                children: [
+                  Text(
+                    provider.userName,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white.withOpacity(0.8)
+                            : Colors.blueGrey.shade700),
                   ),
-                  child: provider.profileImage == ''
-                      ? const Icon(
-                          CupertinoIcons.person,
-                          color: Colors.blue,
-                        )
-                      : ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(kDefaultPadding / 4),
-                          child: CachedNetworkImage(
-                            imageUrl: provider.profileImage,
-                            fit: BoxFit.cover,
+                  const SizedBox(width: kDefaultPadding / 2),
+                  Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(kDefaultPadding / 4),
+                      color: Colors.blue.shade100,
+                    ),
+                    child: provider.profileImage == ''
+                        ? const Icon(
+                            CupertinoIcons.person,
+                            color: Colors.blue,
+                          )
+                        : ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(kDefaultPadding / 4),
+                            child: CachedNetworkImage(
+                              imageUrl: provider.profileImage,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           if (authViewModel.userLoggedIn && isAdmin)
             TextButton.icon(

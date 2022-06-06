@@ -22,7 +22,7 @@ class PostViewModel with ChangeNotifier {
     var resposts = responseBody['posts'] as List<dynamic>;
     resposts.forEach((element) {
       var post = Post.fromJson(element);
-      print(element);
+
       temp.add(post);
     });
     posts = temp;
@@ -61,14 +61,21 @@ class PostViewModel with ChangeNotifier {
     };
 
     var request = json.encode(data);
-
-    var response = await http.post(
-      uri,
-      body: request,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+    try {
+      var response = await http.post(
+        uri,
+        body: request,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      var responseBody = json.decode(response.body);
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['message']);
+      }
+    } catch (err) {
+      throw err;
+    }
   }
 
   Future<void> reportPost(String id) async {

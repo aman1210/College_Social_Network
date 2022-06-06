@@ -1,6 +1,7 @@
 import 'package:ConnectUs/components/custom_dialog.dart';
 import 'package:ConnectUs/models/HttpExceptions.dart';
 import 'package:ConnectUs/models/postModel.dart';
+import 'package:ConnectUs/view_models/auth_view_model.dart';
 import 'package:ConnectUs/view_models/post_view_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -70,6 +71,8 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
+    var profileImage =
+        Provider.of<AuthViewModel>(context, listen: false).profileImage;
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 1000),
       opacity: _animate ? 1 : 0,
@@ -134,12 +137,15 @@ class _PostCardState extends State<PostCard> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       backgroundColor: Colors.lightBlue,
-                      child: Icon(
-                        Icons.person_outline_rounded,
-                        color: Colors.white,
-                      ),
+                      backgroundImage: CachedNetworkImageProvider(profileImage),
+                      child: profileImage != null
+                          ? null
+                          : Icon(
+                              Icons.person_outline_rounded,
+                              color: Colors.white,
+                            ),
                     ),
                     Expanded(
                       child: Container(
@@ -470,20 +476,24 @@ class PostHead extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CircleAvatar(
-          backgroundColor: Colors.black,
-          child: post!.userProfileImage != null
-              ? CachedNetworkImage(imageUrl: post!.userProfileImage!)
-              : Icon(Icons.person),
-          maxRadius: 20,
-        ),
+        if (post!.profileImage == null)
+          CircleAvatar(
+            child: Icon(Icons.person),
+            maxRadius: 20,
+          ),
+        if (post!.profileImage != null)
+          CircleAvatar(
+            backgroundColor: Colors.transparent,
+            backgroundImage: CachedNetworkImageProvider(post!.profileImage!),
+            maxRadius: 20,
+          ),
         const SizedBox(width: kDefaultPadding),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              post?.userName ?? "Aman",
+              post!.userName!,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

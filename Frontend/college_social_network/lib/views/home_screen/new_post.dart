@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:ConnectUs/components/custom_dialog.dart';
+import 'package:ConnectUs/models/HttpExceptions.dart';
+import 'package:ConnectUs/view_models/auth_view_model.dart';
 import 'package:ConnectUs/view_models/post_view_model.dart';
 import 'package:ConnectUs/views/home_screen/post_card.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
@@ -46,24 +50,26 @@ class _NewPostState extends State<NewPost> {
       }).toList());
       await Provider.of<PostViewModel>(context, listen: false)
           .addNewPost(_editingController.text, response);
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(
+              msg:
+                  "Post created successfully! It will appear in feed after verification!"));
+    } on HttpExceptions catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
     } catch (e) {
       showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-                title: Text("Something went wrong!"),
-                content: Text("Please try after sometime"),
-                actions: [
-                  ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(Icons.check),
-                      label: Text("Okay"))
-                ],
-              ));
+          builder: (context) => CustomDialog(
+              msg: "Something went wrong! Please try again later"));
     }
 
+    _editingController.clear();
+
     setState(() {
+      imagesPicked = [];
       isLoading = false;
     });
   }
@@ -97,8 +103,10 @@ class _NewPostState extends State<NewPost> {
         child: Column(children: [
           Row(
             children: [
-              const CircleAvatar(
-                child: Icon(Icons.person),
+              CircleAvatar(
+                backgroundImage: CachedNetworkImageProvider(
+                    Provider.of<AuthViewModel>(context, listen: false)
+                        .profileImage),
               ),
               const SizedBox(width: kDefaultPadding / 2),
               Expanded(
