@@ -1,5 +1,6 @@
 const Notification = require("../models/notificationModel");
 const Event = require("../models/eventModel");
+const User = require("../models/userModel");
 
 exports.other_get_events = (req, res, next) => {
   let today = new Date();
@@ -27,5 +28,25 @@ exports.other_get_events = (req, res, next) => {
         message: "Something went wrong!",
         err: err,
       });
+    });
+};
+
+exports.other_get_notifications = (req, res, next) => {
+  User.findOne({ _id: req.params.id })
+    .populate({
+      path: "notifications",
+      populate: [
+        { path: "senderId", model: "User", select: "name -_id" },
+        { path: "postId", model: "Post", select: "images -_id" },
+      ],
+    })
+    .select("notifications")
+    .sort({ timeStamp: -1 })
+    .exec()
+    .then((result) => {
+      res.status(200).json({ notification: result.notifications });
+    })
+    .catch((err) => {
+      res.status(402).json({ message: "Something went wrong!", error: err });
     });
 };

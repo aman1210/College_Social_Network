@@ -1,6 +1,5 @@
 const User = require("../models/userModel");
-const {validationResult} = require('express-validator');
-const { UserRefreshClient } = require("google-auth-library");
+const { validationResult } = require("express-validator");
 
 exports.user_show_friends = async (req, res, next) => {
   let curUser;
@@ -17,8 +16,12 @@ exports.user_show_friends = async (req, res, next) => {
   }
   return res.json({
     friendList: curUser.friendList.map((friend) => {
-      return { userId: friend._id,name: friend.name, profile_image: friend.profile_image };
-    })
+      return {
+        name: friend.name,
+        profile_image: friend.profile_image,
+        _id: friend._id,
+      };
+    }),
   });
 };
 
@@ -47,7 +50,7 @@ exports.user_show_friendRequests = async(req,res,next)=>{
   }
 
   res.status(201).json({friendRequest:curUser.friendRequest.map((user)=>{
-    return {userId: user._id, name:user.name, profile_image:user.profile_image};
+    return {_id: user._id, name:user.name, profile_image:user.profile_image};
   })});
 }
 
@@ -55,7 +58,9 @@ exports.user_send_request = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(422).json({"error":"Invalid input passes, please check your data again."})
+    return res
+      .status(422)
+      .json({ error: "Invalid input passes, please check your data again." });
   }
   const userId = req.params.uid;
   User.findByIdAndUpdate(userId, {$addToSet:{friendRequest:req.userData.userId}}
@@ -70,7 +75,9 @@ exports.user_accept_request = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(422).json({"error":"Invalid input passes, please check your data again."})
+    return res
+      .status(422)
+      .json({ error: "Invalid input passes, please check your data again." });
   }
   const userId=req.params.uid;
   const curUserId = req.userData.userId;
