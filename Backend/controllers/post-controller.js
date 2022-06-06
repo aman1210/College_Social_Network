@@ -35,6 +35,7 @@ exports.posts_get_user_posts = (req, res, next) => {
         sort: { timeStamp: -1 },
       },
     })
+    .populate("createdBy", "profile_image -_id")
     .exec()
     .then((posts) => {
       const response = {
@@ -112,4 +113,20 @@ exports.posts_report_post = (req, res, next) => {
       message: "Post reported!",
     });
   });
+};
+
+exports.posts_edit_post = (req, res, next) => {
+  Post.findOneAndUpdate({ _id: req.params.id }, { $set: req.body })
+    .then((result) => {
+      res.status(203).json({
+        message: "Post updated successfully",
+        post: result,
+      });
+    })
+    .catch((err) => {
+      res.status(402).json({
+        message: "Something went wrong!",
+        error: err,
+      });
+    });
 };
