@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
             title: 'ConnectUs',
             theme: value.isDarkMode ? darkTheme : lightTheme,
             debugShowCheckedModeBanner: false,
-            home: MainScreen(),
+            home: value.isAdmin ? AdminScreen() : MainScreen(),
           );
         },
       ),

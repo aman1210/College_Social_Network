@@ -108,7 +108,9 @@ class CustomAppBar extends StatelessWidget {
             ),
           if (authViewModel.userLoggedIn && isAdmin)
             TextButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Provider.of<AuthViewModel>(context, listen: false).logout();
+                },
                 icon: Icon(Icons.logout_rounded),
                 label: Text("Logout"))
         ],

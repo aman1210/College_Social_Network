@@ -16,9 +16,11 @@ import 'package:provider/provider.dart';
 import '../../utils/constants.dart';
 
 class NewPost extends StatefulWidget {
-  const NewPost({Key? key, required this.isMobile}) : super(key: key);
+  const NewPost({Key? key, required this.isMobile, this.isAdmin = false})
+      : super(key: key);
 
   final bool isMobile;
+  final bool isAdmin;
 
   @override
   State<NewPost> createState() => _NewPostState();
@@ -100,7 +102,7 @@ class _NewPostState extends State<NewPost> {
                 offset: const Offset(0, 5),
               )
             ]),
-        child: Column(children: [
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
           Row(
             children: [
               CircleAvatar(

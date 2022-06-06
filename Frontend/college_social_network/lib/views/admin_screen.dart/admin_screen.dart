@@ -3,6 +3,7 @@ import 'package:ConnectUs/models/HttpExceptions.dart';
 import 'package:ConnectUs/responsive.dart';
 import 'package:ConnectUs/utils/constants.dart';
 import 'package:ConnectUs/view_models/admin_view_model.dart';
+import 'package:ConnectUs/views/home_screen/new_post.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -116,7 +117,19 @@ class _AdminScreenState extends State<AdminScreen>
               Card(
                 child: ListTile(
                   onTap: () {
-                    Navigator.of(context).pop(2);
+                    Navigator.pop(context);
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              content: SizedBox(
+                                  width: isMobile
+                                      ? size.width * 0.9
+                                      : size.width * 0.6,
+                                  child: NewPost(
+                                    isMobile: isMobile,
+                                    isAdmin: true,
+                                  )),
+                            ));
                   },
                   tileColor: Colors.black12,
                   title: const Text("Post"),

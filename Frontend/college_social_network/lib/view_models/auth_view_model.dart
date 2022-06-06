@@ -12,10 +12,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool _userLoggedIn = false;
+  bool _isAdmin = false;
   bool isDarkMode = false;
 
   bool get isLoading => _isLoading;
   bool get userLoggedIn => _userLoggedIn;
+  bool get isAdmin => _isAdmin;
 
   String _token = '';
   DateTime _expiryDate = DateTime.now();
@@ -86,6 +88,10 @@ class AuthViewModel extends ChangeNotifier {
       _profileImage = bodyresponse['profile_image'];
       _token = bodyresponse['token'];
 
+      if (_email == "aman.18605@knit.ac.in") {
+        _isAdmin = true;
+      }
+
       saveData();
       _userLoggedIn = true;
       notifyListeners();
@@ -146,6 +152,7 @@ class AuthViewModel extends ChangeNotifier {
     _userId = "";
     _profileImage = '';
     _userLoggedIn = false;
+
     notifyListeners();
     await prefs.clear();
   }
@@ -180,6 +187,9 @@ class AuthViewModel extends ChangeNotifier {
 
       if (_token != '' && _expiryDate.isAfter(DateTime.now())) {
         _userLoggedIn = true;
+        if (_email == "aman.18605@knit.ac.in") {
+          _isAdmin = true;
+        }
       } else {
         _userLoggedIn = false;
         logout();
