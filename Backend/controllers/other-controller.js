@@ -41,6 +41,7 @@ exports.other_get_notifications = (req, res, next) => {
       ],
     })
     .select("notifications")
+    .sort({ timeStamp: -1 })
     .exec()
     .then((result) => {
       res.status(200).json({ notification: result.notifications });
