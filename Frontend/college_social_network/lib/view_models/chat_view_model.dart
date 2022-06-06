@@ -1,64 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
-import 'package:flutter_socket_io/flutter_socket_io.dart';
-import 'package:flutter_socket_io/socket_io_manager.dart';
-import 'dart:convert';
 
 import '../models/message.dart';
 import '../models/user.dart';
 
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
 class ChatModel extends ChangeNotifier {
-  late User currentUser;
+  String? currentUserId;
   List<User> friendList = <User>[];
   List<Message> messages = <Message>[];
-  late SocketIO socketIO;
+  late IO.Socket socket;
 
-  void init() {
-    // currentUser = users[0];
-    // friendList =
-    //     users.where((user) => user.id != currentUser.id).toList();
+  void init(String userId) {
+    socket =
+        IO.io('https://connectus15-backend.herokuapp.com', <String, dynamic>{
+      "chatId": userId,
+      "transport": ['websocket'],
+      "upgrade": false
 
-    socketIO = SocketIOManager().createSocketIO(
-        'https://connectus15-backend.herokuapp.com', '/',
-        query: 'chatID=${currentUser.id}');
-    socketIO.init();
-
-    socketIO.subscribe('receive_message', (jsonData) {
-      Map<String, dynamic> data = json.decode(jsonData);
-      messages.add(
-        Message(
-          text: data['content'],
-          senderID: data['senderChatID'],
-          receiverID: data['receiverChatID'],
-          timeStamp: data['timeStamp'],
-        ),
-      );
-      notifyListeners();
+      // "autoConnect": false,
     });
-
-    socketIO.connect();
+    socket.connect();
+    socket.onConnect((data) => print("connected"));
+    socket.onConnectError((data) => print(data));
+    print("helo");
   }
+  // late SocketIO socketIO;
 
-  void sendMessage(String text, String receiverChatID) {
-    messages.add(Message(
-        text: text,
-        senderID: currentUser.id!,
-        receiverID: receiverChatID,
-        timeStamp: DateTime.now().toIso8601String()));
-    socketIO.sendMessage(
-      'send_message',
-      json.encode({
-        'receiverChatID': receiverChatID,
-        'senderChatID': currentUser.id,
-        'content': text,
-      }),
-    );
-    notifyListeners();
-  }
+  // void init(String userId) {
+  //   currentUserId = userId;
+  //   // friendList =
+  //   //     users.where((user) => user.id != currentUser.id).toList();
 
-  List<Message> getMessagesForChatID(String chatID) {
-    return messages
-        .where((msg) => msg.senderID == chatID || msg.receiverID == chatID)
-        .toList();
-  }
+  //   socketIO = SocketIOManager().createSocketIO(
+  //       'https://connectus15-backend.herokuapp.com', '/',
+  //       query: 'chatID=$currentUserId');
+  //   socketIO.init();
+
+  //   socketIO.subscribe('receive_message', (jsonData) {
+  //     Map<String, dynamic> data = json.decode(jsonData);
+  //     messages.add(
+  //       Message(
+  //         text: data['content'],
+  //         senderID: data['senderChatID'],
+  //         receiverID: data['receiverChatID'],
+  //         timeStamp: data['timeStamp'],
+  //       ),
+  //     );
+  //     notifyListeners();
+  //   });
+
+  //   socketIO.connect();
+  // }
+
+  // void sendMessage(String text, String receiverChatID) {
+  //   messages.add(Message(
+  //       text: text,
+  //       senderID: currentUserId!,
+  //       receiverID: receiverChatID,
+  //       timeStamp: DateTime.now().toIso8601String()));
+  //   socketIO.sendMessage(
+  //     'send_message',
+  //     json.encode({
+  //       'receiverChatID': receiverChatID,
+  //       'senderChatID': currentUserId,
+  //       'content': text,
+  //     }),
+  //   );
+  //   notifyListeners();
+  // }
+
+  // List<Message> getMessagesForChatID(String chatID) {
+  //   return messages
+  //       .where((msg) => msg.senderID == chatID || msg.receiverID == chatID)
+  //       .toList();
+  // }
 }

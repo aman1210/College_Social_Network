@@ -8,13 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
-  args:
-    dependency: transitive
-    description:
-      name: args
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.3.1"
   async:
     dependency: transitive
     description:
@@ -174,13 +167,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.6"
-  flutter_socket_io:
-    dependency: "direct main"
-    description:
-      name: flutter_socket_io
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.0"
   flutter_spinkit:
     dependency: "direct main"
     description:
@@ -317,13 +303,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
-  mime:
-    dependency: transitive
-    description:
-      name: mime
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   nested:
     dependency: transitive
     description:
@@ -429,13 +408,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.0.3"
-  rikulo_commons:
-    dependency: transitive
-    description:
-      name: rikulo_commons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.2.0+2"
   rxdart:
     dependency: transitive
     description:
@@ -511,13 +483,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  socket_io:
+  socket_io_client:
     dependency: "direct main"
     description:
-      name: socket_io
+      name: socket_io_client
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   socket_io_common:
     dependency: transitive
     description:
@@ -553,13 +525,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0"
-  stream:
-    dependency: transitive
-    description:
-      name: stream
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.3"
   stream_channel:
     dependency: transitive
     description:

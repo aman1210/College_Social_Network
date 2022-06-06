@@ -1,3 +1,4 @@
+import 'package:ConnectUs/view_models/auth_view_model.dart';
 import 'package:ConnectUs/view_models/chat_view_model.dart';
 
 import '../../models/message.dart';
@@ -28,18 +29,20 @@ class _MessageScreenState extends State<MessageScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    var userId = Provider.of<AuthViewModel>(context, listen: false).userId;
+    Provider.of<ChatModel>(context, listen: false).init(userId);
   }
 
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
     var selectedUser = Provider.of<MessageViewModel>(context).selectedUser;
-    // var model = Provider.of<ChatModel>(context);
+
     if (selectedUser != null) {
-      selected = Provider.of<ChatModel>(context, listen: false)
-          .friendList[selectedUser];
-      chatId = selected.id!;
-      chats = Provider.of<ChatModel>(context).getMessagesForChatID(chatId);
+      // selected = Provider.of<ChatModel>(context, listen: false)
+      //     .friendList[selectedUser];
+      // chatId = selected.id!;
+      // chats = Provider.of<ChatModel>(context).getMessagesForChatID(chatId);
     }
     return isMobile && selectedUser == null
         ? ChatList()
