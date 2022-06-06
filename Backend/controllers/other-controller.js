@@ -8,7 +8,9 @@ exports.other_get_events = (req, res, next) => {
   let next3Days = new Date(today);
   next3Days.setDate(next3Days.getDate() + 3);
 
-  Event.find({ time: { $gte: today, $lte: next3Days } })
+  Event.find({
+    time: { $gte: today.toISOString(), $lte: next3Days.toISOString() },
+  })
     .then((events) => {
       if (events.length == 0) {
         return res.status(201).json({

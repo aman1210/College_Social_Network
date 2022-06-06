@@ -1,12 +1,11 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 
 dotenv.config();
 
 const signup = async (req, res, next) => {
-
   const { name, email, password, profile_image } = req.body;
   // console.log(req.body);
   let verified = true;
@@ -29,23 +28,23 @@ const signup = async (req, res, next) => {
     return res.status(500).json({ error: "Could not create user, Please try again !!"});
 
   }
-  if(!(/@knit.ac.in/.test(email))){
-    verified=false;
+  if (!/@knit.ac.in/.test(email)) {
+    verified = false;
   }
   const createdUser = new User({
     name,
     email,
     password: hashedPassword,
-    intro:"",
-    about:"",
-    dob:"",
-    location:"",
-    social_links:[],
+    intro: "",
+    about: "",
+    dob: "",
+    location: "",
+    social_links: [],
     profile_image,
     verified,
-    post:[],
-    friendList:[],
-    friendRequest:[]
+    post: [],
+    friendList: [],
+    friendRequest: [],
   });
 
   try {
@@ -56,11 +55,15 @@ const signup = async (req, res, next) => {
 
   // toObject converts mongoose Object to default js object
 
-
   let token;
   try {
     token = jwt.sign(
-      { userId: createdUser.id, email: createdUser.email, profile_image: createdUser.profile_image, name: createdUser.name },
+      {
+        userId: createdUser.id,
+        email: createdUser.email,
+        profile_image: createdUser.profile_image,
+        name: createdUser.name,
+      },
       process.env.JWT_KEY,
       { expiresIn: "1h" }
     );
@@ -68,7 +71,13 @@ const signup = async (req, res, next) => {
     return res.status(500).json({ error: "Signup failed, Please try again !!"});
   }
 
-  res.status(201).json({ userId: createdUser.id, email: createdUser.email, token: token });
+  res.status(201).json({
+    userId: createdUser.id,
+    email: createdUser.email,
+    token: token,
+    profile_image: createdUser.profile_image,
+    userName: createdUser.userName,
+  });
 };
 
 const login = async (req, res, next) => {
@@ -77,7 +86,7 @@ const login = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ email });
   } catch (err) {
-    return res.status(500).json({ error: "Login failed, Please try again !!"});
+    return res.status(500).json({ error: "Login failed, Please try again !!" });
   }
 
   if (!existingUser) {
@@ -98,7 +107,12 @@ const login = async (req, res, next) => {
   let token;
   try {
     token = jwt.sign(
-      { userId: existingUser.id, email: existingUser.email, profile_image: existingUser.profile_image, name: existingUser.name },
+      {
+        userId: existingUser.id,
+        email: existingUser.email,
+        profile_image: existingUser.profile_image,
+        name: existingUser.name,
+      },
       process.env.JWT_KEY,
       { expiresIn: "1h" }
     );
@@ -109,6 +123,8 @@ const login = async (req, res, next) => {
   res.json({
     userId: existingUser.id,
     email: existingUser.email,
+    profile_image: existingUser.profile_image,
+    userName: existingUser.userName,
     token: token,
   });
 };
