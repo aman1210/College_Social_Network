@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ConnectUs/models/HttpExceptions.dart';
 import 'package:ConnectUs/models/adminPosts.dart';
 import 'package:ConnectUs/utils/constants.dart';
+import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -160,6 +161,37 @@ class AdminViewModel extends ChangeNotifier {
       print(responseBody);
       posts.removeWhere((post) => post.id == id);
       notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  Future<void> createPost(String text, String userName, String userId,
+      List<CloudinaryResponse> images) async {
+    Uri uri = Uri.parse(server + "admin/post");
+    List<String> postImages = images.map((image) => image.secureUrl).toList();
+
+    var data = {
+      "userId": userId,
+      "text": text,
+      "timeStamp": DateTime.now().toIso8601String(),
+      "userName": userName,
+      "images": postImages,
+    };
+
+    var request = json.encode(data);
+    try {
+      var response = await http.post(
+        uri,
+        body: request,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      var responseBody = json.decode(response.body);
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['message']);
+      }
     } catch (err) {
       throw err;
     }

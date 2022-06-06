@@ -49,14 +49,16 @@ class PostViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> addNewPost(String text, List<CloudinaryResponse> images) async {
+  Future<void> addNewPost(String text, String userName, String userId,
+      List<CloudinaryResponse> images) async {
     Uri uri = Uri.parse(server + "posts/");
     List<String> postImages = images.map((image) => image.secureUrl).toList();
 
     var data = {
+      "userId": userId,
       "text": text,
       "timeStamp": DateTime.now().toIso8601String(),
-      "userName": 'Khushboo Arora',
+      "userName": userName,
       "images": postImages,
     };
 

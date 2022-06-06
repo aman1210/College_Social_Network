@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:ConnectUs/components/custom_dialog.dart';
 import 'package:ConnectUs/models/HttpExceptions.dart';
+import 'package:ConnectUs/view_models/admin_view_model.dart';
 import 'package:ConnectUs/view_models/auth_view_model.dart';
 import 'package:ConnectUs/view_models/post_view_model.dart';
 import 'package:ConnectUs/views/home_screen/post_card.dart';
@@ -50,13 +51,23 @@ class _NewPostState extends State<NewPost> {
         return CloudinaryFile.fromFile(image.path,
             resourceType: CloudinaryResourceType.Image);
       }).toList());
-      await Provider.of<PostViewModel>(context, listen: false)
-          .addNewPost(_editingController.text, response);
+      var provider = Provider.of<AuthViewModel>(context, listen: false);
+      var userName = provider.userName;
+      var userId = provider.userId;
+      if (widget.isAdmin) {
+        await Provider.of<AdminViewModel>(context, listen: false)
+            .createPost(_editingController.text, userName, userId, response);
+        Navigator.pop(context);
+      } else {
+        await Provider.of<PostViewModel>(context, listen: false)
+            .addNewPost(_editingController.text, userName, userId, response);
+      }
       showDialog(
           context: context,
           builder: (context) => CustomDialog(
-              msg:
-                  "Post created successfully! It will appear in feed after verification!"));
+              msg: widget.isAdmin
+                  ? "Post created successfully"
+                  : "Post created successfully! It will appear in feed after verification!"));
     } on HttpExceptions catch (err) {
       showDialog(
           context: context,

@@ -152,7 +152,7 @@ class AuthViewModel extends ChangeNotifier {
     _userId = "";
     _profileImage = '';
     _userLoggedIn = false;
-
+    _isAdmin = false;
     notifyListeners();
     await prefs.clear();
   }
