@@ -46,7 +46,6 @@ const signup = async (req, res, next) => {
     friendList: [],
     friendRequest: [],
   });
-
   try {
     await createdUser.save();
   } catch (err) {
