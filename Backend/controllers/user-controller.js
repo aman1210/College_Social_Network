@@ -94,3 +94,39 @@ exports.user_accept_request = async (req, res, next) => {
   })
   console.log("HELLOO");
 };
+
+exports.user_edit_profile = async (req,res,next)=>{
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res
+      .status(422)
+      .json({ error: "Invalid input passes, please check your data again." });
+  }
+  const curUserId = req.userData.userId;
+  const userId = req.params.uid;
+  const {} = req.body;
+  
+  if(curUserId !== userId){
+    return res.status(401).json({"Error":"You are not authorized to perform this operation"});
+  }
+  
+  let curUser;
+  try{
+    curUser = await User.findById(userId);
+  }
+  catch(err){
+    return res.status(500).json({"error":"Something went wrong !!"});
+  }
+
+// update field values 
+// against the received data
+
+  try {
+    await User.save();
+  } catch (err) {
+    return res.status(500).json({"error":"Something went wrong !!"});
+  }
+
+  res.status(200).json({ curUser });
+}
