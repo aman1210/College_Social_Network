@@ -13,12 +13,10 @@ class ChatModel extends ChangeNotifier {
 
   void init(String userId) {
     socket =
-        IO.io('https://connectus15-backend.herokuapp.com', <String, dynamic>{
-      "chatId": userId,
+        IO.io('https://connectus15-backend.herokuapp.com/', <String, dynamic>{
       "transport": ['websocket'],
-      "upgrade": false
-
-      // "autoConnect": false,
+      "upgrade": false,
+      "autoConnect": false,
     });
     socket.connect();
     socket.onConnect((data) => print("connected"));

@@ -25,6 +25,7 @@ class UserViewModel with ChangeNotifier {
       if (responseBody['friendList'] != null) {
         var fl = responseBody['friendList'] as List<dynamic>;
         List<FriendListElement> temp = [];
+        print(fl);
         fl.forEach((f) {
           temp.add(FriendListElement.fromJson(f));
         });

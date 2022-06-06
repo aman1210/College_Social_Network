@@ -1,3 +1,6 @@
+import 'package:ConnectUs/models/friendList.dart';
+import 'package:ConnectUs/view_models/auth_view_model.dart';
+import 'package:ConnectUs/view_models/user_view_model.dart';
 import 'package:ConnectUs/views/message_screen/message_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -20,47 +23,75 @@ class ChatList extends StatefulWidget {
 class _ChatListState extends State<ChatList> {
   final ScrollController _controller = ScrollController();
 
+  bool isLoading = false;
+  List<FriendListElement> friends = [];
+
   @override
   void initState() {
     super.initState();
+
+    setState(() {
+      isLoading = true;
+    });
+    var id = Provider.of<AuthViewModel>(context, listen: false).userId;
+    var token = Provider.of<AuthViewModel>(context, listen: false).token;
+    Provider.of<UserViewModel>(context, listen: false)
+        .getFriendList(id, token)
+        .then((value) => {
+              setState(() {
+                isLoading = false;
+              })
+            });
     // Provider.of<ChatModel>(context, listen: false).init();
   }
 
   @override
   Widget build(BuildContext context) {
-    var model = Provider.of<ChatModel>(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: kDefaultPadding / 2,
-      ),
-      child: Column(
-        children: [
-          TextFormField(
-            decoration: InputDecoration(
-                isDense: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(kDefaultPadding / 2),
-                ),
-                hintText: "Search Friends!",
-                prefixIcon: const Icon(CupertinoIcons.search)),
-          ),
-          const SizedBox(height: kDefaultPadding / 2),
-          Expanded(
-              child: ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  controller: _controller,
-                  itemBuilder: (context, index) => AnimatedChatListItem(
-                        index: index,
-                        scrollPageView: widget.scrollPageView,
-                        name: model.friendList[index].name!,
-                        chatId: model.friendList[index].id!,
-                      ),
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 2),
-                  itemCount: model.friendList.length)),
-        ],
-      ),
-    );
+    friends = Provider.of<UserViewModel>(context).friendList;
+    return isLoading
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: kDefaultPadding / 2,
+            ),
+            child: Column(
+              mainAxisAlignment: friends.length > 0
+                  ? MainAxisAlignment.start
+                  : MainAxisAlignment.center,
+              children: [
+                if (friends.length > 0)
+                  TextFormField(
+                    decoration: InputDecoration(
+                        isDense: true,
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(kDefaultPadding / 2),
+                        ),
+                        hintText: "Search Friends!",
+                        prefixIcon: const Icon(CupertinoIcons.search)),
+                  ),
+                const SizedBox(height: kDefaultPadding / 2),
+                if (friends.length == 0)
+                  Center(child: Text("Please add friends!")),
+                if (friends.length > 0)
+                  Expanded(
+                      child: ListView.separated(
+                          scrollDirection: Axis.vertical,
+                          controller: _controller,
+                          itemBuilder: (context, index) => AnimatedChatListItem(
+                                index: index,
+                                scrollPageView: widget.scrollPageView,
+                                name: friends[index].name!,
+                                chatId: friends[index].id!,
+                              ),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 2),
+                          itemCount: friends.length)),
+              ],
+            ),
+          );
   }
 }
 
