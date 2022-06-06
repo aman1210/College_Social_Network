@@ -7,6 +7,7 @@ import 'package:ConnectUs/utils/constants.dart';
 import 'package:ConnectUs/view_models/secure_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthViewModel extends ChangeNotifier {
   bool _isLoading = false;
@@ -22,8 +23,6 @@ class AuthViewModel extends ChangeNotifier {
   String _userName = '';
   String _email = '';
   String _profileImage = '';
-
-  final SecureStroage secureStroage = SecureStroage();
 
   AuthViewModel() {
     tryAutoLogin();
@@ -81,7 +80,7 @@ class AuthViewModel extends ChangeNotifier {
         throw HttpExceptions(bodyresponse['error']);
       }
 
-      _email = bodyresponse['body'];
+      _email = bodyresponse['email'];
       _userId = bodyresponse['userId'];
       _userName = bodyresponse['userName'];
       _profileImage = bodyresponse['profile_image'];
@@ -123,7 +122,7 @@ class AuthViewModel extends ChangeNotifier {
         throw HttpExceptions(bodyresponse['error']);
       }
 
-      _email = bodyresponse['body'];
+      _email = bodyresponse['email'];
       _userId = bodyresponse['userId'];
       _userName = bodyresponse['userName'];
       _profileImage = bodyresponse['profile_image'];
@@ -138,7 +137,8 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  void logout() {
+  void logout() async {
+    final prefs = await SharedPreferences.getInstance();
     _expiryDate = DateTime.now();
     _userId = '';
     _userName = '';
@@ -147,7 +147,7 @@ class AuthViewModel extends ChangeNotifier {
     _profileImage = '';
     _userLoggedIn = false;
     notifyListeners();
-    secureStroage.deleteStorage();
+    await prefs.clear();
   }
 
   void toggleDarkMode() {
@@ -156,33 +156,38 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<void> saveData() async {
-    secureStroage.writeSecureStorage('token', _token);
-    secureStroage.writeSecureStorage('userId', _userId);
-    secureStroage.writeSecureStorage('userName', _userName);
-    secureStroage.writeSecureStorage('profileImage', _profileImage);
-    secureStroage.writeSecureStorage('email', _email);
-    secureStroage.writeSecureStorage(
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.setString('token', _token);
+    prefs.setString('userId', _userId);
+    prefs.setString('userName', _userName);
+    prefs.setString('profileImage', _profileImage);
+    prefs.setString('email', _email);
+    prefs.setString(
         'expiry', _expiryDate.add(const Duration(hours: 1)).toIso8601String());
   }
 
   Future<bool> tryAutoLogin() async {
-    Map<String, String> data = await secureStroage.realStorage();
-    _userId = data['userId'] ?? '';
-    _userName = data['userName'] ?? '';
-    _token = data['token'] ?? '';
-    _email = data['email'] ?? '';
-    _expiryDate =
-        DateTime.parse(data['expiry'] ?? DateTime.now().toIso8601String());
-    _profileImage = data['profileImage'] ?? '';
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey('token')) {
+      _userId = prefs.getString('token') ?? '';
+      _userName = prefs.getString('userName') ?? '';
+      _token = prefs.getString('token') ?? '';
+      _email = prefs.getString('email') ?? '';
+      _expiryDate = DateTime.parse(
+          prefs.getString('expiry') ?? DateTime.now().toIso8601String());
+      _profileImage = prefs.getString('profileImage') ?? '';
 
-    if (_token != '' && _expiryDate.isAfter(DateTime.now())) {
-      _userLoggedIn = true;
-    } else {
-      _userLoggedIn = false;
-      logout();
+      if (_token != '' && _expiryDate.isAfter(DateTime.now())) {
+        _userLoggedIn = true;
+      } else {
+        _userLoggedIn = false;
+        logout();
+      }
+
+      notifyListeners();
+      return true;
     }
-
-    notifyListeners();
-    return true;
+    return false;
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:html';
 import 'dart:io';
 
 import 'package:ConnectUs/models/HttpExceptions.dart';
@@ -122,16 +121,30 @@ class PostViewModel with ChangeNotifier {
 
     var request = json.encode(data);
 
-    var respose = await http.post(
-      uri,
-      body: request,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+    try {
+      var respose = await http.post(
+        uri,
+        body: request,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
 
-    var responseBody = json.decode(respose.body);
+      var responseBody = json.decode(respose.body);
+      if (respose.statusCode >= 400) {
+        throw HttpExceptions(responseBody['message']);
+      }
 
-    print(responseBody);
+      var post = posts.firstWhere((p) => p.id == id);
+      post.comments!.add({
+        "userName": userName,
+        "timeStamp": DateTime.now().toIso8601String(),
+        "text": text
+      });
+
+      notifyListeners();
+    } catch (err) {
+      throw err;
+    }
   }
 }

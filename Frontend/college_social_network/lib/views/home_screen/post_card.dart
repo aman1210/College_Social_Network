@@ -39,11 +39,18 @@ class _PostCardState extends State<PostCard> {
     setState(() {
       disableComment = true;
     });
-    await Provider.of<PostViewModel>(context, listen: false)
-        .commentOnPost(widget.post!.id!, "Aman", _commentController.text);
+    try {
+      await Provider.of<PostViewModel>(context, listen: false)
+          .commentOnPost(widget.post!.id!, "Aman", _commentController.text);
+    } catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
+    }
     setState(() {
       disableComment = false;
     });
+    _commentController.clear();
   }
 
   @override
@@ -63,11 +70,11 @@ class _PostCardState extends State<PostCard> {
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
     return AnimatedOpacity(
-      duration: Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
       opacity: _animate ? 1 : 0,
       curve: Curves.easeInOutQuart,
       child: AnimatedPadding(
-        duration: Duration(milliseconds: 1000),
+        duration: const Duration(milliseconds: 1000),
         padding: _animate
             ? const EdgeInsets.all(4.0)
             : const EdgeInsets.only(top: 10),
@@ -152,7 +159,7 @@ class _PostCardState extends State<PostCard> {
                           minLines: 1,
                           controller: _commentController,
                           readOnly: disableComment,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: InputBorder.none,
                             hintText: "Write a comment..",
                           ),
@@ -182,16 +189,22 @@ class _PostCardState extends State<PostCard> {
               ),
               if (widget.post!.comments != null &&
                   widget.post!.comments!.length > 0)
-                ...widget.post!.comments!.map((c) => ListTile(
+                ...widget.post!.comments!.map(
+                  (c) => Card(
+                    child: ListTile(
                       title: Text(
                         c['text'],
-                        style: TextStyle(fontSize: 12),
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
-                        c['userName'],
-                        style: TextStyle(fontSize: 10),
+                        "Author: ${c['userName']}",
+                        style: const TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w300),
                       ),
-                    ))
+                    ),
+                  ),
+                )
             ],
           ),
         ),
@@ -239,11 +252,11 @@ class _PostButtonsState extends State<PostButtons> {
               }
             },
             icon: isLiked
-                ? Icon(
+                ? const Icon(
                     Icons.favorite_rounded,
                     color: Colors.red,
                   )
-                : Icon(
+                : const Icon(
                     Icons.favorite_border_rounded,
                   ),
             label: const Text("Like"),
@@ -259,9 +272,9 @@ class _PostButtonsState extends State<PostButtons> {
                   text:
                       "http://connectus-9b0c5.web.app/post/${widget.post!.id!}"));
 
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text("URL copied to clipboard!"),
-                duration: Duration(seconds: 1),
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: const Text("URL copied to clipboard!"),
+                duration: const Duration(seconds: 1),
               ));
             },
             icon: const Icon(Icons.share_outlined),
@@ -494,19 +507,19 @@ class PostHead extends StatelessWidget {
             bool res = await showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                      content:
-                          Text("Do you want to report this post to admin?"),
+                      content: const Text(
+                          "Do you want to report this post to admin?"),
                       actions: [
                         ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context, true);
                             },
-                            child: Text("Yes")),
+                            child: const Text("Yes")),
                         ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context, false);
                             },
-                            child: Text("No")),
+                            child: const Text("No")),
                       ],
                     ));
             if (res) {
@@ -516,17 +529,17 @@ class PostHead extends StatelessWidget {
                 showDialog(
                     context: context,
                     builder: (context) =>
-                        CustomDialog(msg: "Post reported Successfully!"));
+                        const CustomDialog(msg: "Post reported Successfully!"));
               } on HttpExceptions catch (err) {
                 showDialog(
                     context: context,
                     builder: (context) =>
-                        CustomDialog(msg: "Something went wrong!"));
+                        const CustomDialog(msg: "Something went wrong!"));
               } catch (err) {
                 showDialog(
                     context: context,
                     builder: (context) =>
-                        CustomDialog(msg: "Something went wrong!"));
+                        const CustomDialog(msg: "Something went wrong!"));
               }
             }
           },
