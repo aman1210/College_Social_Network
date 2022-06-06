@@ -38,7 +38,7 @@ class _MessageScreenState extends State<MessageScreen> {
     if (selectedUser != null) {
       selected = Provider.of<ChatModel>(context, listen: false)
           .friendList[selectedUser];
-      chatId = selected.chatID;
+      chatId = selected.id!;
       chats = Provider.of<ChatModel>(context).getMessagesForChatID(chatId);
     }
     return isMobile && selectedUser == null

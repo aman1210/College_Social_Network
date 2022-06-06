@@ -1,5 +1,9 @@
+import 'package:ConnectUs/models/user.dart';
+import 'package:ConnectUs/view_models/auth_view_model.dart';
+import 'package:ConnectUs/view_models/user_view_model.dart';
 import 'package:ConnectUs/views/profile_screen/edit_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
 import '../../responsive.dart';
 import '../../utils/constants.dart';
@@ -8,88 +12,136 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_fade/image_fade.dart';
 
-class ProfileScreen extends StatelessWidget {
-  ProfileScreen({Key? key}) : super(key: key);
+class ProfileScreen extends StatefulWidget {
+  ProfileScreen({Key? key, this.id}) : super(key: key);
+
+  final String? id;
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   ScrollController _controller = ScrollController();
+  User? userProfile;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      isLoading = true;
+    });
+    var id = Provider.of<AuthViewModel>(context, listen: false).userId;
+    var token = Provider.of<AuthViewModel>(context, listen: false).token;
+
+    Provider.of<UserViewModel>(context, listen: false)
+        .getProfile(widget.id ?? id, token)
+        .then((value) {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
-    return Container(
-      margin: EdgeInsets.symmetric(
-          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
-      child: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-        child: SingleChildScrollView(
-          controller: _controller,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ProfileAndCoverPhotoCard(isMobile: isMobile),
-              SizedBox(height: kDefaultPadding),
-              Container(
-                padding: EdgeInsets.all(kDefaultPadding),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.blueGrey.withOpacity(0.2)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(kDefaultPadding),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 20,
-                      color: Colors.black.withOpacity(0.07),
-                      offset: const Offset(0, 5),
-                    )
-                  ],
-                ),
+    userProfile = Provider.of<UserViewModel>(context).user;
+    return isLoading
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Container(
+            margin: EdgeInsets.symmetric(
+                horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
+            child: ScrollConfiguration(
+              behavior:
+                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              child: SingleChildScrollView(
+                controller: _controller,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Intro",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white70
-                              : Colors.blueGrey.shade700),
-                    ),
-                    SizedBox(height: kDefaultPadding / 5),
-                    introField(Icons.web, "www.amansri.me", context),
-                    introField(CupertinoIcons.person, "Male", context),
-                    introField(
-                        Icons.cake_outlined, "Born October 12, 1998", context),
-                    introField(Icons.map_rounded, "Varanasi, India", context),
-                    introField(Icons.facebook_outlined, "aman1210", context),
-                    introField(Icons.facebook, "aman1210", context),
-                    Divider(thickness: 1, height: kDefaultPadding * 2),
-                    Text(
-                      "About",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white70
-                              : Colors.blueGrey.shade700),
-                    ),
-                    SizedBox(height: kDefaultPadding / 5),
-                    Text(
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white.withOpacity(0.65)
-                              : null),
-                    ),
-                    Divider(thickness: 1, height: kDefaultPadding * 2),
+                    ProfileAndCoverPhotoCard(
+                        isMobile: isMobile, user: userProfile!),
+                    SizedBox(height: kDefaultPadding),
+                    Container(
+                      padding: EdgeInsets.all(kDefaultPadding),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.blueGrey.withOpacity(0.2)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(kDefaultPadding),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 20,
+                            color: Colors.black.withOpacity(0.07),
+                            offset: const Offset(0, 5),
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Intro",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white70
+                                    : Colors.blueGrey.shade700),
+                          ),
+                          SizedBox(height: kDefaultPadding / 5),
+                          introField(
+                              Icons.cake_outlined,
+                              "Born ${userProfile!.dob ?? 'Not entered'}",
+                              context),
+                          introField(
+                              Icons.map_rounded,
+                              userProfile!.location ?? "Not specified",
+                              context),
+                          if (userProfile!.socialLinks != null)
+                            ...userProfile!.socialLinks!
+                                .map(
+                                  (e) => introField(
+                                      Icons.south_america_rounded,
+                                      userProfile!.location ?? "Not specified",
+                                      context),
+                                )
+                                .toList(),
+                          Divider(thickness: 1, height: kDefaultPadding * 2),
+                          Text(
+                            "About",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white70
+                                    : Colors.blueGrey.shade700),
+                          ),
+                          SizedBox(height: kDefaultPadding / 5),
+                          Text(
+                            userProfile!.about ?? "'About' not specified",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white.withOpacity(0.65)
+                                    : null),
+                          ),
+                          Divider(thickness: 1, height: kDefaultPadding * 2),
+                        ],
+                      ),
+                    )
                   ],
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+              ),
+            ),
+          );
   }
 
   Padding introField(IconData icon, String value, BuildContext context) {
@@ -118,9 +170,11 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
   const ProfileAndCoverPhotoCard({
     Key? key,
     required this.isMobile,
+    required this.user,
   }) : super(key: key);
 
   final bool isMobile;
+  final User user;
 
   @override
   Widget build(BuildContext context) {
@@ -167,13 +221,12 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      CircleAvatar(
-                        maxRadius: isMobile ? 40 : 60,
-                        backgroundColor: Colors.blue,
-                        backgroundImage: NetworkImage(
-                          "https://assets.entrepreneur.com/content/3x2/2000/1396294231-why-college-students-need-entrepreneurial-careers.jpg",
-                        ),
-                      ),
+                      if (user.profileImage != null)
+                        CircleAvatar(
+                            maxRadius: isMobile ? 40 : 60,
+                            backgroundColor: Colors.blue,
+                            backgroundImage:
+                                CachedNetworkImageProvider(user.profileImage!)),
                       Positioned(
                         bottom: 15,
                         right: isMobile ? -10 : 0,
@@ -228,7 +281,7 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Aman Srivastava",
+                      user.name ?? "AMan",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -238,7 +291,7 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "Flutter Developer",
+                      user.intro ?? "",
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).brightness == Brightness.dark

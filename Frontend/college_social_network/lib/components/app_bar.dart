@@ -53,7 +53,7 @@ class CustomAppBar extends StatelessWidget {
                         color: Colors.black12,
                       ),
                     ),
-                    hintText: "Search for something here...",
+                    hintText: "Search for someone here...",
                     hintStyle: const TextStyle(fontSize: 14),
                     prefixIcon: const Icon(
                       CupertinoIcons.search,
@@ -68,7 +68,7 @@ class CustomAppBar extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
               decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.07),
+                  color: Theme.of(context).primaryColor.withOpacity(0.03),
                   borderRadius: BorderRadius.circular(kDefaultPadding / 4)),
               child: Row(
                 children: [

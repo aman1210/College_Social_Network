@@ -1,6 +1,7 @@
 import 'package:ConnectUs/view_models/admin_view_model.dart';
 import 'package:ConnectUs/view_models/chat_view_model.dart';
 import 'package:ConnectUs/view_models/post_view_model.dart';
+import 'package:ConnectUs/view_models/user_view_model.dart';
 import 'package:ConnectUs/views/admin_screen.dart/admin_screen.dart';
 import 'package:ConnectUs/views/auth_screen/auth_screen.dart';
 
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => ChatModel()),
         ChangeNotifierProvider(create: (ctx) => MessageViewModel()),
         ChangeNotifierProvider(create: (ctx) => PostViewModel()),
+        ChangeNotifierProvider(create: (ctx) => UserViewModel()),
       ],
       child: Consumer<AuthViewModel>(
         builder: (context, value, child) {

@@ -8,27 +8,19 @@ import '../models/message.dart';
 import '../models/user.dart';
 
 class ChatModel extends ChangeNotifier {
-  List<User> users = [
-    User(name: 'IronMan', chatID: '111'),
-    User(name: 'Captain America', chatID: '222'),
-    User(name: 'Antman', chatID: '333'),
-    User(name: 'Hulk', chatID: '444'),
-    User(name: 'Thor', chatID: '555'),
-  ];
-
   late User currentUser;
   List<User> friendList = <User>[];
   List<Message> messages = <Message>[];
   late SocketIO socketIO;
 
   void init() {
-    currentUser = users[0];
-    friendList =
-        users.where((user) => user.chatID != currentUser.chatID).toList();
+    // currentUser = users[0];
+    // friendList =
+    //     users.where((user) => user.id != currentUser.id).toList();
 
     socketIO = SocketIOManager().createSocketIO(
         'https://connectus15-backend.herokuapp.com', '/',
-        query: 'chatID=${currentUser.chatID}');
+        query: 'chatID=${currentUser.id}');
     socketIO.init();
 
     socketIO.subscribe('receive_message', (jsonData) {
@@ -50,14 +42,14 @@ class ChatModel extends ChangeNotifier {
   void sendMessage(String text, String receiverChatID) {
     messages.add(Message(
         text: text,
-        senderID: currentUser.chatID,
+        senderID: currentUser.id!,
         receiverID: receiverChatID,
         timeStamp: DateTime.now().toIso8601String()));
     socketIO.sendMessage(
       'send_message',
       json.encode({
         'receiverChatID': receiverChatID,
-        'senderChatID': currentUser.chatID,
+        'senderChatID': currentUser.id,
         'content': text,
       }),
     );

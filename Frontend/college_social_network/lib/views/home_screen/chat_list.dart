@@ -52,8 +52,8 @@ class _ChatListState extends State<ChatList> {
                   itemBuilder: (context, index) => AnimatedChatListItem(
                         index: index,
                         scrollPageView: widget.scrollPageView,
-                        name: model.friendList[index].name,
-                        chatId: model.friendList[index].chatID,
+                        name: model.friendList[index].name!,
+                        chatId: model.friendList[index].id!,
                       ),
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 2),
