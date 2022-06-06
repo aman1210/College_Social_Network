@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 
 const http = require("http").Server(app);
-const io = require("socket.io")(http);
+const io = require("socket.io")("https://connectus15-backend.herokuapp.com");
 
 const port = process.env.PORT || 8080;
 
@@ -72,27 +72,30 @@ app.get("/", (req, res) => {
 
 io.on("connection", (socket) => {
   //Get the chatID of the user and join in a room of the same chatID
-  chatID = socket.handshake.query.chatID;
-  socket.join(chatID);
-
-  //Leave the room if the user closes the socket
-  socket.on("disconnect", () => {
-    socket.leave(chatID);
+  io.on("connection", (socket) => {
+    console.log(socket.id); // x8WIv7-mJelg7on_ALbx
   });
+  // chatID = socket.handshake.query.chatID;
+  // socket.join(chatID);
 
-  //Send message to only a particular user
-  socket.on("send_message", (message) => {
-    receiverChatID = message.receiverChatID;
-    senderChatID = message.senderChatID;
-    content = message.content;
+  // //Leave the room if the user closes the socket
+  // socket.on("disconnect", () => {
+  //   socket.leave(chatID);
+  // });
 
-    //Send message to only that particular room
-    socket.in(receiverChatID).emit("receive_message", {
-      content: content,
-      senderChatID: senderChatID,
-      receiverChatID: receiverChatID,
-    });
-  });
+  // //Send message to only a particular user
+  // socket.on("send_message", (message) => {
+  //   receiverChatID = message.receiverChatID;
+  //   senderChatID = message.senderChatID;
+  //   content = message.content;
+
+  //   //Send message to only that particular room
+  //   socket.in(receiverChatID).emit("receive_message", {
+  //     content: content,
+  //     senderChatID: senderChatID,
+  //     receiverChatID: receiverChatID,
+  //   });
+  // });
 });
 
 //Handling error likes invalid pages
