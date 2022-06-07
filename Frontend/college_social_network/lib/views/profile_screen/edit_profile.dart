@@ -76,6 +76,10 @@ class _EditProfieFormState extends State<EditProfieForm> {
           context: context,
           builder: (context) => CustomDialog(msg: err.toString()));
     }
+    Navigator.of(context).pop();
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override

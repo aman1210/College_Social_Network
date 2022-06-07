@@ -94,6 +94,7 @@ class UserViewModel with ChangeNotifier {
       if (response.statusCode >= 400) {
         throw HttpExceptions(responseBody['message'] ?? responseBody['error']);
       }
+      return;
     } catch (err) {
       throw err;
     }
