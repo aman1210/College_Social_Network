@@ -24,7 +24,7 @@ class PostsVerification extends StatefulWidget {
 }
 
 class _PostsVerificationState extends State<PostsVerification> {
-  List<AdminPosts> posts = [];
+  List<AdminPosts> p = [];
   bool isLoading = false;
   @override
   void initState() {
@@ -43,22 +43,18 @@ class _PostsVerificationState extends State<PostsVerification> {
 
   @override
   Widget build(BuildContext context) {
-    posts = Provider.of<AdminViewModel>(context).posts;
-
+    p = Provider.of<AdminViewModel>(context).posts;
     return isLoading
         ? const Center(child: CircularProgressIndicator())
-        : posts.length == 0
+        : p.length == 0
             ? const Center(
                 child: Text("No new post to verify"),
               )
-            : Container(
-                child: ListView.separated(
-                  itemBuilder: (context, index) =>
-                      PostsVerificationItem(post: posts[index]),
-                  separatorBuilder: (context, index) => const Divider(),
-                  itemCount: posts.length,
-                ),
-              );
+            : ListView.separated(
+                itemBuilder: (context, index) =>
+                    PostsVerificationItem(post: p[index]),
+                separatorBuilder: (context, index) => Divider(),
+                itemCount: p.length);
   }
 }
 
@@ -78,7 +74,7 @@ class PostsVerificationItem extends StatelessWidget {
         },
         child: Row(
           children: [
-            if (post.images != null)
+            if (post.images != null && post.images!.length > 0)
               Container(
                 height: 60,
                 width: 60,

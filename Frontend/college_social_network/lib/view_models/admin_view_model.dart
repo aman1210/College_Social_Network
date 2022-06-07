@@ -44,10 +44,13 @@ class AdminViewModel extends ChangeNotifier {
       }
       var resposts = responseBody['posts'] as List<dynamic>;
       List<AdminPosts> temp = [];
+
       resposts.forEach((post) {
         temp.add(AdminPosts.fromJson(post));
       });
+
       posts = temp;
+      // print(posts);
       notifyListeners();
     } catch (err) {
       throw err;

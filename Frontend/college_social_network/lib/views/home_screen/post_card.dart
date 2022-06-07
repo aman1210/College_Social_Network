@@ -42,8 +42,11 @@ class _PostCardState extends State<PostCard> {
       disableComment = true;
     });
     try {
-      await Provider.of<PostViewModel>(context, listen: false)
-          .commentOnPost(widget.post!.id!, "Aman", _commentController.text);
+      await Provider.of<PostViewModel>(context, listen: false).commentOnPost(
+          widget.post!.id!,
+          "Aman",
+          _commentController.text,
+          Provider.of<AuthViewModel>(context, listen: false).userId);
     } catch (err) {
       showDialog(
           context: context,
@@ -251,7 +254,10 @@ class _PostButtonsState extends State<PostButtons> {
               });
               try {
                 await Provider.of<PostViewModel>(context, listen: false)
-                    .likePost(widget.post!.id!);
+                    .likePost(
+                        widget.post!.id!,
+                        Provider.of<AuthViewModel>(context, listen: false)
+                            .userId);
               } catch (err) {
                 showDialog(
                     context: context,

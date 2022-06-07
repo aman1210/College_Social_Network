@@ -98,11 +98,18 @@ class PostViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> likePost(String id) async {
+  Future<void> likePost(String id, String userId) async {
     Uri uri = Uri.parse(server + "posts/$id");
+    var data = {
+      "userId": userId,
+      "timeStamp": DateTime.now().toIso8601String(),
+    };
+
+    var request = json.encode(data);
     try {
       var response = await http.post(
         uri,
+        body: request,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -119,13 +126,15 @@ class PostViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> commentOnPost(String id, String userName, String text) async {
+  Future<void> commentOnPost(
+      String id, String userName, String text, String userId) async {
     Uri uri = Uri.parse(server + "posts/$id/comment");
 
     var data = {
       "userName": userName,
       "text": text,
-      "timeStamp": DateTime.now().toIso8601String()
+      "timeStamp": DateTime.now().toIso8601String(),
+      "userId": userId,
     };
 
     var request = json.encode(data);
