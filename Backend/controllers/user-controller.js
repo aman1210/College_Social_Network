@@ -105,7 +105,7 @@ exports.user_edit_profile = async (req,res,next)=>{
   }
   const curUserId = req.userData.userId;
   const userId = req.params.uid;
-  const {} = req.body;
+  const {profile_image, intro, about, dob, social_links, location} = req.body;
   
   if(curUserId !== userId){
     return res.status(401).json({"Error":"You are not authorized to perform this operation"});
@@ -122,8 +122,15 @@ exports.user_edit_profile = async (req,res,next)=>{
 // update field values 
 // against the received data
 
+curUser.profile_image = profile_image;
+curUser.dob = dob;
+curUser.intro = intro;
+curUser.about = about;
+curUser.social_links = social_links;
+curUser.location = location;
+
   try {
-    await User.save();
+    await curUser.save();
   } catch (err) {
     return res.status(500).json({"error":"Something went wrong !!"});
   }
