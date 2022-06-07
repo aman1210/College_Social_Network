@@ -105,35 +105,22 @@ exports.user_edit_profile = async (req,res,next)=>{
   }
   const curUserId = req.userData.userId;
   const userId = req.params.uid;
-  const {profile_image, intro, about, dob, social_links, location} = req.body;
-  
+    
   if(curUserId !== userId){
     return res.status(401).json({"Error":"You are not authorized to perform this operation"});
   }
   
-  let curUser;
-  try{
-    curUser = await User.findById(userId);
-  }
-  catch(err){
-    return res.status(500).json({"error":"Something went wrong !!"});
-  }
-
-// update field values 
-// against the received data
-
-curUser.profile_image = profile_image;
-curUser.dob = dob;
-curUser.intro = intro;
-curUser.about = about;
-curUser.social_links = social_links;
-curUser.location = location;
-
-  try {
-    await curUser.save();
-  } catch (err) {
-    return res.status(500).json({"error":"Something went wrong !!"});
-  }
-
-  res.status(200).json({ curUser });
+  User.findOneAndUpdate({ _id: userId }, { $set: req.body })
+    .then((result) => {
+      res.status(203).json({
+        message: "Profile Updated successfully",
+        user: result,
+      });
+    })
+    .catch((err) => {
+      res.status(402).json({
+        message: "Something went wrong!",
+        error: err,
+      });
+    });
 }

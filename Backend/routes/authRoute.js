@@ -49,10 +49,14 @@ const signup = async (req, res, next) => {
   try {
     await createdUser.save();
   } catch (err) {
-    return res.status(500).json({ error: "Signup failed, Please try again !!"});
+    return res.status(500).json({ error: "Signup failed, Please try again later!!"});
   }
 
   // toObject converts mongoose Object to default js object
+
+  if(!createdUser.verified){
+    return res.status(404).json({"error":"please contact ADMIN !!"});
+  }
 
   let token;
   try {
@@ -90,6 +94,10 @@ const login = async (req, res, next) => {
 
   if (!existingUser) {
     return res.status(401).json({ error: "Could not identify user, Credentials seems wrong"});
+  }
+
+  if(!existingUser.verified){
+    return res.status(401).json({"error":"please contact ADMIN !!"});
   }
 
   let isValidPassword = false;
