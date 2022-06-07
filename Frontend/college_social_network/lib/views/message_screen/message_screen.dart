@@ -1,6 +1,11 @@
-import 'package:college_social_network/responsive.dart';
-import 'package:college_social_network/view_models/message_view_model.dart';
-import 'package:college_social_network/views/home_screen/chat_list.dart';
+import 'package:ConnectUs/view_models/auth_view_model.dart';
+import 'package:ConnectUs/view_models/chat_view_model.dart';
+
+import '../../models/message.dart';
+import '../../models/user.dart';
+import '../../responsive.dart';
+import '../../view_models/message_view_model.dart';
+import '../../views/home_screen/chat_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,68 +21,29 @@ class MessageScreen extends StatefulWidget {
 class _MessageScreenState extends State<MessageScreen> {
   final ScrollController _chatListController = ScrollController();
 
-  final List<ChatModel> chats = [
-    ChatModel(
-      name: "Dianne Russell",
-      lastOnline: "5 hours ago",
-      issueType: "General Query",
-      msgs: [
-        MessageModel(
-          msg: "Hey! Okay, send out.",
-          fromUser: false,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg: "Can I send you?",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg:
-              "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim ",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg: "Hey! Okay, send out.",
-          fromUser: false,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg: "Can I send you?",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg:
-              "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim ",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg: "Hey! Okay, send out.",
-          fromUser: false,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg: "Can I send you?",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-        MessageModel(
-          msg:
-              "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim ",
-          fromUser: true,
-          time: "4 days ago",
-        ),
-      ],
-    ),
-  ];
+  List<Message> chats = [];
+  late String chatId;
+  late User selected;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    var userId = Provider.of<AuthViewModel>(context, listen: false).userId;
+    Provider.of<ChatModel>(context, listen: false).init(userId);
+  }
 
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
     var selectedUser = Provider.of<MessageViewModel>(context).selectedUser;
+
+    if (selectedUser != null) {
+      // selected = Provider.of<ChatModel>(context, listen: false)
+      //     .friendList[selectedUser];
+      // chatId = selected.id!;
+      // chats = Provider.of<ChatModel>(context).getMessagesForChatID(chatId);
+    }
     return isMobile && selectedUser == null
         ? ChatList()
         : Container(
@@ -105,7 +71,9 @@ class _MessageScreenState extends State<MessageScreen> {
                     padding: EdgeInsets.only(
                         top: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context).scaffoldBackgroundColor
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(
                           isMobile ? kDefaultPadding / 2 : kDefaultPadding * 1),
                     ),
@@ -113,7 +81,7 @@ class _MessageScreenState extends State<MessageScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ChatBoxHeading(
-                          selectedUser: selectedUser,
+                          selectedUser: selected,
                           isMobile: isMobile,
                         ),
                         Divider(height: kDefaultPadding),
@@ -122,16 +90,21 @@ class _MessageScreenState extends State<MessageScreen> {
                             controller: _chatListController,
                             reverse: true,
                             itemBuilder: (context, index) => MessageBubble(
-                              chatSelected: chats[0].msgs[index],
+                              chatSelected: chats[index],
                               isMobile: isMobile,
+                              userChatID: chatId,
                             ),
-                            itemCount: chats[0].msgs.length,
+                            itemCount: chats.length,
                           ),
                         ),
                         Divider(height: kDefaultPadding / 2),
                         Container(
                           height: 60,
                           decoration: BoxDecoration(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Theme.of(context).scaffoldBackgroundColor
+                                  : null,
                               borderRadius: BorderRadius.only(
                                   bottomLeft: Radius.circular(isMobile
                                       ? kDefaultPadding / 2
@@ -139,49 +112,59 @@ class _MessageScreenState extends State<MessageScreen> {
                                   bottomRight: Radius.circular(isMobile
                                       ? kDefaultPadding / 2
                                       : kDefaultPadding * 1))),
-                          child: Row(children: [
-                            Expanded(
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: isMobile
-                                        ? kDefaultPadding / 2
-                                        : kDefaultPadding),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: isMobile
-                                        ? kDefaultPadding / 2
-                                        : kDefaultPadding),
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.03),
-                                  borderRadius: BorderRadius.circular(5),
-                                  border:
-                                      Border.all(color: Colors.grey.shade300),
-                                ),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: "Type something here",
-                                    hintStyle: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: isMobile ? 12 : 14),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: isMobile
+                                          ? kDefaultPadding / 2
+                                          : kDefaultPadding),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: isMobile
+                                          ? kDefaultPadding / 2
+                                          : kDefaultPadding),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.03),
+                                    borderRadius: BorderRadius.circular(5),
+                                    border:
+                                        Border.all(color: Colors.grey.shade300),
+                                  ),
+                                  child: TextFormField(
+                                    style: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? TextStyle(color: Colors.white70)
+                                        : null,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: "Type something here",
+                                      hintStyle: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: isMobile ? 12 : 14),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .primaryColor
-                                    .withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Icon(
-                                Icons.send,
-                                color: Colors.blue,
-                              ),
-                            )
-                          ]),
+                              Container(
+                                height: 40,
+                                width: 40,
+                                margin: EdgeInsets.only(
+                                    right: isMobile
+                                        ? kDefaultPadding / 2
+                                        : kDefaultPadding),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Icon(
+                                  Icons.send,
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
                         )
                       ],
                     ),
@@ -192,11 +175,15 @@ class _MessageScreenState extends State<MessageScreen> {
 
 class MessageBubble extends StatelessWidget {
   const MessageBubble(
-      {Key? key, required this.chatSelected, required this.isMobile})
+      {Key? key,
+      required this.chatSelected,
+      required this.isMobile,
+      required this.userChatID})
       : super(key: key);
 
-  final MessageModel chatSelected;
+  final Message chatSelected;
   final bool isMobile;
+  final String userChatID;
 
   @override
   Widget build(BuildContext context) {
@@ -206,11 +193,11 @@ class MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: chatSelected.fromUser
+        mainAxisAlignment: userChatID == chatSelected.senderID
             ? MainAxisAlignment.start
             : MainAxisAlignment.end,
         children: [
-          if (chatSelected.fromUser)
+          if (userChatID == chatSelected.senderID)
             Container(
               margin: const EdgeInsets.only(right: 8),
               height: 40,
@@ -227,32 +214,42 @@ class MessageBubble extends StatelessWidget {
                 BoxConstraints(maxWidth: isMobile ? width * 0.6 : width * 0.38),
             decoration: BoxDecoration(
               border: Border.all(
-                  color: chatSelected.fromUser
+                  color: userChatID == chatSelected.senderID
                       ? Colors.lightBlue
                       : Color(0xff707C9740).withOpacity(0.25),
                   width: 1),
-              color:
-                  chatSelected.fromUser ? Colors.lightBlue[300] : Colors.white,
+              color: userChatID == chatSelected.senderID
+                  ? Theme.of(context).brightness == Brightness.dark
+                      ? Colors.blueGrey.shade900
+                      : Colors.lightBlue[300]
+                  : Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : Colors.white,
               borderRadius: BorderRadius.only(
-                topLeft: chatSelected.fromUser
+                topLeft: userChatID == chatSelected.senderID
                     ? const Radius.circular(0)
                     : const Radius.circular(10),
                 bottomLeft: const Radius.circular(10),
                 topRight: const Radius.circular(10),
-                bottomRight: chatSelected.fromUser
+                bottomRight: userChatID == chatSelected.senderID
                     ? const Radius.circular(10)
                     : const Radius.circular(0),
               ),
             ),
             child: Text(
-              chatSelected.msg,
-              textAlign:
-                  chatSelected.fromUser ? TextAlign.start : TextAlign.end,
+              chatSelected.text,
+              textAlign: userChatID == chatSelected.senderID
+                  ? TextAlign.start
+                  : TextAlign.end,
               style: TextStyle(
                   fontSize: isMobile ? 12 : 14,
-                  color: chatSelected.fromUser
-                      ? Colors.white
-                      : const Color(0xff707C97)),
+                  color: userChatID == chatSelected.senderID
+                      ? Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : Colors.white
+                      : Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : const Color(0xff707C97)),
             ),
           ),
         ],
@@ -266,7 +263,7 @@ class ChatBoxHeading extends StatelessWidget {
       {Key? key, required this.selectedUser, required this.isMobile})
       : super(key: key);
 
-  final int selectedUser;
+  final User selectedUser;
   final bool isMobile;
 
   @override
@@ -291,7 +288,7 @@ class ChatBoxHeading extends StatelessWidget {
           ),
           SizedBox(width: kDefaultPadding / 2),
           Text(
-            "User $selectedUser chatbox",
+            "${selectedUser.name} ",
             style: TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 16,
@@ -311,12 +308,12 @@ class ChatBoxHeading extends StatelessWidget {
   }
 }
 
-class ChatModel {
+class ChatMessageModel {
   String name;
   String lastOnline;
   String issueType;
   List<MessageModel> msgs;
-  ChatModel(
+  ChatMessageModel(
       {required this.name,
       required this.lastOnline,
       required this.issueType,

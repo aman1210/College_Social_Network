@@ -1,36 +1,62 @@
+import 'package:ConnectUs/components/custom_dialog.dart';
+import 'package:ConnectUs/models/HttpExceptions.dart';
+import 'package:ConnectUs/models/postModel.dart';
+import 'package:ConnectUs/view_models/auth_view_model.dart';
+import 'package:ConnectUs/view_models/post_view_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:college_social_network/responsive.dart';
-import 'package:college_social_network/utils/constants.dart';
-import 'package:college_social_network/utils/images.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../../responsive.dart';
+import '../../utils/constants.dart';
+import '../../utils/images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_fade/image_fade.dart';
 
 class PostCard extends StatefulWidget {
-  PostCard({Key? key, required this.index}) : super(key: key);
+  PostCard({Key? key, required this.index, this.post}) : super(key: key);
   final int index;
+  final Post? post;
 
   @override
   State<PostCard> createState() => _PostCardState();
 }
 
 class _PostCardState extends State<PostCard> {
-  List<String> images = [
-    Images.img1,
-    Images.img2,
-    Images.img3,
-    Images.img4,
-    Images.img5,
-  ];
-
   CarouselController buttonCarouselController = CarouselController();
-
-  final String lp =
-      "Lorem ipsum dolor sit amet. Ut error rerum ut dolorem velit et iusto nulla qui nihil itaque qui facilis distinctio. Ut accusamus quisquam eos distinctio odit et labore provident aut odit molestiae hic fuga nulla. Et distinctio iure At accusantium quas sed placeat vero ut tempore necessitatibus et cu";
 
   bool _animate = false;
 
   static bool _isStart = true;
+
+  TextEditingController _commentController = TextEditingController();
+  bool disableComment = false;
+
+  submit() async {
+    if (_commentController.text.length == 0) {
+      return;
+    }
+    setState(() {
+      disableComment = true;
+    });
+    try {
+      await Provider.of<PostViewModel>(context, listen: false).commentOnPost(
+          widget.post!.id!,
+          "Aman",
+          _commentController.text,
+          Provider.of<AuthViewModel>(context, listen: false).userId);
+    } catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
+    }
+    setState(() {
+      disableComment = false;
+    });
+    _commentController.clear();
+  }
 
   @override
   void initState() {
@@ -48,12 +74,14 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
+    var profileImage =
+        Provider.of<AuthViewModel>(context, listen: false).profileImage;
     return AnimatedOpacity(
-      duration: Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
       opacity: _animate ? 1 : 0,
       curve: Curves.easeInOutQuart,
       child: AnimatedPadding(
-        duration: Duration(milliseconds: 1000),
+        duration: const Duration(milliseconds: 1000),
         padding: _animate
             ? const EdgeInsets.all(4.0)
             : const EdgeInsets.only(top: 10),
@@ -72,20 +100,22 @@ class _PostCardState extends State<PostCard> {
                 BoxShadow(
                   blurRadius: 20,
                   color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white10
+                      ? Colors.white.withOpacity(0.03)
                       : Colors.black.withOpacity(0.07),
                   offset: const Offset(0, 5),
                 )
               ]),
           child: Column(
             children: [
-              const PostHead(),
-              if (lp != null)
-                Padding(
+              PostHead(post: widget.post),
+              if (widget.post?.text != null)
+                Container(
+                  width: double.infinity,
                   padding:
                       const EdgeInsets.symmetric(vertical: kDefaultPadding / 2),
                   child: Text(
-                    lp,
+                    widget.post!.text!,
+                    textAlign: TextAlign.left,
                     style: TextStyle(
                         fontSize: 14,
                         color: Theme.of(context).brightness == Brightness.dark
@@ -93,24 +123,32 @@ class _PostCardState extends State<PostCard> {
                             : null),
                   ),
                 ),
-              PostImages(
-                buttonCarouselController: buttonCarouselController,
-                images: images,
-                isMobile: isMobile,
+              if (widget.post != null &&
+                  widget.post!.images != null &&
+                  widget.post!.images!.length != 0)
+                PostImages(
+                  buttonCarouselController: buttonCarouselController,
+                  images: widget.post!.images!,
+                  isMobile: isMobile,
+                ),
+              PostStats(post: widget.post),
+              PostButtons(
+                post: widget.post,
               ),
-              const PostStats(),
-              const PostButtons(),
               Container(
                 padding: const EdgeInsets.only(top: kDefaultPadding / 2),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       backgroundColor: Colors.lightBlue,
-                      child: Icon(
-                        Icons.person_outline_rounded,
-                        color: Colors.white,
-                      ),
+                      backgroundImage: CachedNetworkImageProvider(profileImage),
+                      child: profileImage != null
+                          ? null
+                          : Icon(
+                              Icons.person_outline_rounded,
+                              color: Colors.white,
+                            ),
                     ),
                     Expanded(
                       child: Container(
@@ -129,52 +167,54 @@ class _PostCardState extends State<PostCard> {
                         child: TextFormField(
                           maxLines: 5,
                           minLines: 1,
-                          decoration: InputDecoration(
+                          controller: _commentController,
+                          readOnly: disableComment,
+                          decoration: const InputDecoration(
                             border: InputBorder.none,
                             hintText: "Write a comment..",
-                            suffixIcon: isMobile
-                                ? null
-                                : Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.gif_box_outlined,
-                                        color: Colors.blueGrey.shade500,
-                                      ),
-                                      const SizedBox(
-                                          width: kDefaultPadding / 4),
-                                      Icon(
-                                        Icons.image_outlined,
-                                        color: Colors.blueGrey.shade500,
-                                      ),
-                                      const SizedBox(
-                                          width: kDefaultPadding / 4),
-                                      Icon(
-                                        Icons.emoji_emotions_outlined,
-                                        color: Colors.blueGrey.shade500,
-                                      ),
-                                    ],
-                                  ),
                           ),
                         ),
                       ),
                     ),
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(kDefaultPadding / 4),
-                        color: Colors.blue.withOpacity(0.1),
-                      ),
-                      child: Icon(
-                        Icons.send,
-                        color: Theme.of(context).primaryColor,
+                    InkWell(
+                      onTap: () {
+                        submit();
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(kDefaultPadding / 4),
+                          color: Colors.blue.withOpacity(0.1),
+                        ),
+                        child: Icon(
+                          Icons.send,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                     )
                   ],
                 ),
-              )
+              ),
+              if (widget.post!.comments != null &&
+                  widget.post!.comments!.length > 0)
+                ...widget.post!.comments!.map(
+                  (c) => Card(
+                    child: ListTile(
+                      title: Text(
+                        c['text'],
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        "Author: ${c['userName']}",
+                        style: const TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w300),
+                      ),
+                    ),
+                  ),
+                )
             ],
           ),
         ),
@@ -183,10 +223,17 @@ class _PostCardState extends State<PostCard> {
   }
 }
 
-class PostButtons extends StatelessWidget {
-  const PostButtons({
-    Key? key,
-  }) : super(key: key);
+class PostButtons extends StatefulWidget {
+  PostButtons({Key? key, this.post}) : super(key: key);
+
+  Post? post;
+
+  @override
+  State<PostButtons> createState() => _PostButtonsState();
+}
+
+class _PostButtonsState extends State<PostButtons> {
+  bool isLiked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -201,8 +248,30 @@ class PostButtons extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TextButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.favorite_border_rounded),
+            onPressed: () async {
+              setState(() {
+                isLiked = !isLiked;
+              });
+              try {
+                await Provider.of<PostViewModel>(context, listen: false)
+                    .likePost(
+                        widget.post!.id!,
+                        Provider.of<AuthViewModel>(context, listen: false)
+                            .userId);
+              } catch (err) {
+                showDialog(
+                    context: context,
+                    builder: (context) => CustomDialog(msg: err.toString()));
+              }
+            },
+            icon: isLiked
+                ? const Icon(
+                    Icons.favorite_rounded,
+                    color: Colors.red,
+                  )
+                : const Icon(
+                    Icons.favorite_border_rounded,
+                  ),
             label: const Text("Like"),
           ),
           TextButton.icon(
@@ -211,7 +280,16 @@ class PostButtons extends StatelessWidget {
             label: const Text("Comments"),
           ),
           TextButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              Clipboard.setData(ClipboardData(
+                  text:
+                      "http://connectus-9b0c5.web.app/post/${widget.post!.id!}"));
+
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: const Text("URL copied to clipboard!"),
+                duration: const Duration(seconds: 1),
+              ));
+            },
             icon: const Icon(Icons.share_outlined),
             label: const Text("Share"),
           ),
@@ -222,9 +300,8 @@ class PostButtons extends StatelessWidget {
 }
 
 class PostStats extends StatelessWidget {
-  const PostStats({
-    Key? key,
-  }) : super(key: key);
+  const PostStats({Key? key, this.post}) : super(key: key);
+  final Post? post;
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +310,8 @@ class PostStats extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            "100 Likes",
+            // ${post!.likeCount ?? 0}
+            " ${post?.likeCount == null ? 0 : post!.likeCount} Likes",
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
@@ -241,15 +319,8 @@ class PostStats extends StatelessWidget {
           ),
           const Expanded(child: SizedBox()),
           Text(
-            "3 Comments",
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                color: Colors.blueGrey.shade400),
-          ),
-          const SizedBox(width: kDefaultPadding),
-          Text(
-            "17 Share",
+            //
+            "${post?.comments == null ? 0 : post?.comments!.length} Comments",
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
@@ -307,7 +378,7 @@ class PostImages extends StatelessWidget {
                         borderRadius: BorderRadius.circular(
                             isMobile ? kDefaultPadding / 2 : kDefaultPadding),
                         child: ImageFade(
-                          image: AssetImage(e),
+                          image: NetworkImage(e),
                           placeholder: SpinKitCubeGrid(
                               color: Theme.of(context).primaryColor),
                           fit: BoxFit.cover,
@@ -403,27 +474,32 @@ class PostImages extends StatelessWidget {
 }
 
 class PostHead extends StatelessWidget {
-  const PostHead({
-    Key? key,
-  }) : super(key: key);
+  const PostHead({Key? key, this.post}) : super(key: key);
+  final Post? post;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const CircleAvatar(
-          backgroundColor: Colors.black,
-          child: Icon(Icons.person),
-          maxRadius: 20,
-        ),
+        if (post!.profileImage == null)
+          CircleAvatar(
+            child: Icon(Icons.person),
+            maxRadius: 20,
+          ),
+        if (post!.profileImage != null)
+          CircleAvatar(
+            backgroundColor: Colors.transparent,
+            backgroundImage: CachedNetworkImageProvider(post!.profileImage!),
+            maxRadius: 20,
+          ),
         const SizedBox(width: kDefaultPadding),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Person Name",
+              post!.userName!,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -432,7 +508,9 @@ class PostHead extends StatelessWidget {
             ),
             const SizedBox(height: kDefaultPadding / 5),
             Text(
-              "Time",
+              DateFormat('EEE, MMM d, yy')
+                  .add_jm()
+                  .format(DateTime.parse(post!.timeStamp!)),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -444,7 +522,46 @@ class PostHead extends StatelessWidget {
         ),
         const Expanded(child: SizedBox()),
         IconButton(
-          onPressed: () {},
+          onPressed: () async {
+            bool res = await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      content: const Text(
+                          "Do you want to report this post to admin?"),
+                      actions: [
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context, true);
+                            },
+                            child: const Text("Yes")),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                            child: const Text("No")),
+                      ],
+                    ));
+            if (res) {
+              try {
+                await Provider.of<PostViewModel>(context, listen: false)
+                    .reportPost(post!.id!);
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        const CustomDialog(msg: "Post reported Successfully!"));
+              } on HttpExceptions catch (err) {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        const CustomDialog(msg: "Something went wrong!"));
+              } catch (err) {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        const CustomDialog(msg: "Something went wrong!"));
+              }
+            }
+          },
           icon: Icon(
             Icons.more_horiz_outlined,
             color: Colors.grey.shade700,

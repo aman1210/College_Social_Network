@@ -1,35 +1,98 @@
-import 'package:college_social_network/utils/constants.dart';
+import 'package:ConnectUs/components/custom_dialog.dart';
+import 'package:ConnectUs/models/HttpExceptions.dart';
+import 'package:ConnectUs/responsive.dart';
+import 'package:ConnectUs/view_models/admin_view_model.dart';
+import 'package:ConnectUs/view_models/auth_view_model.dart';
+import 'package:provider/provider.dart';
+
+import '../../utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_fade/image_fade.dart';
 
-class UsersVerification extends StatelessWidget {
+class UsersVerification extends StatefulWidget {
   const UsersVerification({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<UsersVerification> createState() => _UsersVerificationState();
+}
+
+class _UsersVerificationState extends State<UsersVerification> {
+  List<AdminUsers> users = [];
+  bool isLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      isLoading = true;
+    });
+    Provider.of<AdminViewModel>(context, listen: false)
+        .getUsers()
+        .then((value) {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.only(
-            top: kDefaultPadding,
-            left: kDefaultPadding,
-            right: kDefaultPadding),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
-              childAspectRatio: 3 / 4,
-              crossAxisSpacing: kDefaultPadding,
-              mainAxisSpacing: kDefaultPadding),
-          itemBuilder: (context, index) => UserVerificationCard(user: index),
-          itemCount: 50,
-        ));
+    users = Provider.of<AdminViewModel>(context).users;
+    var isMobile = Responsive.isMobile(context);
+    var isTab = Responsive.isTablet(context);
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
+        : users.length == 0
+            ? Center(
+                child: Text("No new user to verify"),
+              )
+            : Container(
+                padding: const EdgeInsets.only(
+                    top: kDefaultPadding,
+                    left: kDefaultPadding,
+                    right: kDefaultPadding),
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: isMobile
+                          ? 2
+                          : isTab
+                              ? 3
+                              : 5,
+                      childAspectRatio: 3 / 4,
+                      crossAxisSpacing: kDefaultPadding,
+                      mainAxisSpacing: kDefaultPadding),
+                  itemBuilder: (context, index) =>
+                      UserVerificationCard(user: users[index]),
+                  itemCount: users.length,
+                ));
   }
 }
 
 class UserVerificationCard extends StatelessWidget {
-  UserVerificationCard({Key? key, required this.user}) : super(key: key);
-  int user;
+  const UserVerificationCard({Key? key, required this.user}) : super(key: key);
+  final AdminUsers user;
+
+  decision(String decision, BuildContext context) async {
+    try {
+      if (decision == "approve") {
+        await Provider.of<AdminViewModel>(context, listen: false)
+            .verifyUser(user.id);
+      } else {
+        await Provider.of<AdminViewModel>(context, listen: false)
+            .deleteUser(user.id);
+      }
+    } on HttpExceptions catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
+    } catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +119,8 @@ class UserVerificationCard extends StatelessWidget {
                 width: double.infinity,
                 child: ImageFade(
                   image: NetworkImage(
-                    "https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+                    user.profileImage ??
+                        "https://images.pexels.com/photos/1704488/pexels-photo-1704488.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
                   ),
                   fit: BoxFit.cover,
                   placeholder: SpinKitCubeGrid(
@@ -69,7 +133,7 @@ class UserVerificationCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: kDefaultPadding / 2),
             child: Text(
-              "User $user",
+              user.name,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
@@ -77,7 +141,7 @@ class UserVerificationCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: kDefaultPadding / 2),
             child: Text(
-              "Email $user",
+              user.email,
               style: TextStyle(
                   height: 1,
                   fontWeight: FontWeight.w300,
@@ -91,7 +155,9 @@ class UserVerificationCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      decision("approve", context);
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor,
@@ -107,7 +173,9 @@ class UserVerificationCard extends StatelessWidget {
                 ),
                 Expanded(
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      decision("delete", context);
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                           color: Colors.white,

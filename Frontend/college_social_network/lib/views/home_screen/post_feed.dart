@@ -1,19 +1,61 @@
-import 'package:college_social_network/responsive.dart';
-import 'package:college_social_network/utils/constants.dart';
+import 'dart:async';
+import 'dart:math' as math;
+
+import 'package:ConnectUs/models/eventModel.dart';
+import 'package:ConnectUs/models/postModel.dart';
+import 'package:ConnectUs/view_models/post_view_model.dart';
+import 'package:ConnectUs/views/home_screen/new_post.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import '../../responsive.dart';
+import '../../utils/constants.dart';
 import 'package:flutter/material.dart';
 
 import 'post_card.dart';
 
-class PostFeed extends StatelessWidget {
+class PostFeed extends StatefulWidget {
   PostFeed({Key? key}) : super(key: key);
 
+  @override
+  State<PostFeed> createState() => _PostFeedState();
+}
+
+class _PostFeedState extends State<PostFeed> {
   final ScrollController _scrollController = ScrollController();
+
   final ScrollController _cardController = ScrollController();
+  List<Post> posts = [];
+
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      isLoading = true;
+    });
+    Provider.of<PostViewModel>(context, listen: false)
+        .getAllPosts()
+        .then((value) {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant PostFeed oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
     var isMobile = Responsive.isMobile(context);
     var istablet = Responsive.isTablet(context);
+    posts = Provider.of<PostViewModel>(context).posts;
+
     return Container(
       width: double.infinity,
       clipBehavior: Clip.hardEdge,
@@ -33,22 +75,24 @@ class PostFeed extends StatelessWidget {
           Expanded(
             flex: 8,
             child: ScrollConfiguration(
-              behavior:
-                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
-              child: ListView.separated(
-                clipBehavior: Clip.hardEdge,
-                scrollDirection: Axis.vertical,
-                controller: _scrollController,
-                itemBuilder: (context, index) => index == 0
-                    ? NewPost(isMobile: isMobile)
-                    : PostCard(
-                        index: index - 1,
-                      ),
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: kDefaultPadding),
-                itemCount: 10 + 1,
-              ),
-            ),
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : ListView.separated(
+                        clipBehavior: Clip.hardEdge,
+                        scrollDirection: Axis.vertical,
+                        controller: _scrollController,
+                        itemBuilder: (context, index) => index == 0
+                            ? NewPost(isMobile: isMobile)
+                            : PostCard(
+                                index: index - 1, post: posts[index - 1]),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: kDefaultPadding),
+                        itemCount: posts.length + 1,
+                      )),
           ),
           if (!isMobile && !istablet)
             Expanded(
@@ -58,98 +102,12 @@ class PostFeed extends StatelessWidget {
                 children: const [
                   RecentEventCard(),
                   SizedBox(height: kDefaultPadding),
-                  BirthdayCard(),
+                  // BirthdayCard(),
                 ],
               ),
             )
         ],
       ),
-    );
-  }
-}
-
-class NewPost extends StatelessWidget {
-  const NewPost({
-    Key? key,
-    required this.isMobile,
-  }) : super(key: key);
-
-  final bool isMobile;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(
-          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
-      padding: EdgeInsets.symmetric(
-          vertical: kDefaultPadding / 2,
-          horizontal: isMobile ? kDefaultPadding / 2 : kDefaultPadding),
-      decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Theme.of(context).scaffoldBackgroundColor
-              : Colors.white,
-          borderRadius: BorderRadius.circular(kDefaultPadding),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 20,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white10
-                  : Colors.black.withOpacity(0.07),
-              offset: const Offset(0, 5),
-            )
-          ]),
-      child: Column(children: [
-        Row(
-          children: [
-            const CircleAvatar(
-              child: Icon(Icons.person),
-            ),
-            const SizedBox(width: kDefaultPadding / 2),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.only(
-                  left: kDefaultPadding / 2,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.blueGrey.withOpacity(0.2)
-                      : Colors.grey[200],
-                  borderRadius: BorderRadius.circular(kDefaultPadding / 2),
-                ),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: "What's happening?",
-                    hintStyle: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.1),
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-        const SizedBox(height: kDefaultPadding / 2),
-        Row(
-          children: [
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.emoji_emotions_outlined),
-              label: const Text("Feeling"),
-            ),
-            const SizedBox(height: kDefaultPadding / 4),
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.photo_outlined),
-              label: const Text("Photo"),
-            ),
-            const Expanded(child: SizedBox()),
-            ElevatedButton(onPressed: () {}, child: const Text("Post"))
-          ],
-        ),
-      ]),
     );
   }
 }
@@ -173,7 +131,7 @@ class BirthdayCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white10
+                ? Colors.white.withOpacity(0.03)
                 : Colors.black.withOpacity(0.07),
             blurRadius: kDefaultPadding,
             offset: const Offset(0, 7),
@@ -311,13 +269,44 @@ class BirthdayCard extends StatelessWidget {
   }
 }
 
-class RecentEventCard extends StatelessWidget {
+class RecentEventCard extends StatefulWidget {
   const RecentEventCard({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<RecentEventCard> createState() => _RecentEventCardState();
+}
+
+class _RecentEventCardState extends State<RecentEventCard> {
+  bool isLoading = false;
+  List<Event> upcomingEvents = [];
+  List<Color> color = [Colors.green, Colors.blue, Colors.purple, Colors.brown];
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      isLoading = true;
+    });
+    Provider.of<PostViewModel>(context, listen: false)
+        .getAllEvents()
+        .then((value) {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant RecentEventCard oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    upcomingEvents = Provider.of<PostViewModel>(context).events;
     return Container(
       margin: const EdgeInsets.only(
           right: kDefaultPadding, top: kDefaultPadding * 0.2),
@@ -331,7 +320,7 @@ class RecentEventCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white10
+                ? Colors.white.withOpacity(0.03)
                 : Colors.black.withOpacity(0.07),
             blurRadius: kDefaultPadding,
             offset: const Offset(0, 7),
@@ -357,29 +346,21 @@ class RecentEventCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: Colors.blueGrey.shade700),
                 ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "See All",
-                    style: TextStyle(fontSize: 12),
-                  ),
-                )
               ],
             ),
           ),
           const SizedBox(height: kDefaultPadding / 2),
-          const EventListItem(
-            color: Colors.green,
-            icon: Icons.menu_book_rounded,
-            content: "The graduation ceremony is somtimes also called",
-            title: "Graduation Ceremony",
-          ),
-          const EventListItem(
-            color: Colors.red,
-            icon: Icons.camera_alt_outlined,
-            content: "Reflections. Reflections work because they can create",
-            title: "Photography Ideas",
-          ),
+          if (isLoading) CircularProgressIndicator(),
+          if (!isLoading && upcomingEvents.length == 0)
+            Text("No upcoming events for next 3 days!"),
+          if (!isLoading && upcomingEvents.length > 0)
+            ...upcomingEvents
+                .map((e) => EventListItem(
+                      color: color[math.Random().nextInt(4)],
+                      icon: Icons.calendar_month,
+                      event: e,
+                    ))
+                .toList()
         ],
         mainAxisSize: MainAxisSize.min,
       ),
@@ -391,14 +372,12 @@ class EventListItem extends StatelessWidget {
   const EventListItem({
     Key? key,
     required this.color,
-    required this.content,
+    required this.event,
     required this.icon,
-    required this.title,
   }) : super(key: key);
 
   final Color color;
-  final String title;
-  final String content;
+  final Event event;
   final IconData icon;
 
   @override
@@ -424,7 +403,7 @@ class EventListItem extends StatelessWidget {
                     color: color.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(kDefaultPadding / 4)),
                 child: Icon(
-                  Icons.headphones,
+                  Icons.calendar_month,
                   color: color,
                 ),
               ),
@@ -434,7 +413,7 @@ class EventListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      event.title,
                       style: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).brightness == Brightness.dark
@@ -444,7 +423,7 @@ class EventListItem extends StatelessWidget {
                     ),
                     const SizedBox(height: kDefaultPadding / 5),
                     Text(
-                      content,
+                      event.detail,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -463,7 +442,9 @@ class EventListItem extends StatelessWidget {
           Row(
             children: [
               Text(
-                "8 seen",
+                DateFormat('EE, d/MM/yy')
+                    .add_jm()
+                    .format(event.time!.toLocal()),
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(context).brightness == Brightness.dark
