@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserViewModel with ChangeNotifier {
   List<FriendListElement> friendList = [];
   List<FriendListElement> friendRequest = [];
+  List<FriendListElement> searchResult = [];
   List<Notification> notifications = [];
   User? user;
   String? _token;
@@ -52,7 +53,7 @@ class UserViewModel with ChangeNotifier {
 
   Future<void> getProfile(String id, String token) async {
     Uri uri = Uri.parse(server + "user/profile/$_id");
-    print("Hello");
+
     try {
       var response = await http.get(uri, headers: {
         "Authorization": "Bearer $_token",
@@ -111,10 +112,10 @@ class UserViewModel with ChangeNotifier {
       }
 
       var n = responseBody['notification'] as List<dynamic>;
-      print(responseBody);
+
       if (n != null && n.length != 0) {
         List<Notification> temp = [];
-        print(responseBody);
+
         n.forEach((no) {
           temp.add(Notification.fromJson(no));
         });
@@ -165,6 +166,51 @@ class UserViewModel with ChangeNotifier {
       friendList.add(f);
       friendRequest.removeWhere((element) => element.id == friendId);
       notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  Future<void> searchFriendOnDB(String parameter, String value) async {
+    Uri uri = Uri.parse(server + "other/searchResults?$parameter=$value");
+
+    try {
+      var response = await http.get(uri);
+      var responseBody = json.decode(response.body);
+
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['error']);
+      }
+      List<FriendListElement> temp = [];
+      var users = responseBody as List<dynamic>;
+      if (users.length == 0) {
+        throw HttpExceptions("No users found!");
+      }
+      users.forEach((user) {
+        temp.add(FriendListElement.fromJson(user));
+      });
+
+      searchResult = temp;
+      notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  Future<void> sendFriendRequest(String id, String token) async {
+    Uri uri = Uri.parse(server + "user/sendRequest/$id");
+
+    try {
+      var response = await http.patch(uri, headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer $token"
+      });
+
+      var responseBody = json.decode(response.body);
+
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['error']);
+      }
     } catch (err) {
       throw err;
     }

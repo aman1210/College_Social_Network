@@ -27,6 +27,8 @@ class _ChatListState extends State<ChatList> {
   bool isLoading = false;
   bool init = false;
   List<FriendListElement> friends = [];
+  List<FriendListElement> searchfriends = [];
+  bool searching = false;
 
   @override
   void initState() {
@@ -36,7 +38,7 @@ class _ChatListState extends State<ChatList> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     if (!init) {
       setState(() {
         isLoading = true;
@@ -44,7 +46,7 @@ class _ChatListState extends State<ChatList> {
       var id = Provider.of<AuthViewModel>(context).userId;
       var token = Provider.of<AuthViewModel>(context).token;
 
-      Provider.of<UserViewModel>(context)
+      await Provider.of<UserViewModel>(context)
           .getFriendList(id, token)
           .then((value) => {
                 setState(() {
@@ -61,9 +63,26 @@ class _ChatListState extends State<ChatList> {
     super.didUpdateWidget(oldWidget);
   }
 
+  searchInChatList(String s) {
+    List<FriendListElement> temp = [];
+    friends = Provider.of<UserViewModel>(context, listen: false).friendList;
+    if (s.length > 0) {
+      temp.addAll(friends.where((e) => e.name!.startsWith(s)));
+      friends = temp;
+      searching = true;
+      setState(() {});
+    } else {
+      setState(() {
+        searching = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    friends = Provider.of<UserViewModel>(context).friendList;
+    if (!searching) {
+      friends = Provider.of<UserViewModel>(context).friendList;
+    }
     return isLoading
         ? Center(
             child: CircularProgressIndicator(),
@@ -77,17 +96,19 @@ class _ChatListState extends State<ChatList> {
                   ? MainAxisAlignment.start
                   : MainAxisAlignment.center,
               children: [
-                if (friends.length > 0)
-                  TextFormField(
-                    decoration: InputDecoration(
-                        isDense: true,
-                        border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(kDefaultPadding / 2),
-                        ),
-                        hintText: "Search Friends!",
-                        prefixIcon: const Icon(CupertinoIcons.search)),
-                  ),
+                TextFormField(
+                  onChanged: (value) {
+                    searchInChatList(value);
+                  },
+                  decoration: InputDecoration(
+                      isDense: true,
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(kDefaultPadding / 2),
+                      ),
+                      hintText: "Search Friends!",
+                      prefixIcon: const Icon(CupertinoIcons.search)),
+                ),
                 const SizedBox(height: kDefaultPadding / 2),
                 if (friends.length == 0)
                   Center(child: Text("Please add friends!")),
