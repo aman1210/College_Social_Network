@@ -164,7 +164,10 @@ exports.posts_report_post = (req, res, next) => {
 };
 
 exports.posts_edit_post = (req, res, next) => {
-  Post.findOneAndUpdate({ _id: req.params.id }, { $set: req.body })
+  Post.findOneAndUpdate(
+    { _id: req.params.id },
+    { $set: req.body, verified: false }
+  )
     .then((result) => {
       res.status(203).json({
         message: "Post updated successfully",
