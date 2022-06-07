@@ -83,4 +83,48 @@ class UserViewModel with ChangeNotifier {
       throw err;
     }
   }
+
+  Future<void> getFriendRequest(String id, String token) async {
+    Uri uri = Uri.parse(server + "user/friendRequests/");
+
+    try {
+      var response =
+          await http.get(uri, headers: {"Authorization": "Bearer $token"});
+      var responseBody = json.decode(response.body);
+
+      if (responseBody['friendList'] != null) {
+        var fl = responseBody['friendList'] as List<dynamic>;
+        List<FriendListElement> temp = [];
+        fl.forEach((f) {
+          temp.add(FriendListElement.fromJson(f));
+        });
+        friendRequest = temp;
+        notifyListeners();
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  Future<void> acceptFriendRequest(String friendId, String token) async {
+    Uri uri = Uri.parse(server + "user/acceptRequest/$friendId");
+
+    try {
+      var response =
+          await http.patch(uri, headers: {"Authorization": "Bearer $token"});
+
+      var responseBody = json.decode(response.body);
+
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['error']);
+      }
+
+      var f = friendRequest.firstWhere((element) => element.id == friendId);
+      friendList.add(f);
+      friendRequest.removeWhere((element) => element.id == friendId);
+      notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
 }

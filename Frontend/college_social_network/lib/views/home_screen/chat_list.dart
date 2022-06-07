@@ -25,25 +25,40 @@ class _ChatListState extends State<ChatList> {
   final ScrollController _controller = ScrollController();
 
   bool isLoading = false;
+  bool init = false;
   List<FriendListElement> friends = [];
 
   @override
   void initState() {
     super.initState();
 
-    setState(() {
-      isLoading = true;
-    });
-    var id = Provider.of<AuthViewModel>(context, listen: false).userId;
-    var token = Provider.of<AuthViewModel>(context, listen: false).token;
-    Provider.of<UserViewModel>(context, listen: false)
-        .getFriendList(id, token)
-        .then((value) => {
-              setState(() {
-                isLoading = false;
-              })
-            });
     // Provider.of<ChatModel>(context, listen: false).init();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (!init) {
+      setState(() {
+        isLoading = true;
+      });
+      var id = Provider.of<AuthViewModel>(context).userId;
+      var token = Provider.of<AuthViewModel>(context).token;
+
+      Provider.of<UserViewModel>(context, listen: false)
+          .getFriendList(id, token)
+          .then((value) => {
+                setState(() {
+                  isLoading = false;
+                  init = true;
+                })
+              });
+    }
+    super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(covariant ChatList oldWidget) {
+    super.didUpdateWidget(oldWidget);
   }
 
   @override

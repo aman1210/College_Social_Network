@@ -1,3 +1,6 @@
+import 'dart:html' as html;
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../components/current_state.dart';
@@ -110,6 +113,7 @@ class CustomAppBar extends StatelessWidget {
             TextButton.icon(
                 onPressed: () {
                   Provider.of<AuthViewModel>(context, listen: false).logout();
+                  html.window.location.reload();
                 },
                 icon: Icon(Icons.logout_rounded),
                 label: Text("Logout"))
