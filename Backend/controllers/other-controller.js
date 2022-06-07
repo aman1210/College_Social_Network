@@ -1,3 +1,4 @@
+const querystring = require('querystring');
 const Notification = require("../models/notificationModel");
 const Event = require("../models/eventModel");
 const User = require("../models/userModel");
@@ -50,3 +51,17 @@ exports.other_get_notifications = (req, res, next) => {
       res.status(402).json({ message: "Something went wrong!", error: err });
     });
 };
+
+exports.other_get_search_results = (req,res,next) =>{
+  let urlString = req.url;
+  let paramString = urlString.split('?')[1];
+  User.find(querystring.parse(paramString), "name profile_image").then((results)=>{
+    if(!results){
+      res.json({"error":"No users found"});
+    }
+    else
+    return res.json(results);
+  }).catch((err)=>{
+    res.json({"error":"Could not retreive any User"})
+  });
+}

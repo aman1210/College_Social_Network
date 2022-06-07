@@ -20,6 +20,7 @@
     "nodemon": "^2.0.16",
     "passport": "^0.5.3",
     "passport-google-oauth": "^2.0.0",
+    "querystring": "^0.2.1",
     "socket.io": "^4.5.1"
   },
   "scripts": {
