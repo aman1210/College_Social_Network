@@ -30,7 +30,13 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => ChatModel()),
         ChangeNotifierProvider(create: (ctx) => MessageViewModel()),
         ChangeNotifierProvider(create: (ctx) => PostViewModel()),
-        ChangeNotifierProvider(create: (ctx) => UserViewModel()),
+        ChangeNotifierProxyProvider<AuthViewModel, UserViewModel>(
+            create: (ctx) => UserViewModel(),
+            update: (context, auth, user) {
+              return user!
+                ..id = auth.userId
+                ..token = auth.token;
+            }),
       ],
       child: Consumer<AuthViewModel>(
         builder: (context, value, child) {

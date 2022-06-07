@@ -176,6 +176,7 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<bool> tryAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();
+
     if (prefs.containsKey('token')) {
       _userId = prefs.getString('userId') ?? '';
       _userName = prefs.getString('userName') ?? '';

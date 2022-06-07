@@ -15,13 +15,25 @@ class UserViewModel with ChangeNotifier {
   List<FriendListElement> friendRequest = [];
   List<Notification> notifications = [];
   User? user;
+  String? _token;
+  String? _id;
+
+  set token(String token) {
+    _token = token;
+    notifyListeners();
+  }
+
+  set id(String id) {
+    _id = id;
+    notifyListeners();
+  }
 
   Future<void> getFriendList(String id, String token) async {
     Uri uri = Uri.parse(server + "user/myCommunity");
 
     try {
       var response =
-          await http.get(uri, headers: {"Authorization": "Bearer $token"});
+          await http.get(uri, headers: {"Authorization": "Bearer $_token"});
       var responseBody = json.decode(response.body);
 
       if (responseBody['friendList'] != null) {
@@ -39,11 +51,11 @@ class UserViewModel with ChangeNotifier {
   }
 
   Future<void> getProfile(String id, String token) async {
-    Uri uri = Uri.parse(server + "user/profile/$id");
-
+    Uri uri = Uri.parse(server + "user/profile/$_id");
+    print("Hello");
     try {
       var response = await http.get(uri, headers: {
-        "Authorization": "Bearer $token",
+        "Authorization": "Bearer $_token",
         'Content-Type': 'application/json; charset=UTF-8',
       });
       var responseBody = json.decode(response.body);
@@ -53,6 +65,35 @@ class UserViewModel with ChangeNotifier {
       }
       user = User.fromJson(responseBody['userProfile']);
       notifyListeners();
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  Future<void> editProfile(String id, String token, User user) async {
+    Uri uri = Uri.parse(server + "user/editProfile/$id");
+    var data = {
+      "intro": user.intro,
+      "about": user.about,
+      "dob": user.dob,
+      "location": user.location,
+      "social_links": user.socialLinks,
+      "profile_image": user.profileImage,
+    };
+
+    var request = json.encode(data);
+
+    try {
+      var response = await http.patch(uri, body: request, headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer $token"
+      });
+
+      var responseBody = json.decode(response.body);
+
+      if (response.statusCode >= 400) {
+        throw HttpExceptions(responseBody['message'] ?? responseBody['error']);
+      }
     } catch (err) {
       throw err;
     }

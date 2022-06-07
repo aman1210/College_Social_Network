@@ -44,7 +44,7 @@ class _ChatListState extends State<ChatList> {
       var id = Provider.of<AuthViewModel>(context).userId;
       var token = Provider.of<AuthViewModel>(context).token;
 
-      Provider.of<UserViewModel>(context, listen: false)
+      Provider.of<UserViewModel>(context)
           .getFriendList(id, token)
           .then((value) => {
                 setState(() {
