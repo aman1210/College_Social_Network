@@ -84,7 +84,7 @@ exports.user_accept_request = async (req, res, next) => {
   
   User.updateOne(
     { _id:curUserId},
-    { $pull: { friendRequest: {userId } } }
+    { $pull: { friendRequest:userId } }
   ).then(curUser => console.log(curUser)).catch(err => console.log(err));
 
   User.findByIdAndUpdate(userId,{$addToSet:{friendList:{_id:req.userData.userId}}}).then((result)=>{

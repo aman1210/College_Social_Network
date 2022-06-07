@@ -55,7 +55,9 @@ exports.other_get_notifications = (req, res, next) => {
 exports.other_get_search_results = (req,res,next) =>{
   let urlString = req.url;
   let paramString = urlString.split('?')[1];
-  User.find(querystring.parse(paramString), "name profile_image").then((results)=>{
+  let parameters = querystring.parse(paramString);
+  
+  User.find(parameters, "name profile_image").then((results)=>{
     if(!results){
       res.json({"error":"No users found"});
     }
