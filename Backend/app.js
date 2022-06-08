@@ -33,6 +33,7 @@ app.use((req, res, next) => {
   );
   if (req.method === "OPTIONS") {
     res.header("Access-Control-Allow-Methods", "PUT, GET, POST, PATCH, DELETE");
+
     return res.status(200).json({});
   }
   return next();
@@ -112,3 +113,4 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}..`));
+
