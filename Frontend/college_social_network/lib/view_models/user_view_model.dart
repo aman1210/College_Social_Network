@@ -135,8 +135,10 @@ class UserViewModel with ChangeNotifier {
           await http.get(uri, headers: {"Authorization": "Bearer $token"});
       var responseBody = json.decode(response.body);
 
-      if (responseBody['friendList'] != null) {
-        var fl = responseBody['friendList'] as List<dynamic>;
+      print(responseBody);
+
+      if (responseBody['friendRequest'] != null) {
+        var fl = responseBody['friendRequest'] as List<dynamic>;
         List<FriendListElement> temp = [];
         fl.forEach((f) {
           temp.add(FriendListElement.fromJson(f));

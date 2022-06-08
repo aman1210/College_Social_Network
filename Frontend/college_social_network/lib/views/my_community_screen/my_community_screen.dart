@@ -62,10 +62,15 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
     });
     var id = Provider.of<AuthViewModel>(context, listen: false).userId;
     var token = Provider.of<AuthViewModel>(context, listen: false).token;
+    print(id);
+    print(token);
     Provider.of<UserViewModel>(context, listen: false)
-        .getFriendList(id, token)
+        .getFriendRequest(id, token)
         .then((value) => {
               setState(() {
+                friendRequest =
+                    Provider.of<UserViewModel>(context, listen: false)
+                        .friendRequest;
                 isLoading = false;
               })
             });
@@ -76,7 +81,7 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
     var isMobile = Responsive.isMobile(context);
     var istablet = Responsive.isTablet(context);
     friendList = Provider.of<UserViewModel>(context).friendList;
-    friendRequest = Provider.of<UserViewModel>(context).friendRequest;
+
     return isLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -114,6 +119,9 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
                               setState(() {
                                 showRequest = !showRequest;
                               });
+                              if (showRequest) {
+                                getFriendRequest();
+                              }
                             },
                             child: Text(showRequest
                                 ? "Show friend list"
@@ -124,7 +132,7 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
                         Expanded(
                           child: friendList.isEmpty
                               ? const Center(
-                                  child: Text("No new friend request!"),
+                                  child: Text("No new friends added yet!"),
                                 )
                               : GridView.builder(
                                   controller: _controller,
@@ -358,7 +366,7 @@ class _MyCommunityScreenState extends State<MyCommunityScreen> {
                                                                   kDefaultPadding /
                                                                       4)),
                                                       child: const Text(
-                                                        "View",
+                                                        "Add",
                                                         style: TextStyle(
                                                             color:
                                                                 Colors.white),

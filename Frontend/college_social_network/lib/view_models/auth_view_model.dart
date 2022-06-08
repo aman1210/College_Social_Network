@@ -88,7 +88,7 @@ class AuthViewModel extends ChangeNotifier {
       _profileImage = bodyresponse['profile_image'];
       _token = bodyresponse['token'];
 
-      if (_email == "aman.18605@knit.ac.in") {
+      if (_email == "admin@knit.ac.in") {
         _isAdmin = true;
       }
 
@@ -188,7 +188,7 @@ class AuthViewModel extends ChangeNotifier {
 
       if (_token != '' && _expiryDate.isAfter(DateTime.now())) {
         _userLoggedIn = true;
-        if (_email == "aman.18605@knit.ac.in") {
+        if (_email == "admin@knit.ac.in") {
           _isAdmin = true;
         }
       } else {

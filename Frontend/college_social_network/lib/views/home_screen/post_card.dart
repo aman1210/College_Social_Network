@@ -44,7 +44,7 @@ class _PostCardState extends State<PostCard> {
     try {
       await Provider.of<PostViewModel>(context, listen: false).commentOnPost(
           widget.post!.id!,
-          "Aman",
+          Provider.of<AuthViewModel>(context, listen: false).userName,
           _commentController.text,
           Provider.of<AuthViewModel>(context, listen: false).userId);
     } catch (err) {
