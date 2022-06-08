@@ -7,13 +7,11 @@ import 'package:provider/provider.dart';
 
 import '../../responsive.dart';
 import '../../utils/constants.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:image_fade/image_fade.dart';
 
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({Key? key, this.id}) : super(key: key);
+  const ProfileScreen({Key? key, this.id}) : super(key: key);
 
   final String? id;
 
@@ -22,9 +20,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   User? userProfile;
   bool isLoading = false;
+  late String id;
 
   @override
   void initState() {
@@ -32,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       isLoading = true;
     });
-    var id = Provider.of<AuthViewModel>(context, listen: false).userId;
+    id = Provider.of<AuthViewModel>(context, listen: false).userId;
     var token = Provider.of<AuthViewModel>(context, listen: false).token;
 
     Provider.of<UserViewModel>(context, listen: false)
@@ -49,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var isMobile = Responsive.isMobile(context);
     userProfile = Provider.of<UserViewModel>(context).user;
     return isLoading
-        ? Center(
+        ? const Center(
             child: CircularProgressIndicator(),
           )
         : Container(
@@ -64,10 +63,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ProfileAndCoverPhotoCard(
-                        isMobile: isMobile, user: userProfile!),
-                    SizedBox(height: kDefaultPadding),
+                        isMobile: isMobile, user: userProfile!, currUserId: id),
+                    const SizedBox(height: kDefaultPadding),
                     Container(
-                      padding: EdgeInsets.all(kDefaultPadding),
+                      padding: const EdgeInsets.all(kDefaultPadding),
                       decoration: BoxDecoration(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? Colors.blueGrey.withOpacity(0.2)
@@ -94,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ? Colors.white70
                                     : Colors.blueGrey.shade700),
                           ),
-                          SizedBox(height: kDefaultPadding / 5),
+                          const SizedBox(height: kDefaultPadding / 5),
                           introField(
                               Icons.cake_outlined,
                               "Born ${userProfile!.dob ?? 'Not entered'}",
@@ -112,7 +111,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       context),
                                 )
                                 .toList(),
-                          Divider(thickness: 1, height: kDefaultPadding * 2),
+                          const Divider(
+                              thickness: 1, height: kDefaultPadding * 2),
                           Text(
                             "About",
                             style: TextStyle(
@@ -123,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ? Colors.white70
                                     : Colors.blueGrey.shade700),
                           ),
-                          SizedBox(height: kDefaultPadding / 5),
+                          const SizedBox(height: kDefaultPadding / 5),
                           Text(
                             userProfile!.about ?? "'About' not specified",
                             style: TextStyle(
@@ -133,7 +133,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ? Colors.white.withOpacity(0.65)
                                     : null),
                           ),
-                          Divider(thickness: 1, height: kDefaultPadding * 2),
+                          const Divider(
+                              thickness: 1, height: kDefaultPadding * 2),
                         ],
                       ),
                     )
@@ -153,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           color: Colors.blueGrey,
           size: 20,
         ),
-        SizedBox(width: kDefaultPadding / 2),
+        const SizedBox(width: kDefaultPadding / 2),
         Text(
           value,
           style: TextStyle(
@@ -167,14 +168,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 class ProfileAndCoverPhotoCard extends StatelessWidget {
-  const ProfileAndCoverPhotoCard({
-    Key? key,
-    required this.isMobile,
-    required this.user,
-  }) : super(key: key);
+  const ProfileAndCoverPhotoCard(
+      {Key? key, required this.isMobile, required this.user, this.currUserId})
+      : super(key: key);
 
   final bool isMobile;
   final User user;
+  final String? currUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -227,36 +227,37 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                             backgroundColor: Colors.blue,
                             backgroundImage:
                                 CachedNetworkImageProvider(user.profileImage!)),
-                      Positioned(
-                        bottom: 15,
-                        right: isMobile ? -10 : 0,
-                        child: InkWell(
-                          onTap: () {},
-                          child: Container(
-                            height: 30,
-                            width: 30,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 20,
-                                  color: Colors.black.withOpacity(0.2),
-                                  offset: const Offset(0, 5),
-                                )
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.cloud_upload_outlined,
-                              size: 20,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.black
-                                  : null,
+                      if (user.id == currUserId)
+                        Positioned(
+                          bottom: 15,
+                          right: isMobile ? -10 : 0,
+                          child: InkWell(
+                            onTap: () {},
+                            child: Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                                boxShadow: [
+                                  BoxShadow(
+                                    blurRadius: 20,
+                                    color: Colors.black.withOpacity(0.2),
+                                    offset: const Offset(0, 5),
+                                  )
+                                ],
+                              ),
+                              child: Icon(
+                                Icons.cloud_upload_outlined,
+                                size: 20,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.black
+                                    : null,
+                              ),
                             ),
                           ),
-                        ),
-                      )
+                        )
                     ],
                   ),
                 ),
@@ -269,7 +270,7 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                 left: isMobile ? kDefaultPadding / 2 : kDefaultPadding,
                 right: isMobile ? kDefaultPadding / 2 : kDefaultPadding,
                 bottom: kDefaultPadding),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(kDefaultPadding),
                 bottomRight: Radius.circular(kDefaultPadding),
@@ -301,26 +302,30 @@ class ProfileAndCoverPhotoCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                Expanded(child: SizedBox()),
-                TextButton.icon(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) => EditProfieForm());
-                  },
-                  icon: const Icon(
-                    Icons.cloud_upload_outlined,
-                    size: 18,
-                  ),
-                  label: const Padding(
-                    padding: EdgeInsets.all(4.0),
-                    child: Text(
-                      "Edit Basic Info",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                const Expanded(child: SizedBox()),
+                if (user.id == currUserId)
+                  TextButton.icon(
+                    onPressed: () {
+                      // Navigator.of(context).push(MaterialPageRoute(
+                      //   builder: (context) => EditProfieForm(user: user),
+                      // ));
+                      showDialog(
+                          context: context,
+                          builder: (context) => EditProfieForm(user: user));
+                    },
+                    icon: const Icon(
+                      Icons.cloud_upload_outlined,
+                      size: 18,
+                    ),
+                    label: const Padding(
+                      padding: EdgeInsets.all(4.0),
+                      child: Text(
+                        "Edit Basic Info",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           )

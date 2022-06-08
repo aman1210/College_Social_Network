@@ -1,3 +1,5 @@
+import 'dart:html' as html;
+
 import '../../components/app_bar.dart';
 import '../../components/current_state.dart';
 import '../../responsive.dart';
@@ -51,6 +53,7 @@ class _SideBarState extends State<SideBar> {
                 onTap: () {
                   if (index == CurrentState.tabs.length - 1) {
                     authViewModel.logout();
+                    html.window.location.reload();
                   } else if (index == CurrentState.tabs.length - 2) {
                     Provider.of<AuthViewModel>(context, listen: false)
                         .toggleDarkMode();

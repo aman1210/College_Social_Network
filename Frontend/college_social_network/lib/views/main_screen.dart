@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:ConnectUs/view_models/chat_view_model.dart';
 import 'package:ConnectUs/views/admin_screen.dart/admin_screen.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -104,6 +106,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     pageViews = createPageContents();
     visiblePageViews = createPageContents();
+
     super.initState();
   }
 
@@ -138,7 +141,6 @@ class _MainScreenState extends State<MainScreen> {
     if (!authViewModel.userLoggedIn) {
       return const AuthScreen();
     }
-
     return Expanded(
       child: Responsive(
         mobile: mainarea(pageController),

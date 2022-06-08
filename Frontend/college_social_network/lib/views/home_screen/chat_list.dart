@@ -25,30 +25,64 @@ class _ChatListState extends State<ChatList> {
   final ScrollController _controller = ScrollController();
 
   bool isLoading = false;
+  bool init = false;
   List<FriendListElement> friends = [];
+  List<FriendListElement> searchfriends = [];
+  bool searching = false;
 
   @override
   void initState() {
     super.initState();
 
-    setState(() {
-      isLoading = true;
-    });
-    var id = Provider.of<AuthViewModel>(context, listen: false).userId;
-    var token = Provider.of<AuthViewModel>(context, listen: false).token;
-    Provider.of<UserViewModel>(context, listen: false)
-        .getFriendList(id, token)
-        .then((value) => {
-              setState(() {
-                isLoading = false;
-              })
-            });
     // Provider.of<ChatModel>(context, listen: false).init();
   }
 
   @override
+  void didChangeDependencies() async {
+    if (!init) {
+      setState(() {
+        isLoading = true;
+      });
+      var id = Provider.of<AuthViewModel>(context).userId;
+      var token = Provider.of<AuthViewModel>(context).token;
+
+      await Provider.of<UserViewModel>(context)
+          .getFriendList(id, token)
+          .then((value) => {
+                setState(() {
+                  isLoading = false;
+                  init = true;
+                })
+              });
+    }
+    super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(covariant ChatList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  searchInChatList(String s) {
+    List<FriendListElement> temp = [];
+    friends = Provider.of<UserViewModel>(context, listen: false).friendList;
+    if (s.length > 0) {
+      temp.addAll(friends.where((e) => e.name!.startsWith(s)));
+      friends = temp;
+      searching = true;
+      setState(() {});
+    } else {
+      setState(() {
+        searching = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    friends = Provider.of<UserViewModel>(context).friendList;
+    if (!searching) {
+      friends = Provider.of<UserViewModel>(context).friendList;
+    }
     return isLoading
         ? Center(
             child: CircularProgressIndicator(),
@@ -62,17 +96,19 @@ class _ChatListState extends State<ChatList> {
                   ? MainAxisAlignment.start
                   : MainAxisAlignment.center,
               children: [
-                if (friends.length > 0)
-                  TextFormField(
-                    decoration: InputDecoration(
-                        isDense: true,
-                        border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(kDefaultPadding / 2),
-                        ),
-                        hintText: "Search Friends!",
-                        prefixIcon: const Icon(CupertinoIcons.search)),
-                  ),
+                TextFormField(
+                  onChanged: (value) {
+                    searchInChatList(value);
+                  },
+                  decoration: InputDecoration(
+                      isDense: true,
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(kDefaultPadding / 2),
+                      ),
+                      hintText: "Search Friends!",
+                      prefixIcon: const Icon(CupertinoIcons.search)),
+                ),
                 const SizedBox(height: kDefaultPadding / 2),
                 if (friends.length == 0)
                   Center(child: Text("Please add friends!")),

@@ -88,7 +88,7 @@ class AuthViewModel extends ChangeNotifier {
       _profileImage = bodyresponse['profile_image'];
       _token = bodyresponse['token'];
 
-      if (_email == "aman.18605@knit.ac.in") {
+      if (_email == "admin@knit.ac.in") {
         _isAdmin = true;
       }
 
@@ -176,6 +176,7 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<bool> tryAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();
+
     if (prefs.containsKey('token')) {
       _userId = prefs.getString('userId') ?? '';
       _userName = prefs.getString('userName') ?? '';
@@ -187,7 +188,7 @@ class AuthViewModel extends ChangeNotifier {
 
       if (_token != '' && _expiryDate.isAfter(DateTime.now())) {
         _userLoggedIn = true;
-        if (_email == "aman.18605@knit.ac.in") {
+        if (_email == "admin@knit.ac.in") {
           _isAdmin = true;
         }
       } else {

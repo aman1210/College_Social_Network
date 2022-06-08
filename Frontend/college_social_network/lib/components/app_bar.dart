@@ -1,3 +1,10 @@
+import 'dart:html' as html;
+import 'dart:ui';
+
+import 'package:ConnectUs/components/custom_dialog.dart';
+import 'package:ConnectUs/components/searchUserScreen.dart';
+import 'package:ConnectUs/models/HttpExceptions.dart';
+import 'package:ConnectUs/view_models/user_view_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../components/current_state.dart';
@@ -9,11 +16,46 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CustomAppBar extends StatelessWidget {
-  CustomAppBar({Key? key, this.isAdmin = false, this.scrollPageView})
+class CustomAppBar extends StatefulWidget {
+  const CustomAppBar({Key? key, this.isAdmin = false, this.scrollPageView})
       : super(key: key);
-  bool isAdmin;
+  final bool isAdmin;
   final Function? scrollPageView;
+
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  final TextEditingController _searchController = TextEditingController();
+
+  String parameter = "name";
+  bool isLoading = false;
+
+  submitSearch() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      await Provider.of<UserViewModel>(context, listen: false)
+          .searchFriendOnDB(parameter, _searchController.text);
+      _searchController.clear();
+
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const SearchResultScreen()));
+    } on HttpExceptions catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
+    } catch (err) {
+      showDialog(
+          context: context,
+          builder: (context) => CustomDialog(msg: err.toString()));
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +78,19 @@ class CustomAppBar extends StatelessWidget {
               icon: const Icon(Icons.menu),
             ),
           if (!isMobile || !authViewModel.userLoggedIn)
-            AppLogo(scrollPageView: scrollPageView),
+            AppLogo(scrollPageView: widget.scrollPageView),
           const Expanded(flex: 1, child: SizedBox()),
-          if (!isTablet && !isMobile && authViewModel.userLoggedIn && !isAdmin)
+          if (!isTablet &&
+              !isMobile &&
+              authViewModel.userLoggedIn &&
+              !widget.isAdmin)
             Expanded(
               flex: 8,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                 child: TextFormField(
                   style: const TextStyle(fontSize: 16),
+                  controller: _searchController,
                   decoration: InputDecoration(
                     isDense: true,
                     border: OutlineInputBorder(
@@ -54,17 +100,45 @@ class CustomAppBar extends StatelessWidget {
                       ),
                     ),
                     hintText: "Search for someone here...",
-                    hintStyle: const TextStyle(fontSize: 14),
-                    prefixIcon: const Icon(
-                      CupertinoIcons.search,
-                      size: 15,
+                    suffix: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        DropdownButton(
+                          value: parameter,
+                          items: const [
+                            DropdownMenuItem(
+                                child: Text("Name"), value: "name"),
+                            DropdownMenuItem(
+                                child: Text("Location"), value: "location"),
+                          ],
+                          underline: Container(),
+                          onChanged: (value) {
+                            setState(() {
+                              parameter = value.toString();
+                            });
+                          },
+                        ),
+                        if (isLoading) const CircularProgressIndicator(),
+                        if (!isLoading)
+                          IconButton(
+                            onPressed: () {
+                              submitSearch();
+                            },
+                            icon: const Icon(
+                              CupertinoIcons.search,
+                              color: Colors.blue,
+                            ),
+                          ),
+                      ],
                     ),
+                    hintStyle: const TextStyle(fontSize: 14),
                   ),
                 ),
               ),
             ),
           const Expanded(flex: 4, child: SizedBox()),
-          if (authViewModel.userLoggedIn && !isAdmin)
+          if (authViewModel.userLoggedIn && !widget.isAdmin)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
               decoration: BoxDecoration(
@@ -106,13 +180,14 @@ class CustomAppBar extends StatelessWidget {
                 ],
               ),
             ),
-          if (authViewModel.userLoggedIn && isAdmin)
+          if (authViewModel.userLoggedIn && widget.isAdmin)
             TextButton.icon(
                 onPressed: () {
                   Provider.of<AuthViewModel>(context, listen: false).logout();
+                  html.window.location.reload();
                 },
-                icon: Icon(Icons.logout_rounded),
-                label: Text("Logout"))
+                icon: const Icon(Icons.logout_rounded),
+                label: const Text("Logout"))
         ],
       ),
     );

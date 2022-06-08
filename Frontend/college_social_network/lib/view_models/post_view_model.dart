@@ -133,7 +133,7 @@ class PostViewModel with ChangeNotifier {
     var data = {
       "userName": userName,
       "text": text,
-      "timeStamp": DateTime.now().toIso8601String(),
+      "time": DateTime.now().toIso8601String(),
       "userId": userId,
     };
 
@@ -162,7 +162,7 @@ class PostViewModel with ChangeNotifier {
 
       notifyListeners();
     } catch (err) {
-      throw err;
+      throw err.toString();
     }
   }
 }

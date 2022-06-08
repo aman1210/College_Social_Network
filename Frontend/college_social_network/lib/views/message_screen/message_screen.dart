@@ -1,5 +1,7 @@
+import 'package:ConnectUs/models/friendList.dart';
 import 'package:ConnectUs/view_models/auth_view_model.dart';
 import 'package:ConnectUs/view_models/chat_view_model.dart';
+import 'package:ConnectUs/view_models/user_view_model.dart';
 
 import '../../models/message.dart';
 import '../../models/user.dart';
@@ -20,17 +22,19 @@ class MessageScreen extends StatefulWidget {
 
 class _MessageScreenState extends State<MessageScreen> {
   final ScrollController _chatListController = ScrollController();
+  final TextEditingController _messageController = TextEditingController();
 
   List<Message> chats = [];
   late String chatId;
-  late User selected;
+  late FriendListElement selected;
+  late String userId;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    var userId = Provider.of<AuthViewModel>(context, listen: false).userId;
-    Provider.of<ChatModel>(context, listen: false).init(userId);
+    userId = Provider.of<AuthViewModel>(context, listen: false).userId;
+    // Provider.of<ChatModel>(context, listen: false).init(userId);
   }
 
   @override
@@ -39,9 +43,10 @@ class _MessageScreenState extends State<MessageScreen> {
     var selectedUser = Provider.of<MessageViewModel>(context).selectedUser;
 
     if (selectedUser != null) {
-      // selected = Provider.of<ChatModel>(context, listen: false)
-      //     .friendList[selectedUser];
-      // chatId = selected.id!;
+      selected = Provider.of<UserViewModel>(context, listen: false)
+          .friendList[selectedUser];
+
+      chatId = selected.id!;
       // chats = Provider.of<ChatModel>(context).getMessagesForChatID(chatId);
     }
     return isMobile && selectedUser == null
@@ -131,6 +136,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                         Border.all(color: Colors.grey.shade300),
                                   ),
                                   child: TextFormField(
+                                    controller: _messageController,
                                     style: Theme.of(context).brightness ==
                                             Brightness.dark
                                         ? TextStyle(color: Colors.white70)
@@ -145,22 +151,39 @@ class _MessageScreenState extends State<MessageScreen> {
                                   ),
                                 ),
                               ),
-                              Container(
-                                height: 40,
-                                width: 40,
-                                margin: EdgeInsets.only(
-                                    right: isMobile
-                                        ? kDefaultPadding / 2
-                                        : kDefaultPadding),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Icon(
-                                  Icons.send,
-                                  color: Colors.blue,
+                              InkWell(
+                                onTap: _messageController.text != null
+                                    ? () {
+                                        chats.insert(
+                                            0,
+                                            Message(
+                                                text: _messageController.text,
+                                                timeStamp: DateTime.now()
+                                                    .toIso8601String(),
+                                                senderID: userId,
+                                                receiverID: selected.id!));
+
+                                        setState(() {});
+                                        _messageController.clear();
+                                      }
+                                    : null,
+                                child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  margin: EdgeInsets.only(
+                                      right: isMobile
+                                          ? kDefaultPadding / 2
+                                          : kDefaultPadding),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Icon(
+                                    Icons.send,
+                                    color: Colors.blue,
+                                  ),
                                 ),
                               )
                             ],
@@ -263,7 +286,7 @@ class ChatBoxHeading extends StatelessWidget {
       {Key? key, required this.selectedUser, required this.isMobile})
       : super(key: key);
 
-  final User selectedUser;
+  final FriendListElement selectedUser;
   final bool isMobile;
 
   @override
